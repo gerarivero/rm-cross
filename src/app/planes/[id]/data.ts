@@ -9,7 +9,7 @@ export async function getPlanDetalle(planId: string): Promise<PlanDetalle> {
 
   const { data: planRow, error: planError } = await supabase
     .from("plan")
-    .select("*, disciplina:disciplina_id(id, nombre), plan_precio_historico(precio, vigente_desde, vigente_hasta)")
+    .select("*, disciplina:disciplina_id(id, nombre), plan_precio_historico(id, precio, vigente_desde, vigente_hasta)")
     .eq("id", planId)
     .maybeSingle();
 
