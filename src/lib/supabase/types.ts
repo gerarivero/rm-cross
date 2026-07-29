@@ -48,6 +48,8 @@ export type Alumno = {
   turno_id: string | null;
   altura: number | null;
   peso: number | null;
+  foto_inicial_url: string | null;
+  foto_actual_url: string | null;
   estado: EstadoPersona;
   fecha_alta: string;
 };
@@ -101,4 +103,10 @@ export type AlumnoConPlan = Alumno & {
 export type PlanDetalle = PlanConPrecio & {
   historial_precios: PlanPrecioHistorico[];
   ultimas_inscripciones: InscripcionConAlumno[];
+};
+
+// Vista de la página de detalle de alumno: mismos datos que AlumnoConPlan +
+// el nombre de la promoción aplicada (si la inscripción tiene una).
+export type AlumnoDetalle = AlumnoConPlan & {
+  promocion_nombre: string | null;
 };

@@ -1,0 +1,175 @@
+"use client";
+
+import { useState } from "react";
+import type { AlumnoDetalle, PlanConPrecio, Turno } from "@/lib/supabase/types";
+import { AlumnoFormModal } from "../AlumnoFormModal";
+
+const ESTADO_ESTILO: Record<string, string> = {
+  activo: "bg-success/10 text-success",
+  inactivo: "bg-surface-container-high text-on-surface-variant",
+  suspendido: "bg-warning/10 text-warning",
+  de_baja: "bg-error/10 text-error",
+};
+
+const ESTADO_LABEL: Record<string, string> = {
+  activo: "Activo",
+  inactivo: "Inactivo",
+  suspendido: "Suspendido",
+  de_baja: "De baja",
+};
+
+function formatoMoneda(valor: number | null) {
+  if (valor === null) return "—";
+  return valor.toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
+}
+
+function formatoFecha(valor: string | null) {
+  if (!valor) return "—";
+  return new Date(`${valor}T00:00:00`).toLocaleDateString("es-AR");
+}
+
+export function AlumnoDetalleView({
+  alumno,
+  planes,
+  turnos,
+  promociones,
+}: {
+  alumno: AlumnoDetalle;
+  planes: PlanConPrecio[];
+  turnos: Turno[];
+  promociones: { id: string; nombre: string; plan_ids: string[] }[];
+}) {
+  const [modalEditarOpen, setModalEditarOpen] = useState(false);
+  const nombreCompleto = alumno.nombre || alumno.apellido ? `${alumno.nombre ?? ""} ${alumno.apellido ?? ""}`.trim() : `DNI ${alumno.dni}`;
+
+  return (
+    <>
+      <header className="sticky top-0 z-40 bg-surface-white border-b border-border shadow-sm flex items-center gap-md px-lg py-md w-full">
+        <a href="/alumnos" className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors" title="Volver a Alumnos">
+          <span className="material-symbols-outlined">arrow_back</span>
+        </a>
+        <h2 className="font-headline-md text-headline-md text-primary">{nombreCompleto}</h2>
+      </header>
+
+      <div className="p-lg space-y-gutter flex-1">
+        {/* Card: Información general */}
+        <div className="bg-surface-white border border-border rounded-xl shadow-sm p-lg">
+          <div className="flex items-center justify-between mb-md">
+            <h3 className="font-headline-md text-headline-md text-on-background">Información general</h3>
+            <button
+              onClick={() => setModalEditarOpen(true)}
+              className="flex items-center gap-xs px-lg py-2 bg-primary-container text-on-primary-container rounded-lg hover:opacity-90 transition-opacity font-label-bold text-label-bold"
+            >
+              <span className="material-symbols-outlined text-[18px]">edit</span>
+              Editar
+            </button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg">
+            <div>
+              <p className="text-caption font-caption text-text-muted uppercase tracking-wider">DNI</p>
+              <p className="font-data-mono text-data-mono text-on-surface mt-1">{alumno.dni}</p>
+            </div>
+            <div>
+              <p className="text-caption font-caption text-text-muted uppercase tracking-wider">Estado</p>
+              <span className={`inline-block mt-1 px-3 py-1 rounded-full text-caption font-label-bold ${ESTADO_ESTILO[alumno.estado]}`}>
+                {ESTADO_LABEL[alumno.estado]}
+              </span>
+            </div>
+            <div>
+              <p className="text-caption font-caption text-text-muted uppercase tracking-wider">Fecha de nacimiento</p>
+              <p className="font-label-bold text-label-bold text-on-surface mt-1">{formatoFecha(alumno.fecha_nacimiento)}</p>
+            </div>
+            <div>
+              <p className="text-caption font-caption text-text-muted uppercase tracking-wider">Turno</p>
+              <p className="font-label-bold text-label-bold text-on-surface mt-1">{alumno.turno?.nombre ?? "—"}</p>
+            </div>
+            <div>
+              <p className="text-caption font-caption text-text-muted uppercase tracking-wider">Email</p>
+              <p className="text-body-sm text-on-surface mt-1">{alumno.email ?? "—"}</p>
+            </div>
+            <div>
+              <p className="text-caption font-caption text-text-muted uppercase tracking-wider">Celular</p>
+              <p className="text-body-sm text-on-surface mt-1">{alumno.celular ?? "—"}</p>
+            </div>
+            <div>
+              <p className="text-caption font-caption text-text-muted uppercase tracking-wider">Altura</p>
+              <p className="font-data-mono text-data-mono text-on-surface mt-1">{alumno.altura != null ? `${alumno.altura} cm` : "—"}</p>
+            </div>
+            <div>
+              <p className="text-caption font-caption text-text-muted uppercase tracking-wider">Peso</p>
+              <p className="font-data-mono text-data-mono text-on-surface mt-1">{alumno.peso != null ? `${alumno.peso} kg` : "—"}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Card: Plan asignado */}
+        <div className="bg-surface-white border border-border rounded-xl shadow-sm p-lg">
+          <h3 className="font-headline-md text-headline-md text-on-background mb-md">Plan asignado</h3>
+          {alumno.plan ? (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-lg">
+              <div>
+                <p className="text-caption font-caption text-text-muted uppercase tracking-wider">Plan</p>
+                <p className="font-label-bold text-label-bold text-on-surface mt-1">{alumno.plan.nombre}</p>
+              </div>
+              <div>
+                <p className="text-caption font-caption text-text-muted uppercase tracking-wider">Precio</p>
+                <p className="font-data-mono text-data-mono text-on-surface mt-1">{formatoMoneda(alumno.precio)}</p>
+              </div>
+              {alumno.promocion_nombre && (
+                <div>
+                  <p className="text-caption font-caption text-text-muted uppercase tracking-wider">Promoción aplicada</p>
+                  <span className="inline-flex items-center gap-1 mt-1 bg-warning/10 text-warning px-3 py-1 rounded-full text-caption font-label-bold">
+                    <span className="material-symbols-outlined text-[14px]">sell</span>
+                    {alumno.promocion_nombre}
+                  </span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className="text-body-sm text-text-muted">Este alumno no tiene un plan activo.</p>
+          )}
+        </div>
+
+        {/* Card: Fotos de progreso */}
+        <div className="bg-surface-white border border-border rounded-xl shadow-sm p-lg">
+          <h3 className="font-headline-md text-headline-md text-on-background mb-md">Fotos de progreso</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-lg">
+            <div>
+              <p className="text-caption font-caption text-text-muted uppercase tracking-wider mb-2">Inicial</p>
+              {alumno.foto_inicial_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={alumno.foto_inicial_url} alt="Foto inicial" className="w-full max-w-xs rounded-xl border border-border object-cover aspect-square" />
+              ) : (
+                <div className="w-full max-w-xs aspect-square rounded-xl border border-dashed border-border flex items-center justify-center text-text-muted text-body-sm">
+                  Sin foto
+                </div>
+              )}
+            </div>
+            <div>
+              <p className="text-caption font-caption text-text-muted uppercase tracking-wider mb-2">Actual</p>
+              {alumno.foto_actual_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={alumno.foto_actual_url} alt="Foto actual" className="w-full max-w-xs rounded-xl border border-border object-cover aspect-square" />
+              ) : (
+                <div className="w-full max-w-xs aspect-square rounded-xl border border-dashed border-border flex items-center justify-center text-text-muted text-body-sm">
+                  Sin foto
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {modalEditarOpen && (
+        <AlumnoFormModal
+          mode="edit"
+          alumno={alumno}
+          planes={planes}
+          turnos={turnos}
+          promociones={promociones}
+          onClose={() => setModalEditarOpen(false)}
+        />
+      )}
+    </>
+  );
+}

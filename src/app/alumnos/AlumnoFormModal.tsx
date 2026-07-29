@@ -116,6 +116,28 @@ export function AlumnoFormModal({
           </div>
         </div>
 
+        <div className="border-t border-border pt-md">
+          <p className={`${labelClass} mb-2`}>Fotos de progreso</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-md">
+            <div>
+              <label className={labelClass}>Foto inicial</label>
+              {alumno?.foto_inicial_url && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={alumno.foto_inicial_url} alt="Foto inicial actual" className="mt-1 w-20 h-20 object-cover rounded-lg border border-border" />
+              )}
+              <input name="foto_inicial" type="file" accept="image/*" className={`${inputClass} file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-surface-container-low file:text-caption`} />
+            </div>
+            <div>
+              <label className={labelClass}>Foto actual</label>
+              {alumno?.foto_actual_url && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={alumno.foto_actual_url} alt="Foto actual" className="mt-1 w-20 h-20 object-cover rounded-lg border border-border" />
+              )}
+              <input name="foto_actual" type="file" accept="image/*" className={`${inputClass} file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-surface-container-low file:text-caption`} />
+            </div>
+          </div>
+        </div>
+
         {mode === "edit" && (
           <div>
             <label className={labelClass}>Estado</label>

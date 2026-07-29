@@ -27,6 +27,34 @@ async function buscarAdminAutorizador(supabase: SupabaseClient): Promise<string 
   return data?.id ?? null;
 }
 
+const POSTGRES_FOREIGN_KEY_VIOLATION = "23503";
+const POSTGRES_UNIQUE_VIOLATION = "23505";
+
+// Sube una foto al bucket público 'alumnos-fotos' (migración 0003) y devuelve su
+// URL pública. Si no se adjuntó archivo (input vacío), no hace nada.
+async function subirFotoSiCorresponde(
+  supabase: SupabaseClient,
+  alumnoId: string,
+  formData: FormData,
+  campo: "foto_inicial" | "foto_actual"
+): Promise<{ url: string | null; error: string | null }> {
+  const file = formData.get(campo);
+  if (!(file instanceof File) || file.size === 0) return { url: null, error: null };
+
+  const extension = file.name.includes(".") ? file.name.split(".").pop() : "jpg";
+  const ruta = `${alumnoId}/${campo}-${Date.now()}.${extension}`;
+
+  const { error } = await supabase.storage.from("alumnos-fotos").upload(ruta, file, {
+    upsert: true,
+    contentType: file.type || "image/jpeg",
+  });
+
+  if (error) return { url: null, error: `No se pudo subir la foto (${campo}): ${error.message}` };
+
+  const { data } = supabase.storage.from("alumnos-fotos").getPublicUrl(ruta);
+  return { url: data.publicUrl, error: null };
+}
+
 type DatosAlumnoForm = {
   dni: string;
   nombre: string | null;
@@ -71,10 +99,30 @@ export async function crearAlumno(formData: FormData): Promise<ActionResult> {
   const { data: alumno, error: alumnoError } = await supabase.from("alumno").insert(parsed.datos).select("id").single();
 
   if (alumnoError || !alumno) {
-    if (alumnoError?.code === "23505") {
+    if (alumnoError?.code === POSTGRES_UNIQUE_VIOLATION) {
       return { ok: false, error: "Ya existe un alumno registrado con ese DNI." };
     }
     return { ok: false, error: `No se pudo crear el alumno: ${alumnoError?.message ?? "error desconocido"}` };
+  }
+
+  // Las fotos se suben recién acá porque necesitamos el id del alumno para armar
+  // la ruta en el bucket. Si falla la subida, el alumno ya quedó creado (mismo
+  // criterio pragmático que usa crearPlan con el precio inicial).
+  const fotoInicial = await subirFotoSiCorresponde(supabase, alumno.id, formData, "foto_inicial");
+  if (fotoInicial.error) return { ok: false, error: `Alumno creado, pero ${fotoInicial.error}` };
+
+  const fotoActual = await subirFotoSiCorresponde(supabase, alumno.id, formData, "foto_actual");
+  if (fotoActual.error) return { ok: false, error: `Alumno creado, pero ${fotoActual.error}` };
+
+  if (fotoInicial.url || fotoActual.url) {
+    const { error: fotosError } = await supabase
+      .from("alumno")
+      .update({
+        ...(fotoInicial.url ? { foto_inicial_url: fotoInicial.url } : {}),
+        ...(fotoActual.url ? { foto_actual_url: fotoActual.url } : {}),
+      })
+      .eq("id", alumno.id);
+    if (fotosError) return { ok: false, error: `Alumno creado, pero no se pudieron guardar las fotos: ${fotosError.message}` };
   }
 
   const aplicaPromocion = formData.get("aplicar_promocion") === "on";
@@ -123,18 +171,57 @@ export async function actualizarAlumno(alumnoId: string, formData: FormData): Pr
 
   const estado = String(formData.get("estado") ?? "activo");
 
+  const fotoInicial = await subirFotoSiCorresponde(supabase, alumnoId, formData, "foto_inicial");
+  if (fotoInicial.error) return { ok: false, error: fotoInicial.error };
+
+  const fotoActual = await subirFotoSiCorresponde(supabase, alumnoId, formData, "foto_actual");
+  if (fotoActual.error) return { ok: false, error: fotoActual.error };
+
   const { error } = await supabase
     .from("alumno")
-    .update({ ...parsed.datos, estado })
+    .update({
+      ...parsed.datos,
+      estado,
+      ...(fotoInicial.url ? { foto_inicial_url: fotoInicial.url } : {}),
+      ...(fotoActual.url ? { foto_actual_url: fotoActual.url } : {}),
+    })
     .eq("id", alumnoId);
 
   if (error) {
-    if (error.code === "23505") {
+    if (error.code === POSTGRES_UNIQUE_VIOLATION) {
       return { ok: false, error: "Ya existe un alumno registrado con ese DNI." };
     }
     return { ok: false, error: `No se pudo actualizar el alumno: ${error.message}` };
   }
 
   revalidatePath("/alumnos");
+  revalidatePath(`/alumnos/${alumnoId}`);
+  return { ok: true };
+}
+
+// El alumno solo se puede eliminar físicamente si no tiene ninguna inscripción
+// (inscripcion.alumno_id no tiene ON DELETE CASCADE, así que la base lo impide
+// con un error de FK). En la práctica, como el alta siempre crea una inscripción,
+// esto casi nunca va a poder completarse — es intencional: preserva el historial
+// de planes/cuotas/asistencia de la persona. Para dejar de contarlo como alumno
+// activo, usar el estado "De baja" desde Editar.
+export async function eliminarAlumno(alumnoId: string): Promise<ActionResult> {
+  const supabase = createServerClient();
+  const { error } = await supabase.from("alumno").delete().eq("id", alumnoId);
+
+  if (error) {
+    if (error.code === POSTGRES_FOREIGN_KEY_VIOLATION) {
+      return {
+        ok: false,
+        error:
+          "Este alumno tiene un plan asignado (y va a tener historial de cuotas/asistencia) y no se puede eliminar. " +
+          "Si ya no concurre, marcalo como \"De baja\" desde Editar en su lugar.",
+      };
+    }
+    return { ok: false, error: error.message };
+  }
+
+  revalidatePath("/alumnos");
+  revalidatePath("/planes");
   return { ok: true };
 }

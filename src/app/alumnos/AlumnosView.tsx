@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
+import { ConfirmModal } from "@/components/ConfirmModal";
 import type { AlumnoConPlan, PlanConPrecio, Turno } from "@/lib/supabase/types";
 import { AlumnoFormModal } from "./AlumnoFormModal";
+import { eliminarAlumno } from "./actions";
 
 const PAGE_SIZES = [10, 25, 50] as const;
 
@@ -45,6 +47,9 @@ export function AlumnosView({
 
   const [modalCreateOpen, setModalCreateOpen] = useState(false);
   const [alumnoEditando, setAlumnoEditando] = useState<AlumnoConPlan | null>(null);
+  const [alumnoEliminando, setAlumnoEliminando] = useState<AlumnoConPlan | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const planFiltroNombre = planFiltro ? planes.find((p) => p.id === planFiltro)?.nombre ?? "Plan" : null;
 
@@ -84,6 +89,16 @@ export function AlumnosView({
     window.history.replaceState(null, "", "/alumnos");
   }
 
+  function handleConfirmarEliminar() {
+    if (!alumnoEliminando) return;
+    setError(null);
+    startTransition(async () => {
+      const result = await eliminarAlumno(alumnoEliminando.id);
+      if (!result.ok) setError(result.error);
+      setAlumnoEliminando(null);
+    });
+  }
+
   return (
     <>
       <header className="sticky top-0 z-40 bg-surface-white border-b border-border shadow-sm flex justify-between items-center px-lg py-md w-full">
@@ -106,6 +121,8 @@ export function AlumnosView({
       </header>
 
       <div className="p-lg space-y-gutter flex-1">
+        {error && <div className="bg-error/10 border border-error/30 text-error rounded-xl p-md text-body-sm">{error}</div>}
+
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-md">
           <div className="space-y-1">
             <h3 className="font-headline-md text-headline-md text-on-background">Listado General</h3>
@@ -196,13 +213,31 @@ export function AlumnosView({
                       </span>
                     </td>
                     <td className="px-lg py-4 text-right">
-                      <button
-                        onClick={() => setAlumnoEditando(alumno)}
-                        className="p-2 text-info hover:bg-info/10 rounded-lg transition-colors"
-                        title="Editar"
-                      >
-                        <span className="material-symbols-outlined text-[20px]">edit</span>
-                      </button>
+                      <div className="flex items-center justify-end gap-sm">
+                        <a
+                          href={`/alumnos/${alumno.id}`}
+                          className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors"
+                          title="Ver detalle"
+                        >
+                          <span className="material-symbols-outlined text-[20px]">visibility</span>
+                        </a>
+                        <button
+                          disabled={isPending}
+                          onClick={() => setAlumnoEditando(alumno)}
+                          className="p-2 text-info hover:bg-info/10 rounded-lg transition-colors disabled:opacity-50"
+                          title="Editar"
+                        >
+                          <span className="material-symbols-outlined text-[20px]">edit</span>
+                        </button>
+                        <button
+                          disabled={isPending}
+                          onClick={() => setAlumnoEliminando(alumno)}
+                          className="p-2 text-error hover:bg-error/10 rounded-lg transition-colors disabled:opacity-50"
+                          title="Eliminar"
+                        >
+                          <span className="material-symbols-outlined text-[20px]">delete</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -255,6 +290,17 @@ export function AlumnosView({
           turnos={turnos}
           promociones={promociones}
           onClose={() => setAlumnoEditando(null)}
+        />
+      )}
+      {alumnoEliminando && (
+        <ConfirmModal
+          title="Eliminar alumno"
+          message={`¿Eliminar a "${alumnoEliminando.nombre || alumnoEliminando.apellido ? `${alumnoEliminando.nombre ?? ""} ${alumnoEliminando.apellido ?? ""}`.trim() : `DNI ${alumnoEliminando.dni}`}"? Esta acción no se puede deshacer. Si tiene un plan asignado, el sistema va a impedirlo y te va a sugerir marcarlo "De baja" en su lugar.`}
+          confirmLabel="Eliminar"
+          danger
+          pending={isPending}
+          onConfirm={handleConfirmarEliminar}
+          onCancel={() => setAlumnoEliminando(null)}
         />
       )}
     </>
