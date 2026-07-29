@@ -99,13 +99,22 @@ export function PlanesView({ planes, disciplinas }: { planes: PlanConPrecio[]; d
               Mostrando {filteredPlanes.length} de {planes.length} planes registrados.
             </p>
           </div>
-          <button
-            onClick={() => setModalCreateOpen(true)}
-            className="flex items-center gap-xs px-lg py-2.5 bg-primary-container text-on-primary-container rounded-lg hover:opacity-90 transition-opacity shadow-md font-label-bold text-label-bold"
-          >
-            <span className="material-symbols-outlined text-[18px]">add</span>
-            Nuevo Plan
-          </button>
+          <div className="flex items-center gap-sm">
+            <a
+              href="/planes/promociones"
+              className="flex items-center gap-xs px-lg py-2.5 border border-border text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors font-label-bold text-label-bold"
+            >
+              <span className="material-symbols-outlined text-[18px]">local_offer</span>
+              Promociones
+            </a>
+            <button
+              onClick={() => setModalCreateOpen(true)}
+              className="flex items-center gap-xs px-lg py-2.5 bg-primary-container text-on-primary-container rounded-lg hover:opacity-90 transition-opacity shadow-md font-label-bold text-label-bold"
+            >
+              <span className="material-symbols-outlined text-[18px]">add</span>
+              Nuevo Plan
+            </button>
+          </div>
         </div>
 
         {/* Table Card */}

@@ -5,6 +5,14 @@ Cubre: alumnos, profesores con especialidades, turnos, planes de entrenamiento c
 precios, cuotas con prorrateo, pagos, asistencia (alumnos y profesores), reservas,
 rutinas y seguimiento físico.
 
+> **Estado de implementación:** este documento describe el modelo completo (algunas
+> tablas todavía son aspiracionales, ej. `profesor`, `clase`, `cuota`, `rutina`).
+> Lo ya migrado a la base real vive en `supabase/migrations/`:
+> `0001_planes.sql` (disciplina, usuario mínimo, plan + precios, promocion, alumno
+> mínimo, inscripcion) y `0002_alumnos_promociones.sql` (turno, alumno completo con
+> DNI, `promocion_plan`, seed de un usuario admin). Donde el código real difiere de
+> este doc (por simplificación o por no estar construido todavía), se aclara inline.
+
 ---
 
 ## 1. Entidades principales y relaciones
@@ -96,19 +104,25 @@ create table profesor_especialidad (
   primary key (profesor_id, disciplina_id)
 );
 
+-- Implementado en supabase/migrations/0002_alumnos_promociones.sql. Único campo
+-- obligatorio: dni (nombre/apellido quedaron nullable a propósito — se puede
+-- registrar un alumno solo con el DNI y completar el resto después). `genero`,
+-- `objetivo` y `foto_url` de este doc son aspiracionales, todavía no se
+-- implementaron (se agregan si hace falta más adelante).
 create table alumno (
-  id              uuid primary key default gen_random_uuid(),
-  usuario_id      uuid references usuario(id),
-  nombre          text not null,
-  apellido        text not null,
-  email           text,
-  telefono        text,
-  fecha_nacimiento date,
-  genero          text,
-  objetivo        text,                          -- 'Hipertrofia', 'Pérdida de peso', etc.
-  fecha_alta      date not null default current_date,
-  estado          estado_persona not null default 'activo',
-  foto_url        text
+  id                uuid primary key default gen_random_uuid(),
+  usuario_id        uuid references usuario(id),
+  dni               text not null unique,
+  nombre            text,
+  apellido          text,
+  email             text,
+  celular           text,
+  fecha_nacimiento  date,
+  turno_id          uuid references turno(id),
+  altura            numeric(5,2),                 -- cm
+  peso              numeric(5,2),                 -- kg
+  fecha_alta        date not null default current_date,
+  estado            estado_persona not null default 'activo'
 );
 
 -- =========================================================
@@ -148,6 +162,15 @@ create table promocion (
   fecha_inicio    date,
   fecha_fin       date,
   activa          boolean not null default true
+);
+
+-- Una promoción puede aplicar a varios planes (M:N). Se gestiona desde el módulo
+-- de Planes (pantalla /planes/promociones): al elegir un plan en el alta de un
+-- alumno, el selector de promociones se filtra por esta relación.
+create table promocion_plan (
+  promocion_id    uuid not null references promocion(id) on delete cascade,
+  plan_id         uuid not null references plan(id) on delete cascade,
+  primary key (promocion_id, plan_id)
 );
 
 -- Un alumno inscripto a un plan (puede tener más de una inscripción histórica)
@@ -314,6 +337,11 @@ create table ejercicio (
   grupo_muscular  text
 );
 
+-- Nota de negocio (todavía no implementada): un alumno tiene como máximo 2 rutinas
+-- activas simultáneas, y cada rutina tiene una temporalidad típica de ~2 meses antes
+-- de renovarse/reemplazarse. Cuando se construya este módulo, agregar un campo de
+-- vigencia (ej. fecha_inicio/fecha_fin, análogo a inscripcion) y un constraint o
+-- validación en la Server Action que impida más de 2 rutinas activas por alumno.
 create table rutina (
   id              uuid primary key default gen_random_uuid(),
   alumno_id       uuid not null references alumno(id),
@@ -482,6 +510,15 @@ reportes). Un gimnasio puede tener uno o varios profesores con `es_admin = true`
 dueño y un encargado), y el resto de los profesores acceden solo a su propio subset:
 sus clases, sus alumnos, tomar asistencia, cargar rutinas — sin ver cuotas ni
 configuración general.
+
+**Workaround temporal sin autenticación:** hasta que exista login real, la app
+(`src/lib/supabase/server.ts`) se conecta con la service role key, sin sesión de
+usuario — no hay forma de saber "quién está logueado". Por eso, cuando una Server
+Action necesita completar `inscripcion.autorizado_por` (precio promocional), busca
+`select id from usuario where es_admin = true limit 1` y usa ese usuario. La migración
+`0002_alumnos_promociones.sql` siembra un usuario admin único para este propósito. El
+día que se implemente autenticación de verdad, este workaround se reemplaza por el
+usuario de la sesión actual.
 
 ## 7. Preguntas abiertas para vos
 

@@ -35,12 +35,42 @@ export type PlanConPrecio = Plan & {
   alumnos_count: number;
 };
 
+export type EstadoPersona = "activo" | "inactivo" | "de_baja" | "suspendido";
+
 export type Alumno = {
   id: string;
-  nombre: string;
-  apellido: string;
+  dni: string;
+  nombre: string | null;
+  apellido: string | null;
   email: string | null;
-  estado: "activo" | "inactivo" | "de_baja" | "suspendido";
+  celular: string | null;
+  fecha_nacimiento: string | null;
+  turno_id: string | null;
+  altura: number | null;
+  peso: number | null;
+  estado: EstadoPersona;
+  fecha_alta: string;
+};
+
+export type Turno = {
+  id: string;
+  nombre: string;
+  hora_inicio: string;
+  hora_fin: string;
+};
+
+export type Promocion = {
+  id: string;
+  nombre: string;
+  descripcion: string | null;
+  fecha_inicio: string | null;
+  fecha_fin: string | null;
+  activa: boolean;
+};
+
+// Promoción + los planes a los que aplica (tabla promocion_plan)
+export type PromocionConPlanes = Promocion & {
+  planes: Pick<Plan, "id" | "nombre">[];
 };
 
 export type Inscripcion = {
@@ -50,10 +80,20 @@ export type Inscripcion = {
   fecha_inicio: string;
   fecha_fin: string | null;
   estado: "activa" | "pausada" | "finalizada";
+  precio_acordado: number | null;
+  promocion_id: string | null;
 };
 
 export type InscripcionConAlumno = Inscripcion & {
   alumno: Pick<Alumno, "id" | "nombre" | "apellido" | "email">;
+};
+
+// Vista de lista que usa la tabla de Alumnos: alumno + su inscripción activa
+// (plan + precio) + turno.
+export type AlumnoConPlan = Alumno & {
+  turno: Pick<Turno, "id" | "nombre"> | null;
+  plan: Pick<Plan, "id" | "nombre"> | null;
+  precio: number | null;
 };
 
 // Vista compuesta de la página de detalle: plan + historial completo de precios
