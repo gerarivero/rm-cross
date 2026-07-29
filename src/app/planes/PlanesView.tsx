@@ -181,6 +181,13 @@ export function PlanesView({ planes, disciplinas }: { planes: PlanConPrecio[]; d
                     </td>
                     <td className="px-lg py-4 text-right">
                       <div className="flex items-center justify-end gap-sm">
+                        <a
+                          href={`/planes/${plan.id}`}
+                          className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors"
+                          title="Ver detalle"
+                        >
+                          <span className="material-symbols-outlined text-[20px]">visibility</span>
+                        </a>
                         <button
                           disabled={isPending}
                           onClick={() => setPlanEditando(plan)}

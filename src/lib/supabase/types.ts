@@ -34,3 +34,31 @@ export type PlanConPrecio = Plan & {
   precio_vigente: number | null;
   alumnos_count: number;
 };
+
+export type Alumno = {
+  id: string;
+  nombre: string;
+  apellido: string;
+  email: string | null;
+  estado: "activo" | "inactivo" | "de_baja" | "suspendido";
+};
+
+export type Inscripcion = {
+  id: string;
+  alumno_id: string;
+  plan_id: string;
+  fecha_inicio: string;
+  fecha_fin: string | null;
+  estado: "activa" | "pausada" | "finalizada";
+};
+
+export type InscripcionConAlumno = Inscripcion & {
+  alumno: Pick<Alumno, "id" | "nombre" | "apellido" | "email">;
+};
+
+// Vista compuesta de la página de detalle: plan + historial completo de precios
+// + últimas inscripciones (con el alumno embebido).
+export type PlanDetalle = PlanConPrecio & {
+  historial_precios: PlanPrecioHistorico[];
+  ultimas_inscripciones: InscripcionConAlumno[];
+};

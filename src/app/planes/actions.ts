@@ -142,6 +142,7 @@ export async function actualizarPlan(planId: string, formData: FormData): Promis
   }
 
   revalidatePath("/planes");
+  revalidatePath(`/planes/${planId}`);
   return { ok: true };
 }
 
@@ -170,6 +171,7 @@ export async function desactivarPlan(planId: string): Promise<ActionResult> {
   }
 
   revalidatePath("/planes");
+  revalidatePath(`/planes/${planId}`);
   return { ok: true };
 }
 
@@ -182,6 +184,7 @@ export async function reactivarPlan(planId: string): Promise<ActionResult> {
   }
 
   revalidatePath("/planes");
+  revalidatePath(`/planes/${planId}`);
   return { ok: true };
 }
 
