@@ -81,16 +81,19 @@ export function PlanFormModal({
           </div>
           <div>
             <label className="font-label-bold text-label-bold text-on-surface-variant">Precio</label>
-            <input
-              name="precio"
-              type="number"
-              min={1}
-              step="0.01"
-              required
-              defaultValue={plan?.precio_vigente ?? undefined}
-              placeholder="15000"
-              className="mt-1 w-full border border-border rounded-lg px-3 py-2 outline-none focus:border-primary-container"
-            />
+            <div className="relative mt-1">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-body-sm pointer-events-none">$</span>
+              <input
+                name="precio"
+                type="number"
+                min={1}
+                step="0.01"
+                required
+                defaultValue={plan?.precio_vigente ?? undefined}
+                placeholder="15000"
+                className="w-full border border-border rounded-lg pl-7 pr-3 py-2 outline-none focus:border-primary-container"
+              />
+            </div>
           </div>
         </div>
         <div className="flex justify-end gap-sm">

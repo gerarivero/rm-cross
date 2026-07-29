@@ -135,6 +135,7 @@ export function PlanesView({ planes, disciplinas }: { planes: PlanConPrecio[]; d
                   <th className="px-lg py-4 font-label-bold text-label-bold">Disciplina</th>
                   <th className="px-lg py-4 font-label-bold text-label-bold">Frecuencia</th>
                   <th className="px-lg py-4 font-label-bold text-label-bold">Precio vigente</th>
+                  <th className="px-lg py-4 font-label-bold text-label-bold">Alumnos</th>
                   <th className="px-lg py-4 font-label-bold text-label-bold">Estado</th>
                   <th className="px-lg py-4 font-label-bold text-label-bold text-right">Acciones</th>
                 </tr>
@@ -142,7 +143,7 @@ export function PlanesView({ planes, disciplinas }: { planes: PlanConPrecio[]; d
               <tbody className="divide-y divide-border">
                 {paginatedPlanes.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-lg py-lg text-center text-body-sm text-text-muted">
+                    <td colSpan={7} className="px-lg py-lg text-center text-body-sm text-text-muted">
                       {planes.length === 0
                         ? "Todavía no hay planes cargados. Creá el primero con el botón \"Nuevo Plan\"."
                         : "Ningún plan coincide con la búsqueda."}
@@ -159,6 +160,16 @@ export function PlanesView({ planes, disciplinas }: { planes: PlanConPrecio[]; d
                       </span>
                     </td>
                     <td className="px-lg py-4 font-data-mono text-data-mono">{formatoMoneda(plan.precio_vigente)}</td>
+                    <td className="px-lg py-4">
+                      <a
+                        href={`/alumnos?plan=${plan.id}`}
+                        className="inline-flex items-center gap-1 text-primary hover:underline font-label-bold text-label-bold"
+                        title="Ver alumnos de este plan"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">group</span>
+                        {plan.alumnos_count}
+                      </a>
+                    </td>
                     <td className="px-lg py-4">
                       <span
                         className={`px-3 py-1 rounded-full text-caption font-label-bold ${

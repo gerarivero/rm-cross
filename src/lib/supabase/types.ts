@@ -32,4 +32,5 @@ export type PlanPrecioHistorico = {
 export type PlanConPrecio = Plan & {
   disciplina: Pick<Disciplina, "id" | "nombre">;
   precio_vigente: number | null;
+  alumnos_count: number;
 };
