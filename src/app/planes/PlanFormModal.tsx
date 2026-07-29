@@ -61,7 +61,7 @@ export function PlanFormModal({
             className="mt-1 w-full border border-border rounded-lg px-3 py-2 outline-none focus:border-primary-container"
           />
         </div>
-        <div className="grid grid-cols-2 gap-md items-end">
+        <div className="grid grid-cols-2 gap-md items-start">
           <div>
             <label className="font-label-bold text-label-bold text-on-surface-variant">Frecuencia semanal</label>
             <input

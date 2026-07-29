@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const NAV_ITEMS = [
   { href: "/dashboard", icon: "dashboard", label: "Dashboard" },
@@ -19,25 +19,9 @@ const NAV_ITEMS = [
 // aviso de "en construcción" hasta que se porten desde la maqueta de Stitch.
 const RUTAS_IMPLEMENTADAS = new Set(["/planes"]);
 
-const PIN_STORAGE_KEY = "sidebar-pinned";
-
 export function Sidebar({ activo }: { activo: string }) {
   const [hovered, setHovered] = useState(false);
-  const [pinned, setPinned] = useState(false);
-
-  useEffect(() => {
-    setPinned(window.localStorage.getItem(PIN_STORAGE_KEY) === "1");
-  }, []);
-
-  function togglePinned() {
-    setPinned((prev) => {
-      const next = !prev;
-      window.localStorage.setItem(PIN_STORAGE_KEY, next ? "1" : "0");
-      return next;
-    });
-  }
-
-  const expanded = pinned || hovered;
+  const expanded = hovered;
 
   return (
     <aside
@@ -47,23 +31,12 @@ export function Sidebar({ activo }: { activo: string }) {
         expanded ? "w-64 shadow-[4px_0_16px_rgba(0,0,0,0.15)]" : "w-20"
       }`}
     >
-      <div className={`mb-xl flex items-center ${expanded ? "px-lg justify-between" : "px-2 justify-center"}`}>
+      <div className="mb-xl flex items-center justify-center px-2">
         <img
           src="/logo-rm.png"
           alt="RM Entrenamiento"
           className={`object-contain transition-all duration-200 ${expanded ? "w-16 h-16" : "w-10 h-10"}`}
         />
-        {expanded && (
-          <button
-            onClick={togglePinned}
-            className={`p-2 rounded-lg transition-colors ${
-              pinned ? "text-primary-container bg-on-secondary-fixed-variant" : "text-on-secondary opacity-60 hover:opacity-100"
-            }`}
-            title={pinned ? "Quitar pin (colapsar al sacar el mouse)" : "Fijar sidebar abierto"}
-          >
-            <span className="material-symbols-outlined">push_pin</span>
-          </button>
-        )}
       </div>
       {expanded && (
         <p className="text-on-secondary opacity-70 font-label-bold text-label-bold text-center px-lg mb-md">Administración</p>
