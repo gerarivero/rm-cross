@@ -4,6 +4,7 @@ import type { AlumnoDetalle } from "@/lib/supabase/types";
 
 export { getPlanes } from "../../planes/data";
 export { getPromocionesActivas, getTurnos } from "../data";
+export { getCuotasDeAlumno } from "../../cuotas/data";
 
 export async function getAlumnoDetalle(alumnoId: string): Promise<AlumnoDetalle> {
   const supabase = createServerClient();

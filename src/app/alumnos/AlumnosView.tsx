@@ -302,7 +302,7 @@ export function AlumnosView({
       {alumnoEliminando && (
         <ConfirmModal
           title="Eliminar alumno"
-          message={`¿Eliminar a "${alumnoEliminando.nombre || alumnoEliminando.apellido ? `${alumnoEliminando.nombre ?? ""} ${alumnoEliminando.apellido ?? ""}`.trim() : `DNI ${alumnoEliminando.dni}`}"? Esta acción no se puede deshacer. Si tiene un plan asignado, el sistema va a impedirlo y te va a sugerir marcarlo "De baja" en su lugar.`}
+          message={`¿Eliminar a "${alumnoEliminando.nombre || alumnoEliminando.apellido ? `${alumnoEliminando.nombre ?? ""} ${alumnoEliminando.apellido ?? ""}`.trim() : `DNI ${alumnoEliminando.dni}`}"? Esta acción no se puede deshacer y va a eliminar también su inscripción, cuotas y pagos registrados. El plan asignado no se ve afectado.`}
           confirmLabel="Eliminar"
           danger
           pending={isPending}

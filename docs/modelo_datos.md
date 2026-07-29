@@ -270,6 +270,17 @@ create table pago (
   referencia      text,                          -- nro. de operación MP / transferencia
   registrado_por  uuid references usuario(id)
 );
+```
+
+**Eliminar un alumno borra en cascada** (`supabase/migrations/0005_eliminar_alumno_en_cascada.sql`):
+`inscripcion.alumno_id`, `cuota.inscripcion_id` y `pago.cuota_id` están en
+`on delete cascade`, así que borrar un `alumno` se lleva puesto todo su historial de
+inscripciones, cuotas y pagos. Es una decisión de negocio explícita, distinta de
+`inscripcion.plan_id` (que sigue en `on delete restrict`, sin cambios) — **el plan
+nunca se borra ni se ve afectado** al eliminar un alumno, solo el vínculo y los
+registros que dependen de esa inscripción puntual.
+
+```sql
 
 -- Comprobante interno (no es factura fiscal AFIP) que se envía al alumno tras el pago
 create type canal_envio_comprobante as enum ('whatsapp', 'email', 'descarga_manual');

@@ -21,7 +21,6 @@ function opcionalNumero(formData: FormData, campo: string): number | null {
   return Number.isNaN(num) ? null : num;
 }
 
-const POSTGRES_FOREIGN_KEY_VIOLATION = "23503";
 const POSTGRES_UNIQUE_VIOLATION = "23505";
 
 // Sube una foto al bucket público 'alumnos-fotos' (migración 0003) y devuelve su
@@ -221,29 +220,18 @@ export async function actualizarAlumno(alumnoId: string, formData: FormData): Pr
   return { ok: true };
 }
 
-// El alumno solo se puede eliminar físicamente si no tiene ninguna inscripción
-// (inscripcion.alumno_id no tiene ON DELETE CASCADE, así que la base lo impide
-// con un error de FK). En la práctica, como el alta siempre crea una inscripción,
-// esto casi nunca va a poder completarse — es intencional: preserva el historial
-// de planes/cuotas/asistencia de la persona. Para dejar de contarlo como alumno
-// activo, usar el estado "De baja" desde Editar.
+// Eliminar un alumno borra en cascada su inscripción, cuotas y pagos
+// (migración 0005_eliminar_alumno_en_cascada.sql) — a diferencia de Planes, acá sí
+// se permite borrar aunque tenga un plan asignado. El plan en sí nunca se toca,
+// solo el vínculo (inscripcion) y los registros que dependen de esa inscripción.
 export async function eliminarAlumno(alumnoId: string): Promise<ActionResult> {
   const supabase = createServerClient();
   const { error } = await supabase.from("alumno").delete().eq("id", alumnoId);
 
-  if (error) {
-    if (error.code === POSTGRES_FOREIGN_KEY_VIOLATION) {
-      return {
-        ok: false,
-        error:
-          "Este alumno tiene un plan asignado (y va a tener historial de cuotas/asistencia) y no se puede eliminar. " +
-          "Si ya no concurre, marcalo como \"De baja\" desde Editar en su lugar.",
-      };
-    }
-    return { ok: false, error: error.message };
-  }
+  if (error) return { ok: false, error: error.message };
 
   revalidatePath("/alumnos");
   revalidatePath("/planes");
+  revalidatePath("/cuotas");
   return { ok: true };
 }

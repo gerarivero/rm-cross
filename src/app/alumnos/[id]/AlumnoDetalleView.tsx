@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { AlumnoDetalle, PlanConPrecio, Turno } from "@/lib/supabase/types";
+import type { AlumnoDetalle, CuotaDeAlumno, PlanConPrecio, Turno } from "@/lib/supabase/types";
 import { AlumnoFormModal } from "../AlumnoFormModal";
 
 const ESTADO_ESTILO: Record<string, string> = {
@@ -16,6 +16,18 @@ const ESTADO_LABEL: Record<string, string> = {
   inactivo: "Inactivo",
   suspendido: "Suspendido",
   de_baja: "De baja",
+};
+
+const ESTADO_CUOTA_ESTILO: Record<string, string> = {
+  pagada: "bg-success/10 text-success",
+  adeudada: "bg-warning/10 text-warning",
+  vencida: "bg-error/10 text-error",
+};
+
+const ESTADO_CUOTA_LABEL: Record<string, string> = {
+  pagada: "Pagada",
+  adeudada: "Adeudada",
+  vencida: "Vencida",
 };
 
 function formatoMoneda(valor: number | null) {
@@ -33,11 +45,13 @@ export function AlumnoDetalleView({
   planes,
   turnos,
   promociones,
+  cuotas,
 }: {
   alumno: AlumnoDetalle;
   planes: PlanConPrecio[];
   turnos: Turno[];
   promociones: { id: string; nombre: string; plan_ids: string[] }[];
+  cuotas: CuotaDeAlumno[];
 }) {
   const [modalEditarOpen, setModalEditarOpen] = useState(false);
   const nombreCompleto = alumno.nombre || alumno.apellido ? `${alumno.nombre ?? ""} ${alumno.apellido ?? ""}`.trim() : `DNI ${alumno.dni}`;
@@ -127,6 +141,54 @@ export function AlumnoDetalleView({
             </div>
           ) : (
             <p className="text-body-sm text-text-muted">Este alumno no tiene un plan activo.</p>
+          )}
+        </div>
+
+        {/* Card: Registro de Cuotas */}
+        <div className="bg-surface-white border border-border rounded-xl shadow-sm overflow-hidden">
+          <div className="px-lg py-md border-b border-border flex items-center justify-between">
+            <h3 className="font-headline-md text-headline-md text-on-background">Registro de Cuotas</h3>
+            <a href="/cuotas" className="text-caption font-caption text-primary hover:underline">
+              Ver todas las cuotas
+            </a>
+          </div>
+          {cuotas.length === 0 ? (
+            <p className="px-lg py-lg text-center text-body-sm text-text-muted">Este alumno todavía no tiene cuotas generadas.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-secondary text-on-secondary">
+                    <th className="px-lg py-4 font-label-bold text-label-bold">Plan</th>
+                    <th className="px-lg py-4 font-label-bold text-label-bold">Período</th>
+                    <th className="px-lg py-4 font-label-bold text-label-bold">Vencimiento</th>
+                    <th className="px-lg py-4 font-label-bold text-label-bold">Monto</th>
+                    <th className="px-lg py-4 font-label-bold text-label-bold">Recargo</th>
+                    <th className="px-lg py-4 font-label-bold text-label-bold">Estado</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {cuotas.map((cuota, i) => (
+                    <tr key={cuota.id} className={i % 2 === 1 ? "bg-surface-container-lowest" : ""}>
+                      <td className="px-lg py-4 text-body-sm text-on-surface">{cuota.plan.nombre}</td>
+                      <td className="px-lg py-4 text-body-sm text-on-surface-variant">
+                        {formatoFecha(cuota.periodo_desde)} — {formatoFecha(cuota.periodo_hasta)}
+                      </td>
+                      <td className="px-lg py-4 text-body-sm font-label-bold text-on-surface">{formatoFecha(cuota.fecha_vencimiento)}</td>
+                      <td className="px-lg py-4 font-data-mono text-data-mono">{formatoMoneda(cuota.monto_base)}</td>
+                      <td className="px-lg py-4 font-data-mono text-data-mono text-error">
+                        {cuota.recargo_efectivo > 0 ? `+${formatoMoneda(cuota.recargo_efectivo)}` : "—"}
+                      </td>
+                      <td className="px-lg py-4">
+                        <span className={`px-3 py-1 rounded-full text-caption font-label-bold ${ESTADO_CUOTA_ESTILO[cuota.estado_efectivo]}`}>
+                          {ESTADO_CUOTA_LABEL[cuota.estado_efectivo]}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
 

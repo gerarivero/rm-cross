@@ -152,3 +152,11 @@ export type CuotaConDetalle = Cuota & {
   estado_efectivo: EstadoCuota;
   recargo_efectivo: number;
 };
+
+// Vista que usa el detalle de Alumno: mismo cálculo de estado/recargo, sin repetir
+// los datos del alumno (ya se conocen en esa pantalla).
+export type CuotaDeAlumno = Cuota & {
+  plan: Pick<Plan, "id" | "nombre">;
+  estado_efectivo: EstadoCuota;
+  recargo_efectivo: number;
+};
