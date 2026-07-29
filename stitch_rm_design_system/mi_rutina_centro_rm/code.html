@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Centro RM - Mi Rutina</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed": "#2c1600",
+                    "primary-container": "#e8973a",
+                    "error": "#F44336",
+                    "on-background": "#1a1c1c",
+                    "error-container": "#ffdad6",
+                    "on-secondary": "#ffffff",
+                    "secondary": "#4f6264",
+                    "surface-bright": "#f9f9f9",
+                    "inverse-primary": "#ffb86e",
+                    "surface-container-highest": "#e2e2e2",
+                    "on-surface-variant": "#534436",
+                    "tertiary": "#006684",
+                    "on-secondary-fixed": "#0c1e20",
+                    "surface": "#f9f9f9",
+                    "on-surface": "#1a1c1c",
+                    "surface-white": "#FFFFFF",
+                    "on-tertiary-fixed": "#001f2a",
+                    "on-error-container": "#93000a",
+                    "surface-tint": "#8a5100",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error": "#ffffff",
+                    "inverse-on-surface": "#f1f1f1",
+                    "surface-container-low": "#f3f3f3",
+                    "surface-container-high": "#e8e8e8",
+                    "info": "#2196F3",
+                    "text-muted": "#757575",
+                    "on-primary": "#ffffff",
+                    "on-secondary-fixed-variant": "#384a4c",
+                    "border": "#D0D0D0",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed-dim": "#b6cacc",
+                    "inverse-surface": "#2f3131",
+                    "primary-fixed-dim": "#ffb86e",
+                    "warning": "#FFC107",
+                    "success": "#4CAF50",
+                    "tertiary-container": "#3cb5e2",
+                    "primary-fixed": "#ffdcbd",
+                    "tertiary-fixed": "#bee9ff",
+                    "on-primary-container": "#5c3400",
+                    "outline": "#857464",
+                    "on-tertiary-container": "#004358",
+                    "surface-variant": "#e2e2e2",
+                    "surface-dim": "#dadada",
+                    "background": "#f9f9f9",
+                    "secondary-container": "#cfe3e6",
+                    "secondary-fixed": "#d2e6e8",
+                    "primary": "#8a5100",
+                    "tertiary-fixed-dim": "#69d3ff",
+                    "on-tertiary-fixed-variant": "#004d64",
+                    "surface-container": "#eeeeee",
+                    "outline-variant": "#d8c3b1",
+                    "on-primary-fixed-variant": "#693c00",
+                    "on-secondary-container": "#536668"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "xs": "4px",
+                    "gutter": "24px",
+                    "container-max": "1280px",
+                    "lg": "24px",
+                    "md": "16px",
+                    "sm": "8px",
+                    "xl": "32px"
+            },
+            "fontFamily": {
+                    "label-bold": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "body-sm": ["Hanken Grotesk"],
+                    "display-lg-mobile": ["Hanken Grotesk"],
+                    "caption": ["Hanken Grotesk"],
+                    "data-mono": ["jetbrainsMono"]
+            },
+            "fontSize": {
+                    "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Hanken Grotesk', sans-serif; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(208, 208, 208, 0.5);
+        }
+        .exercise-complete {
+            text-decoration: line-through;
+            opacity: 0.6;
+            filter: grayscale(1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="bg-surface-white dark:bg-surface-container-lowest sticky top-0 z-40 border-b border-border dark:border-outline-variant shadow-sm flex justify-between items-center px-md py-md w-full">
+<h1 class="font-display-lg-mobile text-display-lg-mobile font-bold text-primary dark:text-primary-container">Mi Rutina</h1>
+<div class="flex items-center gap-sm">
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">history</span>
+</button>
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+</div>
+</header>
+<main class="px-md py-gutter space-y-gutter">
+<!-- Header Info -->
+<div class="space-y-sm">
+<div class="flex justify-between items-end">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-background">Hipertrofia - Día A</h2>
+<p class="font-body-sm text-body-sm text-text-muted">Enfoque: Empuje y Cuádriceps</p>
+</div>
+<div class="bg-primary-container/10 px-sm py-xs rounded-lg border border-primary-container/20">
+<p class="font-label-bold text-label-bold text-primary">Progreso: 2/6</p>
+</div>
+</div>
+<!-- Progress Bar -->
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full transition-all duration-500" style="width: 33%"></div>
+</div>
+</div>
+<!-- Instructor's Global Note -->
+<div class="bg-secondary-container p-md rounded-xl flex gap-md items-start">
+<span class="material-symbols-outlined text-on-secondary-container">info</span>
+<div class="space-y-xs">
+<p class="font-label-bold text-label-bold text-on-secondary-container">Observaciones del Profesor</p>
+<p class="font-body-sm text-body-sm text-on-secondary-container opacity-90">"Hoy priorizamos el tempo 3-1-1 en las bajadas. No sacrifiques técnica por peso."</p>
+</div>
+</div>
+<!-- Exercises List -->
+<div class="space-y-md">
+<!-- Exercise Item 1 -->
+<div class="glass-card rounded-xl overflow-hidden shadow-sm transition-all duration-300" id="exercise-1">
+<div class="p-md flex items-start gap-md">
+<div class="w-16 h-16 rounded-lg bg-surface-container-high flex-shrink-0 relative overflow-hidden">
+<img class="object-cover w-full h-full" data-alt="A cinematic, close-up shot of a chrome barbell being lifted in a professional gymnasium. The lighting is dramatic, high-contrast, highlighting the metallic texture and the grit of the environment. Warm amber tones mix with cool industrial shadows, creating a high-performance, athletic atmosphere consistent with a modern fitness center." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGtgrxwL4kv9nbOcPJmPf0DjLGdy0hD7qf3sOfsh8ktfc475v2yTm4_9FTK6ymI2FUzGuDPjrdkQdnyFdK9XR3CBvpSJj6nZw7jYCoq18zRX0mYrx8zOdKof72K8cVyZ0HnfZSHwCKeH2IpF3uxZKOAI5_ecs1d0BBsgLCLVxej9kUy8gJZVFX0ds24u3ftabmzXUQ-VSs_2ZjTT_XbRP1EYzbEErqqVf2SBhH6JogK-f8N8Z2tJwd"/>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<h3 class="font-label-bold text-label-bold text-on-surface">Sentadilla con Barra</h3>
+<button class="w-6 h-6 rounded border-2 border-primary-container flex items-center justify-center transition-colors" onclick="toggleComplete('exercise-1')">
+<span class="material-symbols-outlined text-[18px] text-white hidden">check</span>
+</button>
+</div>
+<div class="flex gap-md mt-sm">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-text-muted">repeat</span>
+<p class="font-data-mono text-data-mono text-on-surface-variant">4 x 10</p>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-text-muted">fitness_center</span>
+<p class="font-data-mono text-data-mono text-on-surface-variant">80 kg</p>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-text-muted">timer</span>
+<p class="font-data-mono text-data-mono text-on-surface-variant">90"</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Technical Details Accordion (Simulated) -->
+<div class="bg-surface-container-low p-md border-t border-border flex justify-between items-center">
+<button class="flex items-center gap-xs text-primary font-label-bold text-label-bold">
+<span class="material-symbols-outlined">description</span>
+                        Ver técnica
+                    </button>
+<span class="material-symbols-outlined text-text-muted">expand_more</span>
+</div>
+</div>
+<!-- Exercise Item 2 (Completed) -->
+<div class="glass-card rounded-xl overflow-hidden shadow-sm transition-all duration-300 exercise-complete opacity-60" id="exercise-2">
+<div class="p-md flex items-start gap-md">
+<div class="w-16 h-16 rounded-lg bg-surface-container-high flex-shrink-0 relative overflow-hidden">
+<img class="object-cover w-full h-full" data-alt="Close-up of a person's hands gripping a pull-up bar, veins visible, showcasing strength and determination. The setting is an urban, minimalist gym with professional equipment. The lighting is bright and clean, with a focus on functional movement. Modern corporate fitness aesthetic with high-quality textures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYJks1jQOV8dO5cYpleDBWr6QnKLsphRcNaUt5AhCawSV6VFvvuBBfATdUpgBN8iVOl3HiXVdHBN4Q1oGDTlrUDTUNnkcYIHgV8Yq1Ry_og6voalcyndPYo6OF8bRHR_VFalecq4z5-XpbJNNSDszKZo-NbS-2_HEV8mwp8BCU49UjYTGO-1kt5Li5zyk_skf2OK9TVaGVvi_nfzH4hdfhWppqa8kc-pV6ocHwWyZ-PssvwrrZAqmr"/>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<h3 class="font-label-bold text-label-bold text-on-surface">Press Militar</h3>
+<button class="w-6 h-6 rounded border-2 border-primary-container bg-primary-container flex items-center justify-center transition-colors" onclick="toggleComplete('exercise-2')">
+<span class="material-symbols-outlined text-[18px] text-white">check</span>
+</button>
+</div>
+<div class="flex gap-md mt-sm">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-text-muted">repeat</span>
+<p class="font-data-mono text-data-mono text-on-surface-variant">3 x 12</p>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-text-muted">fitness_center</span>
+<p class="font-data-mono text-data-mono text-on-surface-variant">40 kg</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Exercise Item 3 (With Note) -->
+<div class="glass-card rounded-xl overflow-hidden shadow-sm transition-all duration-300" id="exercise-3">
+<div class="p-md flex items-start gap-md">
+<div class="w-16 h-16 rounded-lg bg-surface-container-high flex-shrink-0 relative overflow-hidden">
+<img class="object-cover w-full h-full" data-alt="Highly detailed shot of professional dumbbells resting on a rubber floor in a high-end gym. Selective focus on the knurling of the handle. Soft overhead studio lighting creates clean highlights and soft shadows. The background features blurred silhouettes of professional training rigs, emphasizing a structured and authoritative fitness environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtsYAXhGdJdsFZ5cV4AvMpLy2Umt1SoaBDB7qXRhLb5Em1mpar4SbJL7wnNa5Tn3K5lZZlIZ8QWfyzyW0VMZq2Yc0_66Nnt6ZQx3ta1c3ZeN9FNL9n0LgsMFu3pVUKmZTPbkNrSdTZREoTQZ6yW2-JH0DuFFEl2mrBPxHwLkJqg04c3p-SzWccaDb2KbT5RXpYQEOdvBdjPJW3gFmlr7lXilaAkB0Dm8R0g9PbbPfgeKA4n7o9FJ5r"/>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<h3 class="font-label-bold text-label-bold text-on-surface">Vuelos Laterales</h3>
+<button class="w-6 h-6 rounded border-2 border-primary-container flex items-center justify-center transition-colors" onclick="toggleComplete('exercise-3')">
+<span class="material-symbols-outlined text-[18px] text-white hidden">check</span>
+</button>
+</div>
+<div class="flex gap-md mt-sm">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-text-muted">repeat</span>
+<p class="font-data-mono text-data-mono text-on-surface-variant">4 x 15</p>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-text-muted">fitness_center</span>
+<p class="font-data-mono text-data-mono text-on-surface-variant">10 kg</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Specific Instructor Note -->
+<div class="mx-md mb-md p-sm bg-warning/10 border border-warning/20 rounded-lg flex gap-xs items-center">
+<span class="material-symbols-outlined text-warning text-[18px]">priority_high</span>
+<p class="font-caption text-caption text-on-surface-variant">Nota: "Sin balanceo, controla el descenso."</p>
+</div>
+</div>
+<!-- Exercise Item 4 -->
+<div class="glass-card rounded-xl overflow-hidden shadow-sm transition-all duration-300" id="exercise-4">
+<div class="p-md flex items-start gap-md">
+<div class="w-16 h-16 rounded-lg bg-surface-container-high flex-shrink-0 relative overflow-hidden">
+<img class="object-cover w-full h-full" data-alt="A sleek leg press machine in a modern fitness center. The machine is made of dark steel and black upholstery. Cool morning light filters through large windows, creating a bright and energetic atmosphere. The space is clean, organized, and signals a professional and reliable training facility." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAepbm0fzl8HtJlDynChb5aquPjNKBWLYUa8DL564ffkxQBGyCDxOqWGIIM_kLmkAQSyNkv_iTdpN5tZTWiVQCc7v54PNLUIS9EDDBwoJMhxbXQrYZcve_v4TpSBgWxpvrY18UdpTBFatgc17qb6ybZr0hr7gJ3u7iSNvUccViluiNlaKFbQZu6M5VZnVCGKANtXFxwmeXmnB_MLn8GY5HP9s2yXNthIiSHYrj1h3_2wyX_l-nGHmVD"/>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<h3 class="font-label-bold text-label-bold text-on-surface">Prensa 45º</h3>
+<button class="w-6 h-6 rounded border-2 border-primary-container flex items-center justify-center transition-colors" onclick="toggleComplete('exercise-4')">
+<span class="material-symbols-outlined text-[18px] text-white hidden">check</span>
+</button>
+</div>
+<div class="flex gap-md mt-sm">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-text-muted">repeat</span>
+<p class="font-data-mono text-data-mono text-on-surface-variant">3 x 12</p>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-text-muted">fitness_center</span>
+<p class="font-data-mono text-data-mono text-on-surface-variant">120 kg</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Finish Session Button -->
+<div class="pt-lg">
+<button class="w-full bg-primary-container text-white py-md rounded-xl font-headline-md text-headline-md shadow-lg active:scale-[0.98] transition-transform">
+                Finalizar Entrenamiento
+            </button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-md pb-safe bg-surface-white border-t border-border dark:border-outline-variant shadow-[0_-2px_8px_rgba(0,0,0,0.08)] z-50 h-20">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 transition-transform scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<span class="font-caption text-caption">Rutina</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined">event_available</span>
+<span class="font-caption text-caption">Asistencia</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="font-caption text-caption">Reservas</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim transition-transform active:scale-90" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-caption text-caption">Perfil</span>
+</a>
+</nav>
+<script>
+        function toggleComplete(id) {
+            const el = document.getElementById(id);
+            const button = el.querySelector('button');
+            const icon = button.querySelector('.material-symbols-outlined');
+            
+            if (el.classList.contains('exercise-complete')) {
+                el.classList.remove('exercise-complete', 'opacity-60');
+                button.classList.remove('bg-primary-container');
+                icon.classList.add('hidden');
+            } else {
+                el.classList.add('exercise-complete', 'opacity-60');
+                button.classList.add('bg-primary-container');
+                icon.classList.remove('hidden');
+            }
+        }
+    </script>
+</body></html>

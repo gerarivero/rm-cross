@@ -1,0 +1,339 @@
+<!DOCTYPE html><html lang="es" class="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed": "#2c1600",
+                    "primary-container": "#e8973a",
+                    "error": "#F44336",
+                    "on-background": "#1a1c1c",
+                    "error-container": "#ffdad6",
+                    "on-secondary": "#ffffff",
+                    "secondary": "#4f6264",
+                    "surface-bright": "#f9f9f9",
+                    "inverse-primary": "#ffb86e",
+                    "surface-container-highest": "#e2e2e2",
+                    "on-surface-variant": "#534436",
+                    "tertiary": "#006684",
+                    "on-secondary-fixed": "#0c1e20",
+                    "surface": "#f9f9f9",
+                    "on-surface": "#1a1c1c",
+                    "surface-white": "#FFFFFF",
+                    "on-tertiary-fixed": "#001f2a",
+                    "on-error-container": "#93000a",
+                    "surface-tint": "#8a5100",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error": "#ffffff",
+                    "inverse-on-surface": "#f1f1f1",
+                    "surface-container-low": "#f3f3f3",
+                    "surface-container-high": "#e8e8e8",
+                    "info": "#2196F3",
+                    "text-muted": "#757575",
+                    "on-primary": "#ffffff",
+                    "on-secondary-fixed-variant": "#384a4c",
+                    "border": "#D0D0D0",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed-dim": "#b6cacc",
+                    "inverse-surface": "#2f3131",
+                    "primary-fixed-dim": "#ffb86e",
+                    "warning": "#FFC107",
+                    "success": "#4CAF50",
+                    "tertiary-container": "#3cb5e2",
+                    "primary-fixed": "#ffdcbd",
+                    "tertiary-fixed": "#bee9ff",
+                    "on-primary-container": "#5c3400",
+                    "outline": "#857464",
+                    "on-tertiary-container": "#004358",
+                    "surface-variant": "#e2e2e2",
+                    "surface-dim": "#dadada",
+                    "background": "#f9f9f9",
+                    "secondary-container": "#cfe3e6",
+                    "secondary-fixed": "#d2e6e8",
+                    "primary": "#8a5100",
+                    "tertiary-fixed-dim": "#69d3ff",
+                    "on-tertiary-fixed-variant": "#004d64",
+                    "surface-container": "#eeeeee",
+                    "outline-variant": "#d8c3b1",
+                    "on-primary-fixed-variant": "#693c00",
+                    "on-secondary-container": "#536668"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "xs": "4px",
+                    "gutter": "24px",
+                    "container-max": "1280px",
+                    "lg": "24px",
+                    "md": "16px",
+                    "sm": "8px",
+                    "xl": "32px"
+            },
+            "fontFamily": {
+                    "label-bold": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "body-sm": ["Hanken Grotesk"],
+                    "display-lg-mobile": ["Hanken Grotesk"],
+                    "caption": ["Hanken Grotesk"],
+                    "data-mono": ["jetbrainsMono"]
+            },
+            "fontSize": {
+                    "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    }catch(_e){}</script><meta charset="utf-8"></head><body class="bg-background text-on-surface flex min-h-screen">
+<!-- SideNavBar (Desktop Only) -->
+<aside class="hidden md:flex flex-col h-screen py-gutter bg-secondary dark:bg-on-secondary-fixed text-primary-container font-label-bold text-label-bold h-full w-64 fixed left-0 top-0 border-r border-outline-variant shadow-md z-50">
+<div class="px-lg mb-xl">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuALESVl9fjnp9K-hhx6E72lz0R5vmyljnrRLcLWKeM3a8vDTQhYSl-ZEhLdM9wkPpS0fjyu8A-ivc35ljH3zsoYtEa4DGkdMT4za4KP4JTN5eetLqu_SUf8cfEI4qhOGQVtAORT_ji0O5YHEYumSqOnWRSIVodPK-Mt78aydANxtEv3_KCQEXYiP9SLAa9TFHtfmuwCdDI9UOd8-puQgrnYfEgtetve2_y8GV93KLZbERcN86xX26-_s2gNUcvcJ-DYDQ" alt="Centro RM Logo" class="w-full h-auto object-contain mb-xs">
+
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Asistencia is Active -->
+<a href="#" class="flex items-center text-primary-container font-bold border-l-4 border-primary-container pl-4 py-3 transition-colors duration-200 ease-in-out">
+<span class="material-symbols-outlined mr-3" data-icon="how_to_reg">how_to_reg</span>
+                Asistencia
+            </a>
+<a href="#" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200 ease-in-out">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a href="#" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200 ease-in-out">
+<span class="material-symbols-outlined mr-3" data-icon="group">group</span>
+                Alumnos
+            </a>
+<a href="#" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200 ease-in-out">
+<span class="material-symbols-outlined mr-3" data-icon="payments">payments</span>
+                Cuotas
+            </a>
+<a href="#" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200 ease-in-out">
+<span class="material-symbols-outlined mr-3" data-icon="fitness_center">fitness_center</span>
+                Rutinas
+            </a>
+<a href="#" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200 ease-in-out">
+<span class="material-symbols-outlined mr-3" data-icon="leaderboard">leaderboard</span>
+                Estadísticas
+            </a>
+</nav>
+<div class="px-lg mt-auto pt-lg border-t border-on-secondary-fixed-variant">
+<a href="#" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 py-3 transition-colors duration-200 ease-in-out">
+<span class="material-symbols-outlined mr-3" data-icon="settings">settings</span>
+                Configuración
+            </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<div class="flex-1 md:ml-64 flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-lg py-md w-full bg-surface-white dark:bg-surface-container-lowest border-b border-border dark:border-outline-variant shadow-sm sticky top-0 z-40">
+<div class="flex items-center gap-md">
+<span class="md:hidden material-symbols-outlined text-primary cursor-pointer" data-icon="menu">menu</span>
+<h1 class="font-headline-md text-headline-md text-primary font-bold">Asistencia</h1>
+</div>
+<div class="flex items-center gap-lg">
+<div class="hidden md:flex items-center bg-surface-container-low px-md py-xs rounded-lg border border-border">
+<span class="material-symbols-outlined text-on-surface-variant mr-xs" data-icon="search">search</span>
+<input type="text" placeholder="Buscar alumno..." class="bg-transparent border-none focus:ring-0 text-body-sm font-body-sm w-48">
+</div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary-container transition-all" data-icon="notifications">notifications</span>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-border">
+<img class="w-full h-full object-cover" data-alt="A close-up high-resolution portrait of a professional gym administrator with a friendly expression. The image has soft lighting, a modern minimalist background in white and grey tones, reflecting a corporate and high-end fitness center aesthetic. The lighting is bright and even, highlighting the clean and professional atmosphere of the management software's user persona." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoX0EnAtpP1mjwibeW43LaufiESqMRJhyZJVdx9yDFzE3LCS1vcZGQ7KATwa1i_fFxZPNOhx1tR4tN7MUthKribiDMZmpFMoOmqnVBlsUqZw_NQj-810DBEr304nYXmq5J7P8P-07UPDip8ABKGgnw3_8HQHtOoSzVM_agovFqbl3LSzVeslnfsJRanB90j0aEcUS4xMzSCusK4bvQa52zzJbAGu7Ew5Ool90iF6-PAiCxiH099_uo">
+</div>
+<span class="hidden md:block font-label-bold text-label-bold text-on-surface">Prof. Carlos</span>
+</div>
+</div>
+</header>
+<!-- Main Body -->
+<main class="p-lg flex-1">
+<div class="max-w-container-max mx-auto space-y-lg">
+<!-- Class Summary Card (Bento Grid Style Header) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<div class="md:col-span-2 bento-card p-lg flex flex-col justify-between relative overflow-hidden">
+<div class="relative z-10">
+<span class="inline-block px-sm py-xs bg-primary-container text-on-primary-container font-label-bold text-caption rounded-lg mb-sm">Clase Actual</span>
+<h2 class="font-display-lg text-display-lg font-bold text-secondary mb-xs">Musculación</h2>
+<p class="text-on-surface-variant font-body-lg text-body-lg flex items-center">
+<span class="material-symbols-outlined mr-xs" data-icon="schedule">schedule</span>
+                                18:00 - 19:30 | Sala de Máquinas
+                            </p>
+</div>
+<div class="mt-xl flex gap-xl">
+<div>
+<p class="text-caption font-caption text-on-surface-variant uppercase tracking-wider">Inscriptos</p>
+<p class="font-headline-md text-headline-md text-secondary">24 Alumnos</p>
+</div>
+<div>
+<p class="text-caption font-caption text-on-surface-variant uppercase tracking-wider">Presentes</p>
+<p class="font-headline-md text-headline-md text-primary-container" id="present-count">0</p>
+</div>
+</div>
+<!-- Abstract decorative element -->
+<div class="absolute right-0 bottom-0 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined" data-icon="fitness_center" style="font-size: 160px;">fitness_center</span>
+</div>
+</div>
+<div class="bento-card p-lg flex flex-col justify-center items-center text-center bg-secondary text-on-secondary">
+<span class="material-symbols-outlined text-primary-container mb-md" data-icon="calendar_today" style="font-size: 48px;">calendar_today</span>
+<p class="font-headline-md text-headline-md mb-xs" id="current-date">Lunes, 24 Octubre</p>
+<p class="text-body-sm font-body-sm opacity-80">Registro de asistencia diaria</p>
+<button class="mt-lg w-full bg-primary-container text-on-primary-container py-md rounded font-label-bold text-label-bold hover:shadow-lg transition-all" onclick="saveAttendance()">
+                            Guardar Asistencia
+                        </button>
+</div>
+</div>
+<!-- Students Attendance List -->
+<div class="bento-card overflow-hidden">
+<div class="bg-secondary p-md flex items-center justify-between">
+<h3 class="text-on-secondary font-label-bold text-label-bold flex items-center">
+<span class="material-symbols-outlined mr-xs" data-icon="format_list_bulleted">format_list_bulleted</span>
+                            Lista de Alumnos
+                        </h3>
+<div class="flex gap-md">
+<button class="text-on-secondary text-caption font-label-bold opacity-80 hover:opacity-100 flex items-center" onclick="markAll(true)">
+<span class="material-symbols-outlined mr-xs" data-icon="done_all">done_all</span> Seleccionar todos
+                            </button>
+<button class="text-on-secondary text-caption font-label-bold opacity-80 hover:opacity-100 flex items-center" onclick="markAll(false)">
+<span class="material-symbols-outlined mr-xs" data-icon="close">close</span> Limpiar
+                            </button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full border-collapse">
+<thead>
+<tr class="bg-surface-container-high text-left">
+<th class="px-lg py-md text-on-surface font-label-bold text-label-bold border-b border-border">Alumno</th>
+<th class="px-lg py-md text-on-surface font-label-bold text-label-bold border-b border-border hidden md:table-cell">Estado de Cuota</th>
+<th class="px-lg py-md text-on-surface font-label-bold text-label-bold border-b border-border hidden sm:table-cell">Últ. Visita</th>
+<th class="px-lg py-md text-right text-on-surface font-label-bold text-label-bold border-b border-border">Asistencia</th>
+</tr>
+</thead>
+<tbody id="student-list">
+<!-- JS populated rows for demonstration -->
+</tbody>
+</table>
+</div>
+</div>
+<!-- Footer Action for Mobile -->
+<div class="md:hidden pt-xl">
+<button class="w-full bg-primary-container text-on-primary-container py-xl rounded-xl font-display-lg-mobile text-display-lg-mobile font-bold shadow-lg flex items-center justify-center gap-md active:scale-95 transition-transform" onclick="saveAttendance()">
+<span class="material-symbols-outlined" data-icon="save">save</span>
+                        Guardar Asistencia
+                    </button>
+</div>
+</div>
+</main>
+</div>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-md pb-safe bg-surface-white border-t border-border shadow-[0_-2px_8px_rgba(0,0,0,0.08)] z-50 h-16">
+<a class="flex flex-col items-center justify-center text-secondary" href="#">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+<span class="text-caption font-caption">Rutina</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1" href="#">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+<span class="text-caption font-caption">Asistencia</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="text-caption font-caption">Reservas</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-caption font-caption">Perfil</span>
+</a>
+</nav>
+<script>
+        const students = [
+            { name: "Martín Rodríguez", status: "Al Día", lastVisit: "Ayer", avatar: "MR" },
+            { name: "Lucía Fernández", status: "Vencida", lastVisit: "2 días", avatar: "LF" },
+            { name: "Javier Gómez", status: "Al Día", lastVisit: "Hoy", avatar: "JG" },
+            { name: "Sofía Martínez", status: "Al Día", lastVisit: "Ayer", avatar: "SM" },
+            { name: "Diego López", status: "Al Día", lastVisit: "3 días", avatar: "DL" },
+            { name: "Camila Ruiz", status: "Vencida", lastVisit: "1 semana", avatar: "CR" },
+            { name: "Mateo Pérez", status: "Al Día", lastVisit: "Ayer", avatar: "MP" },
+            { name: "Elena Sánchez", status: "Al Día", lastVisit: "2 días", avatar: "ES" },
+            { name: "Nicolás Díaz", status: "Al Día", lastVisit: "Hoy", avatar: "ND" },
+            { name: "Valeria Torres", status: "Vencida", lastVisit: "4 días", avatar: "VT" }
+        ];
+
+        const listContainer = document.getElementById('student-list');
+        const presentCounter = document.getElementById('present-count');
+
+        function renderStudents() {
+            listContainer.innerHTML = students.map((s, idx) => `
+                <tr class="${idx % 2 === 0 ? 'bg-surface-white' : 'bg-surface-container-low'} hover:bg-secondary-container transition-colors border-b border-border">
+                    <td class="px-lg py-md">
+                        <div class="flex items-center gap-md">
+                            <div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-container font-label-bold text-label-bold">
+                                ${s.avatar}
+                            </div>
+                            <div>
+                                <p class="font-label-bold text-label-bold text-on-surface">${s.name}</p>
+                                <p class="text-caption font-caption text-on-surface-variant md:hidden">Cuota: ${s.status}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-lg py-md hidden md:table-cell">
+                        <span class="px-sm py-xs rounded-full font-label-bold text-caption ${s.status === 'Al Día' ? 'bg-success/10 text-success' : 'bg-error/10 text-error'}">
+                            ${s.status}
+                        </span>
+                    </td>
+                    <td class="px-lg py-md hidden sm:table-cell font-body-sm text-body-sm text-on-surface-variant">
+                        ${s.lastVisit}
+                    </td>
+                    <td class="px-lg py-md text-right">
+                        <input type="checkbox" class="attendance-check custom-checkbox w-6 h-6 rounded border-border focus:ring-primary-container text-primary-container" onchange="updateCounter()">
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateCounter() {
+            const checks = document.querySelectorAll('.attendance-check');
+            const count = Array.from(checks).filter(c => c.checked).length;
+            presentCounter.innerText = count;
+        }
+
+        function markAll(val) {
+            document.querySelectorAll('.attendance-check').forEach(c => c.checked = val);
+            updateCounter();
+        }
+
+        function saveAttendance() {
+            const btn = event.currentTarget;
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = `<span class="material-symbols-outlined animate-spin" data-icon="sync">sync</span> Guardando...`;
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                alert('Asistencia guardada correctamente para Musculación.');
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            }, 1500);
+        }
+
+        // Initialize Date
+        const dateOptions = { weekday: 'long', day: 'numeric', month: 'long' };
+        document.getElementById('current-date').innerText = new Intl.DateTimeFormat('es-ES', dateOptions).format(new Date());
+
+        renderStudents();
+    </script>
+
+</body></html>

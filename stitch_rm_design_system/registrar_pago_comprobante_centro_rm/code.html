@@ -1,0 +1,162 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Centro RM - Registrar Pago y Comprobante</title><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed": "#2c1600","primary-container": "#e8973a","error": "#F44336","on-background": "#1a1c1c","error-container": "#ffdad6","on-secondary": "#ffffff","secondary": "#4f6264","surface-bright": "#f9f9f9","inverse-primary": "#ffb86e","surface-container-highest": "#e2e2e2","on-surface-variant": "#534436","tertiary": "#006684","on-secondary-fixed": "#0c1e20","surface": "#f9f9f9","on-surface": "#1a1c1c","surface-white": "#FFFFFF","on-tertiary-fixed": "#001f2a","on-error-container": "#93000a","surface-tint": "#8a5100","surface-container-lowest": "#ffffff","on-error": "#ffffff","inverse-on-surface": "#f1f1f1","surface-container-low": "#f3f3f3","surface-container-high": "#e8e8e8","info": "#2196F3","text-muted": "#757575","on-primary": "#ffffff","on-secondary-fixed-variant": "#384a4c","border": "#D0D0D0","on-tertiary": "#ffffff","secondary-fixed-dim": "#b6cacc","inverse-surface": "#2f3131","primary-fixed-dim": "#ffb86e","warning": "#FFC107","success": "#4CAF50","tertiary-container": "#3cb5e2","primary-fixed": "#ffdcbd","tertiary-fixed": "#bee9ff","on-primary-container": "#5c3400","outline": "#857464","on-tertiary-container": "#004358","surface-variant": "#e2e2e2","surface-dim": "#dadada","background": "#f9f9f9","secondary-container": "#cfe3e6","secondary-fixed": "#d2e6e8","primary": "#8a5100","tertiary-fixed-dim": "#69d3ff","on-tertiary-fixed-variant": "#004d64","surface-container": "#eeeeee","outline-variant": "#d8c3b1","on-primary-fixed-variant": "#693c00","on-secondary-container": "#536668"
+            },
+            "borderRadius": {"DEFAULT": "0.125rem","lg": "0.25rem","xl": "0.5rem","full": "0.75rem"},
+            "spacing": {"base": "8px","xs": "4px","gutter": "24px","container-max": "1280px","lg": "24px","md": "16px","sm": "8px","xl": "32px"},
+            "fontFamily": {"label-bold": ["Hanken Grotesk"],"headline-md": ["Hanken Grotesk"],"body-lg": ["Hanken Grotesk"],"display-lg": ["Hanken Grotesk"],"body-sm": ["Hanken Grotesk"],"display-lg-mobile": ["Hanken Grotesk"],"caption": ["Hanken Grotesk"],"data-mono": ["jetbrainsMono"]},
+            "fontSize": {"label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],"headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],"body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],"display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],"body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],"display-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],"caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],"data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]}
+          },
+        },
+      }
+    }catch(_e){}</script><meta charset="utf-8">
+<style>@media print { .no-print { display: none !important; } .print-area { box-shadow:none !important; border:none !important; } body { background: white !important; } main { margin-left:0 !important; padding:0 !important; } }</style>
+</head><body class="bg-background text-on-background font-body-lg text-body-lg antialiased">
+<aside class="hidden md:flex flex-col h-screen py-gutter bg-secondary dark:bg-on-secondary-fixed h-full w-64 fixed left-0 top-0 shadow-md border-r border-outline-variant z-50 no-print">
+<div class="px-lg mb-xl"><div class="flex justify-center items-center w-full mb-md"><span class="font-display-lg-mobile text-display-lg-mobile font-bold text-on-secondary">Centro RM</span></div><p class="text-on-secondary opacity-70 font-label-bold text-label-bold text-center">Administración</p></div>
+<nav class="flex-1 space-y-1">
+<a href="../dashboard_profesor_centro_rm/code.html" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200 ease-in-out"><span class="material-symbols-outlined mr-3">dashboard</span><span class="font-label-bold text-label-bold">Dashboard</span></a>
+<a href="../gesti_n_de_alumnos_centro_rm/code.html" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200 ease-in-out"><span class="material-symbols-outlined mr-3">group</span><span class="font-label-bold text-label-bold">Alumnos</span></a>
+<a href="../gestion_de_profesores_centro_rm/code.html" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200 ease-in-out"><span class="material-symbols-outlined mr-3">badge</span><span class="font-label-bold text-label-bold">Profesores</span></a>
+<!-- Active Tab: Cuotas -->
+<a href="../control_de_cuotas_centro_rm/code.html" class="flex items-center text-primary-container font-bold border-l-4 border-primary-container pl-4 py-3 bg-on-secondary-fixed-variant transition-colors duration-200 ease-in-out"><span class="material-symbols-outlined mr-3">payments</span><span class="font-label-bold text-label-bold">Cuotas</span></a>
+<a href="../gestion_de_planes_centro_rm/code.html" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200 ease-in-out"><span class="material-symbols-outlined mr-3">sell</span><span class="font-label-bold text-label-bold">Planes</span></a>
+<a href="../gesti_n_de_rutinas_centro_rm_redesign/code.html" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200 ease-in-out"><span class="material-symbols-outlined mr-3">fitness_center</span><span class="font-label-bold text-label-bold">Rutinas</span></a>
+<a href="../asistencia_centro_rm/code.html" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200 ease-in-out"><span class="material-symbols-outlined mr-3">how_to_reg</span><span class="font-label-bold text-label-bold">Asistencia Alumnos</span></a>
+<a href="../asistencia_profesores_centro_rm/code.html" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200 ease-in-out"><span class="material-symbols-outlined mr-3">fingerprint</span><span class="font-label-bold text-label-bold">Asistencia Profesores</span></a>
+<a href="../reportes_y_estad_sticas_centro_rm/code.html" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200 ease-in-out"><span class="material-symbols-outlined mr-3">leaderboard</span><span class="font-label-bold text-label-bold">Estadísticas</span></a>
+<a href="../configuraci_n_centro_rm/code.html" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200 ease-in-out"><span class="material-symbols-outlined mr-3">settings</span><span class="font-label-bold text-label-bold">Configuración</span></a>
+</nav>
+<div class="px-lg pt-xl mt-auto">
+<div class="flex items-center gap-3 bg-on-secondary-fixed-variant p-3 rounded-xl border border-outline-variant/30">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-bold text-label-bold">RM</div>
+<div class="overflow-hidden"><p class="text-on-secondary font-label-bold text-label-bold truncate">Profesor Principal</p><p class="text-on-secondary opacity-60 text-caption font-caption truncate">Admin</p></div>
+</div>
+</div>
+</aside>
+<header class="md:hidden flex justify-between items-center px-lg py-md w-full bg-surface-white top-0 sticky z-40 border-b border-border shadow-sm no-print">
+<h1 class="font-display-lg-mobile text-display-lg-mobile font-bold text-primary">Centro RM</h1><span class="material-symbols-outlined text-primary">account_circle</span>
+</header>
+<main class="md:ml-64 min-h-screen p-lg lg:p-xl">
+<div class="mb-xl no-print">
+<a href="../control_de_cuotas_centro_rm/code.html" class="text-on-surface-variant text-body-sm font-label-bold flex items-center gap-1 mb-md"><span class="material-symbols-outlined text-sm">arrow_back</span>Volver a Control de Cuotas</a>
+<h2 class="font-display-lg text-display-lg text-on-surface mb-xs">Registrar Pago</h2>
+<p class="text-on-surface-variant font-body-sm text-body-sm">Al guardar el pago se genera automáticamente el comprobante para enviar al alumno.</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+
+<!-- LEFT: Payment Form -->
+<div class="bg-surface-white border border-border rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-lg no-print h-fit">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-md flex items-center gap-2"><span class="material-symbols-outlined text-primary">add_card</span>Nuevo Pago</h3>
+<div class="space-y-md">
+<div>
+<label class="font-label-bold text-label-bold text-on-surface-variant">Alumno</label>
+<select class="mt-1 w-full border border-border rounded-lg px-3 py-2 focus:border-primary-container outline-none">
+<option>Julián Martínez — ID #4023</option>
+<option>Laura Rodriguez — ID #3988</option>
+</select>
+</div>
+<div class="bg-surface-container-low rounded-lg p-md border border-border">
+<p class="text-caption font-caption text-text-muted mb-1">Cuota a saldar</p>
+<div class="flex justify-between items-center">
+<span class="font-label-bold text-on-surface">Musculación 3x semana — Ago 2026</span>
+<span class="bg-warning/10 text-warning px-2 py-1 rounded-full text-caption font-label-bold">Prorrateada</span>
+</div>
+<p class="text-caption font-caption text-text-muted mt-1">Alta el 18/08 · 14 de 31 días facturados</p>
+</div>
+<div class="grid grid-cols-2 gap-md">
+<div><label class="font-label-bold text-label-bold text-on-surface-variant">Monto</label><input class="mt-1 w-full border border-border rounded-lg px-3 py-2 focus:border-primary-container outline-none font-data-mono text-data-mono" value="$6.774,19"></div>
+<div><label class="font-label-bold text-label-bold text-on-surface-variant">Fecha de pago</label><input type="date" class="mt-1 w-full border border-border rounded-lg px-3 py-2 focus:border-primary-container outline-none" value="2026-08-18"></div>
+</div>
+<div>
+<label class="font-label-bold text-label-bold text-on-surface-variant">Medio de pago</label>
+<div class="mt-1 grid grid-cols-4 gap-2">
+<label class="border border-primary-container bg-primary-container/10 rounded-lg py-2 text-center text-caption font-label-bold text-primary cursor-pointer"><input type="radio" name="medio" class="hidden" checked>Efectivo</label>
+<label class="border border-border rounded-lg py-2 text-center text-caption font-label-bold text-on-surface-variant cursor-pointer"><input type="radio" name="medio" class="hidden">Transf.</label>
+<label class="border border-border rounded-lg py-2 text-center text-caption font-label-bold text-on-surface-variant cursor-pointer"><input type="radio" name="medio" class="hidden">MercadoPago</label>
+<label class="border border-border rounded-lg py-2 text-center text-caption font-label-bold text-on-surface-variant cursor-pointer"><input type="radio" name="medio" class="hidden">Tarjeta</label>
+</div>
+</div>
+<div><label class="font-label-bold text-label-bold text-on-surface-variant">Referencia (opcional)</label><input class="mt-1 w-full border border-border rounded-lg px-3 py-2 focus:border-primary-container outline-none" placeholder="Nº de operación / comprobante bancario"></div>
+</div>
+<div class="flex justify-end gap-sm mt-lg">
+<button class="px-lg py-2 rounded-lg border border-primary-container text-primary font-label-bold text-label-bold">Cancelar</button>
+<button class="bg-primary-container text-on-primary-container px-lg py-2 rounded-lg font-label-bold text-label-bold flex items-center gap-2"><span class="material-symbols-outlined">receipt_long</span>Guardar y Generar Comprobante</button>
+</div>
+</div>
+
+<!-- RIGHT: Comprobante de Pago (receipt preview) -->
+<div>
+<div class="flex items-center justify-between mb-md no-print">
+<h3 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-primary">receipt_long</span>Comprobante generado</h3>
+<div class="flex gap-2">
+<button class="bg-secondary text-on-secondary px-3 py-2 rounded-lg text-caption font-label-bold flex items-center gap-1" onclick="window.print()"><span class="material-symbols-outlined text-sm">picture_as_pdf</span>Descargar PDF</button>
+<button class="bg-success text-on-primary px-3 py-2 rounded-lg text-caption font-label-bold flex items-center gap-1"><span class="material-symbols-outlined text-sm">chat</span>Enviar WhatsApp</button>
+<button class="bg-info text-on-primary px-3 py-2 rounded-lg text-caption font-label-bold flex items-center gap-1"><span class="material-symbols-outlined text-sm">mail</span>Enviar Email</button>
+</div>
+</div>
+
+<div class="print-area bg-surface-white border border-border rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-xl">
+<div class="flex justify-between items-start border-b border-border pb-md mb-md">
+<div>
+<p class="font-display-lg-mobile text-display-lg-mobile font-bold text-primary">Centro RM</p>
+<p class="text-caption font-caption text-text-muted">Centro de Entrenamiento · CUIT 20-XXXXXXXX-X</p>
+<p class="text-caption font-caption text-text-muted">Av. Ejemplo 1234, Ciudad</p>
+</div>
+<div class="text-right">
+<p class="font-label-bold text-label-bold text-on-surface uppercase">Comprobante de Pago</p>
+<p class="font-data-mono text-data-mono text-on-surface-variant">Nº 2026-000184</p>
+<p class="text-caption font-caption text-text-muted">18/08/2026</p>
+</div>
+</div>
+
+<div class="grid grid-cols-2 gap-md mb-lg">
+<div>
+<p class="text-caption font-caption text-text-muted">Alumno</p>
+<p class="font-label-bold text-on-surface">Julián Martínez</p>
+<p class="text-caption font-caption text-text-muted">ID #4023</p>
+</div>
+<div class="text-right">
+<p class="text-caption font-caption text-text-muted">Medio de pago</p>
+<p class="font-label-bold text-on-surface">Efectivo</p>
+</div>
+</div>
+
+<table class="w-full text-left border-collapse mb-md">
+<thead><tr class="border-b border-border">
+<th class="py-2 font-label-bold text-label-bold text-on-surface-variant">Concepto</th>
+<th class="py-2 font-label-bold text-label-bold text-on-surface-variant text-right">Detalle</th>
+<th class="py-2 font-label-bold text-label-bold text-on-surface-variant text-right">Monto</th>
+</tr></thead>
+<tbody>
+<tr class="border-b border-border">
+<td class="py-3 text-body-sm text-on-surface">Plan Musculación 3x semana</td>
+<td class="py-3 text-body-sm text-on-surface-variant text-right">Período Ago 2026 — prorrateado (14/31 días)</td>
+<td class="py-3 text-body-sm font-data-mono text-data-mono text-right">$6.774,19</td>
+</tr>
+</tbody>
+</table>
+
+<div class="flex justify-end mb-lg">
+<div class="w-56">
+<div class="flex justify-between py-1"><span class="text-body-sm text-on-surface-variant">Subtotal</span><span class="font-data-mono text-data-mono text-body-sm">$6.774,19</span></div>
+<div class="flex justify-between py-2 border-t border-border mt-1"><span class="font-label-bold text-on-surface">Total pagado</span><span class="font-display-lg-mobile text-display-lg-mobile text-primary">$6.774,19</span></div>
+</div>
+</div>
+
+<div class="bg-success/10 text-success rounded-lg px-md py-3 flex items-center gap-2 mb-lg">
+<span class="material-symbols-outlined">check_circle</span>
+<span class="font-label-bold text-label-bold">Cuota saldada — próximo vencimiento: 01/09/2026</span>
+</div>
+
+<p class="text-caption font-caption text-text-muted text-center">Comprobante interno de pago, no válido como factura fiscal. Ante cualquier consulta, contactar a Centro RM.</p>
+</div>
+</div>
+</div>
+</main>
+</body></html>

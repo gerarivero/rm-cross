@@ -1,0 +1,440 @@
+<!DOCTYPE html><html lang="es" class="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed": "#2c1600",
+                    "primary-container": "#e8973a",
+                    "error": "#F44336",
+                    "on-background": "#1a1c1c",
+                    "error-container": "#ffdad6",
+                    "on-secondary": "#ffffff",
+                    "secondary": "#4f6264",
+                    "surface-bright": "#f9f9f9",
+                    "inverse-primary": "#ffb86e",
+                    "surface-container-highest": "#e2e2e2",
+                    "on-surface-variant": "#534436",
+                    "tertiary": "#006684",
+                    "on-secondary-fixed": "#0c1e20",
+                    "surface": "#f9f9f9",
+                    "on-surface": "#1a1c1c",
+                    "surface-white": "#FFFFFF",
+                    "on-tertiary-fixed": "#001f2a",
+                    "on-error-container": "#93000a",
+                    "surface-tint": "#8a5100",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error": "#ffffff",
+                    "inverse-on-surface": "#f1f1f1",
+                    "surface-container-low": "#f3f3f3",
+                    "surface-container-high": "#e8e8e8",
+                    "info": "#2196F3",
+                    "text-muted": "#757575",
+                    "on-primary": "#ffffff",
+                    "on-secondary-fixed-variant": "#384a4c",
+                    "border": "#D0D0D0",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed-dim": "#b6cacc",
+                    "inverse-surface": "#2f3131",
+                    "primary-fixed-dim": "#ffb86e",
+                    "warning": "#FFC107",
+                    "success": "#4CAF50",
+                    "tertiary-container": "#3cb5e2",
+                    "primary-fixed": "#ffdcbd",
+                    "tertiary-fixed": "#bee9ff",
+                    "on-primary-container": "#5c3400",
+                    "outline": "#857464",
+                    "on-tertiary-container": "#004358",
+                    "surface-variant": "#e2e2e2",
+                    "surface-dim": "#dadada",
+                    "background": "#f9f9f9",
+                    "secondary-container": "#cfe3e6",
+                    "secondary-fixed": "#d2e6e8",
+                    "primary": "#8a5100",
+                    "tertiary-fixed-dim": "#69d3ff",
+                    "on-tertiary-fixed-variant": "#004d64",
+                    "surface-container": "#eeeeee",
+                    "outline-variant": "#d8c3b1",
+                    "on-primary-fixed-variant": "#693c00",
+                    "on-secondary-container": "#536668"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "xs": "4px",
+                    "gutter": "24px",
+                    "container-max": "1280px",
+                    "lg": "24px",
+                    "md": "16px",
+                    "sm": "8px",
+                    "xl": "32px"
+            },
+            "fontFamily": {
+                    "label-bold": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "body-sm": ["Hanken Grotesk"],
+                    "display-lg-mobile": ["Hanken Grotesk"],
+                    "caption": ["Hanken Grotesk"],
+                    "data-mono": ["jetbrainsMono"]
+            },
+            "fontSize": {
+                    "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    }catch(_e){}</script><meta charset="utf-8"></head><body class="bg-background text-on-background min-h-screen">
+<!-- Desktop Sidebar -->
+<aside class="hidden md:flex flex-col h-screen py-gutter bg-secondary dark:bg-on-secondary-fixed text-on-secondary border-r border-outline-variant shadow-md fixed left-0 top-0 w-64 z-50">
+<div class="px-lg mb-xl"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUPAR72z_8zos00MN_e0E59rQGTUoBnIogxg9us2HeJjC7GJLhXxh4_cIR-eFm6U7WVWqVkS0s4L0VAedD9QaC4gLhjMP94zG8-vZAHoje1U3ccuxGRS5-jmqT1-PBgi47AfTndg_eE2KP6FNLZNzvCsVNM4b75oul3yukC50ldnUL83LUWAgCTMzi9XEhAjHcpCgkhvuebD1ZOogbmsIbGfQ7FVMnEnoX5-py_QepdnvDBvYtXt7wQAMQgaFbKSwa_A" alt="Centro RM Logo" class="w-full h-auto max-w-[180px] mx-auto"></div>
+<nav class="flex-1 space-y-1">
+<a href="#" class="flex items-center px-5 py-3 text-on-secondary opacity-80 hover:opacity-100 hover:bg-on-secondary-fixed-variant transition-colors">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+<span class="font-label-bold text-label-bold">Dashboard</span>
+</a>
+<a href="#" class="flex items-center px-5 py-3 text-on-secondary opacity-80 hover:opacity-100 hover:bg-on-secondary-fixed-variant transition-colors">
+<span class="material-symbols-outlined mr-3">group</span>
+<span class="font-label-bold text-label-bold">Alumnos</span>
+</a>
+<a href="#" class="flex items-center px-5 py-3 text-on-secondary opacity-80 hover:opacity-100 hover:bg-on-secondary-fixed-variant transition-colors">
+<span class="material-symbols-outlined mr-3">payments</span>
+<span class="font-label-bold text-label-bold">Cuotas</span>
+</a>
+<a href="#" class="flex items-center px-5 py-3 text-on-secondary opacity-80 hover:opacity-100 hover:bg-on-secondary-fixed-variant transition-colors">
+<span class="material-symbols-outlined mr-3">fitness_center</span>
+<span class="font-label-bold text-label-bold">Rutinas</span>
+</a>
+<a href="#" class="flex items-center px-5 py-3 text-on-secondary opacity-80 hover:opacity-100 hover:bg-on-secondary-fixed-variant transition-colors">
+<span class="material-symbols-outlined mr-3">how_to_reg</span>
+<span class="font-label-bold text-label-bold">Asistencia</span>
+</a>
+<a href="#" class="flex items-center text-primary-container font-bold border-l-4 border-primary-container pl-4 py-3 bg-on-secondary-fixed-variant transition-colors">
+<span class="material-symbols-outlined mr-3">leaderboard</span>
+<span class="font-label-bold text-label-bold">Estadísticas</span>
+</a>
+<a href="#" class="flex items-center px-5 py-3 text-on-secondary opacity-80 hover:opacity-100 hover:bg-on-secondary-fixed-variant transition-colors">
+<span class="material-symbols-outlined mr-3">notifications</span>
+<span class="font-label-bold text-label-bold">Notificaciones</span>
+</a>
+<a href="#" class="flex items-center px-5 py-3 text-on-secondary opacity-80 hover:opacity-100 hover:bg-on-secondary-fixed-variant transition-colors">
+<span class="material-symbols-outlined mr-3">settings</span>
+<span class="font-label-bold text-label-bold">Configuración</span>
+</a>
+</nav>
+<div class="mt-auto px-lg pt-md border-t border-outline-variant/30 flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center font-bold text-on-primary-container">
+                RM
+            </div>
+<div>
+<p class="font-label-bold text-label-bold">Admin Profile</p>
+<p class="text-caption opacity-70">Cerrar Sesión</p>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-64 min-h-screen pb-24 md:pb-8 transition-all">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center px-lg py-md w-full sticky top-0 z-40 bg-surface-white dark:bg-surface-container-lowest border-b border-border shadow-sm">
+<h2 class="font-headline-md text-headline-md text-primary">Panel de Estadísticas</h2>
+<div class="flex items-center gap-md">
+<div class="relative hidden sm:block">
+<input type="text" placeholder="Buscar reporte..." class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-lg text-body-sm focus:ring-2 focus:ring-primary-container w-64">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant">search</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Stats Grid Dashboard -->
+<div class="p-lg max-w-container-max mx-auto space-y-lg">
+<!-- KPI Section -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- KPI Card 1 -->
+<div class="bg-surface-white p-md border border-border rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-sm">
+<div class="p-2 bg-primary-container/20 rounded-lg">
+<span class="material-symbols-outlined text-primary">group</span>
+</div>
+<span class="text-success flex items-center font-label-bold text-label-bold">
+                            +12% <span class="material-symbols-outlined text-[16px]">trending_up</span>
+</span>
+</div>
+<p class="text-on-surface-variant text-caption uppercase tracking-wider font-bold">Total Alumnos</p>
+<h3 class="font-display-lg text-display-lg text-on-surface mt-xs">1,248</h3>
+<p class="text-caption text-text-muted mt-sm">Activos este mes: 1,120</p>
+</div>
+<!-- KPI Card 2 -->
+<div class="bg-surface-white p-md border border-border rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-sm">
+<div class="p-2 bg-tertiary-container/20 rounded-lg">
+<span class="material-symbols-outlined text-tertiary">payments</span>
+</div>
+<span class="text-success flex items-center font-label-bold text-label-bold">
+                            +8.4% <span class="material-symbols-outlined text-[16px]">trending_up</span>
+</span>
+</div>
+<p class="text-on-surface-variant text-caption uppercase tracking-wider font-bold">Recaudación</p>
+<h3 class="font-display-lg text-display-lg text-on-surface mt-xs">$45.2k</h3>
+<p class="text-caption text-text-muted mt-sm">Meta mensual: $48k</p>
+</div>
+<!-- KPI Card 3 -->
+<div class="bg-surface-white p-md border border-border rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-sm">
+<div class="p-2 bg-secondary-container/20 rounded-lg">
+<span class="material-symbols-outlined text-secondary">how_to_reg</span>
+</div>
+<span class="text-error flex items-center font-label-bold text-label-bold">
+                            -2.1% <span class="material-symbols-outlined text-[16px]">trending_down</span>
+</span>
+</div>
+<p class="text-on-surface-variant text-caption uppercase tracking-wider font-bold">Asistencia Promedio</p>
+<h3 class="font-display-lg text-display-lg text-on-surface mt-xs">78%</h3>
+<p class="text-caption text-text-muted mt-sm">Promedio diario: 86 personas</p>
+</div>
+<!-- KPI Card 4 -->
+<div class="bg-surface-white p-md border border-border rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-sm">
+<div class="p-2 bg-warning/20 rounded-lg">
+<span class="material-symbols-outlined text-warning" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="text-success flex items-center font-label-bold text-label-bold">
+                            +15% <span class="material-symbols-outlined text-[16px]">trending_up</span>
+</span>
+</div>
+<p class="text-on-surface-variant text-caption uppercase tracking-wider font-bold">Retención</p>
+<h3 class="font-display-lg text-display-lg text-on-surface mt-xs">92%</h3>
+<p class="text-caption text-text-muted mt-sm">Churn rate: 4.2%</p>
+</div>
+</div>
+<!-- Main Charts Row -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+<!-- Line Chart: Alumnos por Mes -->
+<div class="bg-surface-white p-lg border border-border rounded-xl shadow-sm">
+<div class="flex justify-between items-center mb-lg">
+<div>
+<h4 class="font-headline-md text-headline-md text-on-surface">Crecimiento de Alumnos</h4>
+<p class="text-caption text-text-muted">Últimos 6 meses</p>
+</div>
+<select class="bg-surface-container-low border-none rounded-lg text-label-bold font-label-bold focus:ring-primary-container">
+<option>2023</option>
+<option selected="">2024</option>
+</select>
+</div>
+<div class="relative h-64 w-full flex items-end justify-between px-md pb-sm border-b border-l border-outline-variant">
+<!-- SVG Line Chart Concept -->
+<svg class="absolute inset-0 h-full w-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 100 100">
+<path d="M0,80 Q10,75 20,60 T40,40 T60,45 T80,20 T100,10" fill="none" stroke="#e8973a" stroke-width="2" class="chart-line-animate"></path>
+<path d="M0,80 Q10,75 20,60 T40,40 T60,45 T80,20 T100,10 V100 H0 Z" fill="url(#gradient-alumnos)" opacity="0.1"></path>
+<defs>
+<linearGradient id="gradient-alumnos" x1="0%" y1="0%" x2="0%" y2="100%">
+<stop offset="0%" style="stop-color:#e8973a;stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:#e8973a;stop-opacity:0"></stop>
+</linearGradient>
+</defs>
+</svg>
+<!-- Axis Labels -->
+<div class="flex w-full justify-between mt-auto pt-sm relative z-10">
+<span class="text-caption text-text-muted font-label-bold">ENE</span>
+<span class="text-caption text-text-muted font-label-bold">FEB</span>
+<span class="text-caption text-text-muted font-label-bold">MAR</span>
+<span class="text-caption text-text-muted font-label-bold">ABR</span>
+<span class="text-caption text-text-muted font-label-bold">MAY</span>
+<span class="text-caption text-text-muted font-label-bold">JUN</span>
+</div>
+</div>
+</div>
+<!-- Bar Chart: Recaudación Mensual -->
+<div class="bg-surface-white p-lg border border-border rounded-xl shadow-sm">
+<div class="flex justify-between items-center mb-lg">
+<div>
+<h4 class="font-headline-md text-headline-md text-on-surface">Recaudación Mensual</h4>
+<p class="text-caption text-text-muted">Desglose de ingresos (ARS)</p>
+</div>
+<div class="flex gap-sm">
+<span class="flex items-center gap-xs text-caption font-label-bold"><span class="w-3 h-3 bg-secondary rounded-full"></span> Cuotas</span>
+<span class="flex items-center gap-xs text-caption font-label-bold"><span class="w-3 h-3 bg-primary-container rounded-full"></span> Suples</span>
+</div>
+</div>
+<div class="flex items-end justify-between h-64 gap-sm px-md border-b border-outline-variant">
+<!-- Bar Items -->
+<div class="flex flex-col items-center flex-1">
+<div class="w-full flex flex-col justify-end gap-1">
+<div class="bg-secondary/40 w-full rounded-t-sm chart-bar-animate" style="height: 120px;"></div>
+<div class="bg-primary-container w-full rounded-t-sm chart-bar-animate" style="height: 40px;"></div>
+</div>
+<span class="mt-sm text-caption text-text-muted font-label-bold">ENE</span>
+</div>
+<div class="flex flex-col items-center flex-1">
+<div class="w-full flex flex-col justify-end gap-1">
+<div class="bg-secondary/40 w-full rounded-t-sm chart-bar-animate" style="height: 140px;"></div>
+<div class="bg-primary-container w-full rounded-t-sm chart-bar-animate" style="height: 50px;"></div>
+</div>
+<span class="mt-sm text-caption text-text-muted font-label-bold">FEB</span>
+</div>
+<div class="flex flex-col items-center flex-1">
+<div class="w-full flex flex-col justify-end gap-1">
+<div class="bg-secondary/40 w-full rounded-t-sm chart-bar-animate" style="height: 110px;"></div>
+<div class="bg-primary-container w-full rounded-t-sm chart-bar-animate" style="height: 45px;"></div>
+</div>
+<span class="mt-sm text-caption text-text-muted font-label-bold">MAR</span>
+</div>
+<div class="flex flex-col items-center flex-1">
+<div class="w-full flex flex-col justify-end gap-1">
+<div class="bg-secondary/40 w-full rounded-t-sm chart-bar-animate" style="height: 160px;"></div>
+<div class="bg-primary-container w-full rounded-t-sm chart-bar-animate" style="height: 60px;"></div>
+</div>
+<span class="mt-sm text-caption text-text-muted font-label-bold">ABR</span>
+</div>
+<div class="flex flex-col items-center flex-1">
+<div class="w-full flex flex-col justify-end gap-1">
+<div class="bg-secondary/40 w-full rounded-t-sm chart-bar-animate" style="height: 180px;"></div>
+<div class="bg-primary-container w-full rounded-t-sm chart-bar-animate" style="height: 70px;"></div>
+</div>
+<span class="mt-sm text-caption text-text-muted font-label-bold">MAY</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bento Layout Extra Metrics -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Most Popular Routines -->
+<div class="md:col-span-2 bg-surface-white p-lg border border-border rounded-xl shadow-sm">
+<h4 class="font-headline-md text-headline-md text-on-surface mb-md">Rutinas Más Demandadas</h4>
+<div class="space-y-md">
+<div class="flex items-center justify-between p-sm hover:bg-surface-container-low rounded-lg transition-all group">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center text-on-secondary">
+<span class="material-symbols-outlined">fitness_center</span>
+</div>
+<div>
+<p class="font-label-bold text-label-bold text-on-surface">Hipertrofia - Avanzado</p>
+<p class="text-caption text-text-muted">450 alumnos activos</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-data-mono text-data-mono text-primary font-bold">38%</p>
+<div class="w-24 h-2 bg-surface-container-high rounded-full overflow-hidden mt-xs">
+<div class="bg-primary-container h-full" style="width: 38%"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between p-sm hover:bg-surface-container-low rounded-lg transition-all">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-lg bg-tertiary flex items-center justify-center text-on-secondary">
+<span class="material-symbols-outlined">sprint</span>
+</div>
+<div>
+<p class="font-label-bold text-label-bold text-on-surface">HIIT - Quema Grasa</p>
+<p class="text-caption text-text-muted">320 alumnos activos</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-data-mono text-data-mono text-primary font-bold">26%</p>
+<div class="w-24 h-2 bg-surface-container-high rounded-full overflow-hidden mt-xs">
+<div class="bg-primary-container h-full" style="width: 26%"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between p-sm hover:bg-surface-container-low rounded-lg transition-all">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded-lg bg-primary flex items-center justify-center text-on-secondary">
+<span class="material-symbols-outlined">accessibility_new</span>
+</div>
+<div>
+<p class="font-label-bold text-label-bold text-on-surface">Movilidad &amp; Stretching</p>
+<p class="text-caption text-text-muted">185 alumnos activos</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-data-mono text-data-mono text-primary font-bold">15%</p>
+<div class="w-24 h-2 bg-surface-container-high rounded-full overflow-hidden mt-xs">
+<div class="bg-primary-container h-full" style="width: 15%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Active Sessions Right Now -->
+<div class="bg-secondary text-on-secondary p-lg rounded-xl shadow-lg relative overflow-hidden flex flex-col justify-between">
+
+<div class="relative z-10">
+<div class="flex justify-between items-center mb-md">
+<span class="material-symbols-outlined text-primary-container">sensors</span>
+<span class="bg-success text-white px-2 py-0.5 rounded text-[10px] font-bold animate-pulse">EN VIVO</span>
+</div>
+<h4 class="font-headline-md text-headline-md">En el Centro ahora</h4>
+<p class="text-caption opacity-80 mt-xs">Control de aforo en tiempo real</p>
+</div>
+<div class="relative z-10 mt-xl">
+<div class="text-[48px] font-bold leading-none">42</div>
+<p class="font-label-bold text-label-bold">Personas entrenando</p>
+<div class="mt-md flex -space-x-2">
+<img class="w-8 h-8 rounded-full border-2 border-secondary" data-alt="Close up portrait of a fit young man smiling in a gym environment with cinematic warm lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB01eWoUD32WmcyJrjhcEFb0nqE2RKSkAyRb_8gL-DIn_eEG8eAwQBRJRPPDZGpP-Sd_QtngmszEDG85-rWDYplmqTCeKXJOXMdoYg9uO7uZc41HEN9ll-qVzh5WUoLng9QrJ6J8cQYyL0uEBPYq70r-AyL4wcxhZhTP7bkaP-960zelZlu2-6tqS25RrBX5RxcnKKc6PrUhBSH9hlG40PTpQqdp5NDowieiw4CL1grPvwESyMPNlHJ">
+<img class="w-8 h-8 rounded-full border-2 border-secondary" data-alt="Portrait of a determined female athlete with headphones in a modern industrial fitness studio" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAe4hVv2G8hc-Pr3_jw4LUuKHPZwnctn4qRuz5_3CK6963AO74yYBvdzw0MO3gH27egwfyPK1eOJLAim37vD6-OthmcC-uKi0w56VK3iQFr7qh4saZ_Vn4MFfKVV0eyCvehJuioiK_zhw2kapvSF9HaCs86FZN2jRMzx0Te82rXDdZLNyKrF7h105Cva3hanrASZ9T4MSBK_nLi2Jmjtbsa5CBU3npIwMFDTP6NgJ_xGeeKaQq9HoAS">
+<img class="w-8 h-8 rounded-full border-2 border-secondary" data-alt="Portrait of a middle-aged woman in athletic wear resting after a workout, professional soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTQpIzmc1o1bKDPDXI2-FiR_r9kOKsBHLNaaFRlCRcteFR3mdw9e5ex3bRKZ4zjsNcGLcbsPhZsCE3_HVEqI68Fk7lWr9NUk7pbi0Qjk11sAw9RYWTMfYLadIqrDrP1QrcSNysgw-6c0y0z1ym0lRiJSZJh9eqnva7raXc0G2OgmHUQE8tjKArho-tvHACqTBNYRnwh7giEIY9S9wbgY88H0AiCHkpo6AtlXed-RIZ8_3BIfdyVEui">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-caption font-bold border-2 border-secondary">+39</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Mobile Bottom Navigation Shell -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-md pb-safe bg-surface-white border-t border-border shadow-lg z-50 py-3">
+<a class="flex flex-col items-center justify-center text-secondary" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-caption text-caption">Inicio</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-caption text-caption">Alumnos</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="font-caption text-caption">Stats</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-caption text-caption">Ajustes</span>
+</a>
+</nav>
+<script>
+        // Optional micro-interaction: update the "Active Right Now" counter
+        const activeCounter = document.querySelector('.text-\\[48px\\]');
+        if (activeCounter) {
+            setInterval(() => {
+                const current = parseInt(activeCounter.textContent);
+                const drift = Math.floor(Math.random() * 3) - 1; // -1, 0, or 1
+                activeCounter.textContent = Math.max(20, current + drift);
+            }, 5000);
+        }
+
+        // Animate bars on load
+        window.addEventListener('load', () => {
+            const bars = document.querySelectorAll('.chart-bar-animate');
+            bars.forEach(bar => {
+                const targetHeight = bar.style.height;
+                bar.style.height = '0px';
+                setTimeout(() => {
+                    bar.style.height = targetHeight;
+                }, 200);
+            });
+        });
+    </script>
+
+</body></html>

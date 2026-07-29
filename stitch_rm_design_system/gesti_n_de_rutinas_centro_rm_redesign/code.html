@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Centro RM - Gestión de Rutinas</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-secondary": "#ffffff",
+                "primary-fixed-dim": "#ffb86e",
+                "outline-variant": "#d8c3b1",
+                "on-tertiary-fixed": "#001f2a",
+                "surface-container-low": "#f3f3f3",
+                "surface-tint": "#8a5100",
+                "on-surface": "#1a1c1c",
+                "primary": "#8a5100",
+                "surface-container-high": "#e8e8e8",
+                "on-tertiary": "#ffffff",
+                "text-muted": "#757575",
+                "on-primary-fixed": "#2c1600",
+                "surface-container-highest": "#e2e2e2",
+                "secondary-fixed": "#d2e6e8",
+                "secondary-container": "#cfe3e6",
+                "on-error-container": "#93000a",
+                "on-primary": "#ffffff",
+                "inverse-primary": "#ffb86e",
+                "on-secondary-fixed": "#0c1e20",
+                "surface-bright": "#f9f9f9",
+                "error-container": "#ffdad6",
+                "warning": "#FFC107",
+                "on-error": "#ffffff",
+                "inverse-surface": "#2f3131",
+                "secondary-fixed-dim": "#b6cacc",
+                "error": "#F44336",
+                "inverse-on-surface": "#f1f1f1",
+                "surface-container-lowest": "#ffffff",
+                "on-secondary-container": "#536668",
+                "tertiary-fixed": "#bee9ff",
+                "on-tertiary-fixed-variant": "#004d64",
+                "on-primary-container": "#5c3400",
+                "background": "#f9f9f9",
+                "on-primary-fixed-variant": "#693c00",
+                "outline": "#857464",
+                "on-secondary-fixed-variant": "#384a4c",
+                "surface-white": "#FFFFFF",
+                "success": "#4CAF50",
+                "tertiary-fixed-dim": "#69d3ff",
+                "border": "#D0D0D0",
+                "tertiary": "#006684",
+                "tertiary-container": "#3cb5e2",
+                "surface-dim": "#dadada",
+                "info": "#2196F3",
+                "surface": "#f9f9f9",
+                "on-surface-variant": "#534436",
+                "primary-fixed": "#ffdcbd",
+                "on-background": "#1a1c1c",
+                "secondary": "#4f6264",
+                "primary-container": "#e8973a",
+                "on-tertiary-container": "#004358",
+                "surface-variant": "#e2e2e2",
+                "surface-container": "#eeeeee"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "spacing": {
+                "sm": "8px",
+                "lg": "24px",
+                "container-max": "1280px",
+                "md": "16px",
+                "gutter": "24px",
+                "xs": "4px",
+                "xl": "32px",
+                "base": "8px"
+            },
+            "fontFamily": {
+                "label-bold": ["Hanken Grotesk"],
+                "display-lg-mobile": ["Hanken Grotesk"],
+                "body-lg": ["Hanken Grotesk"],
+                "headline-md": ["Hanken Grotesk"],
+                "caption": ["Hanken Grotesk"],
+                "display-lg": ["Hanken Grotesk"],
+                "data-mono": ["jetbrainsMono"],
+                "body-sm": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                "display-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Hanken Grotesk', sans-serif;
+            background-color: #f9f9f9;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .drag-handle { cursor: grab; }
+        .drag-handle:active { cursor: grabbing; }
+        /* High-end scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #D0D0D0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8a5100; }
+    </style>
+</head>
+<body class="flex min-h-screen">
+<!-- SideNavBar Component -->
+<aside class="bg-secondary dark:bg-on-secondary-fixed h-full w-64 fixed left-0 top-0 shadow-md flex flex-col py-gutter z-50">
+<div class="px-lg mb-xl">
+<h1 class="font-display-lg text-display-lg font-bold text-on-secondary tracking-tight">Centro RM</h1>
+<p class="text-on-secondary opacity-60 font-label-bold text-label-bold">Administración</p>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Active Logic: Routine page matches 'Rutinas' -->
+<a class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+<span class="font-label-bold text-label-bold">Dashboard</span>
+</a>
+<a class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3">group</span>
+<span class="font-label-bold text-label-bold">Alumnos</span>
+</a>
+<a class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3">payments</span>
+<span class="font-label-bold text-label-bold">Cuotas</span>
+</a>
+<a class="flex items-center text-primary-container font-bold border-l-4 border-primary-container pl-4 py-3 bg-on-secondary-fixed-variant transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3">fitness_center</span>
+<span class="font-label-bold text-label-bold">Rutinas</span>
+</a>
+<a class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3">how_to_reg</span>
+<span class="font-label-bold text-label-bold">Asistencia</span>
+</a>
+<a class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3">leaderboard</span>
+<span class="font-label-bold text-label-bold">Estadísticas</span>
+</a>
+<a class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3">notifications</span>
+<span class="font-label-bold text-label-bold">Notificaciones</span>
+</a>
+<a class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3">settings</span>
+<span class="font-label-bold text-label-bold">Configuración</span>
+</a>
+</nav>
+<div class="px-lg mt-auto pt-lg border-t border-outline-variant/20 flex items-center gap-3">
+<img class="w-10 h-10 rounded-full border border-outline-variant" data-alt="Close-up professional portrait of a fitness administrator wearing a sleek black polo shirt, warm studio lighting with orange highlights, high contrast corporate photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrMIlGVD-BL5yTp2BKTi8Q5LrR1pxOSSDFRfbF7ikHDjUnqS1Tw_thUEzveWkJlL8Te_bx_HuxOfyThUT4dzn5Yij84OcS8gWLzeWGFFQAGKtlqY4HWAIgLUTRJ-830PLOAEz6vuwQD1dBOXl5Wx6ecCeOz57Obd_Spew36rokmMkCICidvpao4EdeAX-xzGBEafLxDeW8A7ts8XfJZICxuDL28gsPZDDf68-Ynsh50_3rvsWBHbXD"/>
+<div>
+<p class="text-on-secondary font-label-bold text-label-bold">Admin Profile</p>
+<p class="text-on-secondary opacity-50 text-caption font-caption">Cerrar sesión</p>
+</div>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<main class="flex-1 ml-64 flex flex-col bg-background min-h-screen">
+<!-- TopAppBar Component -->
+<header class="sticky top-0 z-40 bg-surface-white border-b border-border shadow-sm flex justify-between items-center px-lg py-md w-full h-16">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary lg:hidden">menu</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Gestión de Rutinas</h2>
+</div>
+<div class="flex items-center gap-xl">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container border-none rounded-lg text-body-sm font-body-sm w-64 focus:ring-2 focus:ring-primary-container" placeholder="Buscar rutinas..." type="text"/>
+</div>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-all">notifications</button>
+<div class="h-8 w-[1px] bg-border"></div>
+<button class="flex items-center gap-2 group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-all">account_circle</span>
+<span class="font-label-bold text-label-bold text-on-surface">Logout</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="p-lg flex flex-col gap-lg max-w-[1400px] mx-auto w-full">
+<!-- Header Action Row -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-md">
+<div>
+<h3 class="font-display-lg text-display-lg font-bold text-on-secondary-fixed">Editor de Rutinas</h3>
+<p class="text-on-surface-variant font-body-lg text-body-lg">Crea y personaliza planes de entrenamiento de alto rendimiento.</p>
+</div>
+<button class="bg-primary-container text-on-primary-container hover:bg-primary transition-colors px-lg py-md rounded-lg flex items-center gap-2 font-label-bold text-label-bold shadow-md self-start">
+<span class="material-symbols-outlined">add_circle</span>
+                    Nueva Rutina
+                </button>
+</div>
+<!-- Main Editor Layout: Split-pane -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Left: Routine Editor -->
+<div class="lg:col-span-8 flex flex-col gap-md">
+<!-- Routine Meta Card -->
+<section class="bg-surface-white border border-border rounded-xl p-lg shadow-sm">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md mb-lg">
+<div class="flex-1 w-full">
+<label class="text-caption font-caption text-on-surface-variant uppercase tracking-wider mb-1 block">Nombre de la Rutina</label>
+<input class="w-full font-headline-md text-headline-md border-none p-0 focus:ring-0 text-primary font-bold bg-transparent" placeholder="Ej: Empuje / Tracción" type="text" value="Fuerza Hipertrofia A"/>
+</div>
+<div class="flex gap-2 shrink-0">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded transition-colors" title="Duplicar">
+<span class="material-symbols-outlined">content_copy</span>
+</button>
+<button class="p-2 text-error hover:bg-error-container rounded transition-colors" title="Eliminar">
+<span class="material-symbols-outlined">delete</span>
+</button>
+<button class="bg-secondary text-white px-lg py-2 rounded-lg font-label-bold text-label-bold hover:opacity-90 transition-opacity">
+                                    Guardar Cambios
+                                </button>
+</div>
+</div>
+<div class="w-full">
+<label class="text-caption font-caption text-on-surface-variant uppercase tracking-wider mb-1 block">Descripción / Objetivo</label>
+<textarea class="w-full bg-surface-container-low border border-border rounded-lg p-md text-body-sm font-body-sm focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all" placeholder="Escribe el enfoque principal de esta rutina..." rows="2">Enfoque en carga progresiva de compuestos básicos. RPE 8-9. Descansos controlados.</textarea>
+</div>
+</section>
+<!-- Exercise List Container -->
+<div class="space-y-4" id="exercise-list">
+<!-- Exercise Card 1 -->
+<div class="bg-surface-white border border-border rounded-xl shadow-sm overflow-hidden group transition-all hover:shadow-md">
+<div class="flex items-stretch flex-col md:flex-row">
+<div class="bg-surface-container-highest w-full md:w-48 relative overflow-hidden shrink-0">
+<div class="absolute inset-0 bg-cover bg-center transition-transform group-hover:scale-105" data-alt="High-quality professional fitness photography showing a muscular athlete performing a barbell back squat in a modern gym. Atmospheric lighting with warm orange glows against a dark industrial background, sharp focus, cinematic style." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBzzdyTeNl6oAiIcCM9PQbO0-Mvz6uk9LJn9d3Alep0n1fLNJNAGVbDnNWDTNAExJOCWSbjkO8qJgsbk_B0OINX875RJkhkEHcRlvDWWbOwhn9MeRWdaIMvF4R-YZpR_zPdsMe9NfwV_eImaWUw1JBDOuTFYdBdiBcmkoRnMIk9n2AGZuU5yt9tVs4uF7IxGjDwZA0PsP0jTNWLcSQH3oRxX7rEO8TROXSNUKTrN-xQhlj5FAQ3HJHT')"></div>
+<div class="absolute top-2 left-2 bg-secondary/80 text-white p-1 rounded-md drag-handle">
+<span class="material-symbols-outlined text-sm">drag_indicator</span>
+</div>
+</div>
+<div class="flex-1 p-lg">
+<div class="flex justify-between items-start mb-md">
+<div>
+<h4 class="font-headline-md text-headline-md text-on-surface">Sentadilla con Barra</h4>
+<span class="text-caption font-caption text-primary-container bg-primary-fixed/30 px-2 py-0.5 rounded uppercase font-bold">Cuádriceps / Glúteos</span>
+</div>
+<button class="text-on-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-md mb-md">
+<div>
+<label class="text-[10px] font-bold text-on-surface-variant uppercase">Series</label>
+<input class="w-full border border-border rounded-lg px-2 py-1 text-center font-data-mono" type="number" value="4"/>
+</div>
+<div>
+<label class="text-[10px] font-bold text-on-surface-variant uppercase">Reps</label>
+<input class="w-full border border-border rounded-lg px-2 py-1 text-center font-data-mono" type="text" value="8-10"/>
+</div>
+<div>
+<label class="text-[10px] font-bold text-on-surface-variant uppercase">Peso (kg)</label>
+<input class="w-full border border-border rounded-lg px-2 py-1 text-center font-data-mono" type="number" value="80"/>
+</div>
+<div>
+<label class="text-[10px] font-bold text-on-surface-variant uppercase">Descanso</label>
+<input class="w-full border border-border rounded-lg px-2 py-1 text-center font-data-mono" type="text" value="3 min"/>
+</div>
+</div>
+<details class="group/obs">
+<summary class="list-none flex items-center gap-1 text-caption font-label-bold text-primary cursor-pointer hover:underline">
+<span class="material-symbols-outlined text-sm">sticky_note_2</span>
+                                            Ver Notas de Coaching
+                                        </summary>
+<div class="mt-2">
+<textarea class="w-full bg-surface-container border border-border rounded-lg p-2 text-body-sm font-body-sm" rows="2">Mantener la espalda neutra. Bajar hasta que el fémur esté paralelo al suelo. Controlar el descenso (3 seg).</textarea>
+</div>
+</details>
+</div>
+</div>
+</div>
+<!-- Exercise Card 2 -->
+<div class="bg-surface-white border border-border rounded-xl shadow-sm overflow-hidden group transition-all hover:shadow-md">
+<div class="flex items-stretch flex-col md:flex-row">
+<div class="bg-surface-container-highest w-full md:w-48 relative overflow-hidden shrink-0">
+<div class="absolute inset-0 bg-cover bg-center transition-transform group-hover:scale-105" data-alt="Close-up of an athlete performing dumbbell chest press on a bench. The lighting is dramatic, high-contrast, emphasizing muscle texture and metallic weight textures. Modern gym aesthetic with corporate orange highlights." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBXumzC9PjMolByUnjroVrJqRrOTv5MdpMZ4gT_jP4ioMkiClwBMHTH_jxdmcUUg1gQXpgb7ZQ4pa3O7e-7H5um3NGBCwzymUNeZaFcjDli0zcSTLdCp1KwTgZI-i2HYh4glxlUh1z_k5Ju3Y1V5ZZsjeAwtQURZJNYTtZUYRrMcm0YPbvQSgmw51UWCu4dxfUHgyGF2cXBo-upXXnu8dEdLY8rEfTfycCBMmy2BnPxWrZdt9u7IAFf')"></div>
+<div class="absolute top-2 left-2 bg-secondary/80 text-white p-1 rounded-md drag-handle">
+<span class="material-symbols-outlined text-sm">drag_indicator</span>
+</div>
+</div>
+<div class="flex-1 p-lg">
+<div class="flex justify-between items-start mb-md">
+<div>
+<h4 class="font-headline-md text-headline-md text-on-surface">Press con Mancuernas Inclinado</h4>
+<span class="text-caption font-caption text-primary-container bg-primary-fixed/30 px-2 py-0.5 rounded uppercase font-bold">Pectoral Superior</span>
+</div>
+<button class="text-on-surface-variant hover:text-error transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-md mb-md">
+<div>
+<label class="text-[10px] font-bold text-on-surface-variant uppercase">Series</label>
+<input class="w-full border border-border rounded-lg px-2 py-1 text-center font-data-mono" type="number" value="3"/>
+</div>
+<div>
+<label class="text-[10px] font-bold text-on-surface-variant uppercase">Reps</label>
+<input class="w-full border border-border rounded-lg px-2 py-1 text-center font-data-mono" type="text" value="12"/>
+</div>
+<div>
+<label class="text-[10px] font-bold text-on-surface-variant uppercase">Peso (kg)</label>
+<input class="w-full border border-border rounded-lg px-2 py-1 text-center font-data-mono" type="number" value="26"/>
+</div>
+<div>
+<label class="text-[10px] font-bold text-on-surface-variant uppercase">Descanso</label>
+<input class="w-full border border-border rounded-lg px-2 py-1 text-center font-data-mono" type="text" value="90 s"/>
+</div>
+</div>
+<details class="group/obs">
+<summary class="list-none flex items-center gap-1 text-caption font-label-bold text-primary cursor-pointer hover:underline">
+<span class="material-symbols-outlined text-sm">sticky_note_2</span>
+                                            Ver Notas de Coaching
+                                        </summary>
+<div class="mt-2">
+<textarea class="w-full bg-surface-container border border-border rounded-lg p-2 text-body-sm font-body-sm" rows="2">Banco a 30-45 grados. Juntar escápulas contra el banco. Movimiento explosivo en la subida.</textarea>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+<!-- Add Exercise Button -->
+<button class="w-full border-2 border-dashed border-border rounded-xl py-lg flex flex-col items-center justify-center gap-2 text-on-surface-variant hover:border-primary-container hover:text-primary transition-all group">
+<span class="material-symbols-outlined text-3xl group-hover:scale-110 transition-transform">add_box</span>
+<span class="font-label-bold text-label-bold">Agregar Ejercicio</span>
+</button>
+</div>
+<!-- Right: Meta Info & Assigned Students -->
+<aside class="lg:col-span-4 flex flex-col gap-gutter">
+<!-- Assigned Students Card -->
+<section class="bg-surface-white border border-border rounded-xl p-lg shadow-sm">
+<div class="flex justify-between items-center mb-lg">
+<h5 class="font-headline-md text-headline-md text-on-surface">Alumnos Asignados</h5>
+<span class="bg-secondary text-white text-[10px] px-2 py-1 rounded-full font-bold">12 Total</span>
+</div>
+<div class="space-y-4 mb-lg">
+<!-- Student Item 1 -->
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full border border-border" data-alt="Portrait of a young male athlete, athletic build, wearing a grey moisture-wicking t-shirt, determined expression, gym environment in background with soft bokeh, high-quality professional photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyEpLxaHLUfCurkfzn4xH7gV1Ui72v1Os9SxEiAGFg2d4NAUyM8QWuVKBwgqCYrb74ZqJmYA-PicvvXEsCtAaRy9e70iX5JLJSwlcqXOxfyKpIaCIMiFQs0Nyywee9bCcZl16sgqwia_ueZIpSDb1FyVtMZHUYuQr6E2QNhVAuvUG0_CeZSQuAf5lNFQLeVRTouYmjD80eiGyR4yTjA9qpVb3ThtMOp2XkTIr0omQ2-n4HK15-UiTO"/>
+<div>
+<p class="font-label-bold text-label-bold text-on-surface">Javier Méndez</p>
+<p class="text-caption font-caption text-on-surface-variant">Vencimiento: 12/08</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">open_in_new</span>
+</button>
+</div>
+<!-- Student Item 2 -->
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full border border-border" data-alt="Close-up portrait of a fit woman with tied-back hair, wearing high-performance activewear, smiling confidently, bright natural gym lighting, minimalist modern style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_q45Xb0vUGBWwdxMDJS8_ny0nt1m_9N4mKdeUhiYnWcbFLgLX9QVzQHz8i37sDUpan0FcAo0M-DHqBx6y7MZrbscDH18StrOOULy-uFmtSDpSlHapRfnAY-9Oc2i-H8bAdKmBaNqBAvZDKQOdRwAHW9LYWt41dKqXDihCnxCqzhpwOkdI5m3gqSkpEH8rhEIiCKbOpSPXLukc83fs9c2XoU54-ZPYFITLB6lScALKsL5QigwRLDE9"/>
+<div>
+<p class="font-label-bold text-label-bold text-on-surface">Carla Russo</p>
+<p class="text-caption font-caption text-success font-bold uppercase text-[10px]">Al día</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">open_in_new</span>
+</button>
+</div>
+<!-- Student Item 3 -->
+<div class="flex items-center gap-3 opacity-60">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant">person_add</span>
+</div>
+<span class="text-caption font-label-bold italic">Asignar a nuevo alumno...</span>
+</div>
+</div>
+<a class="block w-full text-center border border-border py-2 rounded-lg text-label-bold font-label-bold text-on-surface hover:bg-surface-container transition-colors" href="#">
+                            Gestionar Asignaciones
+                        </a>
+</section>
+<!-- Quick Stats / Insight -->
+<section class="bg-primary-container/10 border border-primary-container/30 rounded-xl p-lg">
+<h5 class="font-label-bold text-label-bold text-on-primary-container mb-md flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">insights</span>
+                            Resumen de Carga
+                        </h5>
+<div class="space-y-3">
+<div class="flex justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant">Volumen Total Ejercicios</span>
+<span class="font-bold text-on-surface">8</span>
+</div>
+<div class="flex justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant">Series Totales</span>
+<span class="font-bold text-on-surface">26</span>
+</div>
+<div class="flex justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant">Tiempo Estimado</span>
+<span class="font-bold text-on-surface">65 min</span>
+</div>
+<div class="pt-2 border-t border-primary-container/20">
+<div class="h-2 w-full bg-surface-white rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-3/4 rounded-full"></div>
+</div>
+<p class="text-[10px] mt-1 text-on-primary-container opacity-70">Intensidad Media: 75% RM Estimado</p>
+</div>
+</div>
+</section>
+</aside>
+</div>
+</div>
+<!-- Spacer for mobile bottom nav -->
+<div class="h-20 lg:hidden"></div>
+</main>
+<!-- BottomNavBar Component (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-md pb-safe bg-surface-white border-t border-border shadow-lg h-16 z-50 rounded-t-xl">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<span class="font-caption text-caption">Rutina</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim" href="#">
+<span class="material-symbols-outlined">event_available</span>
+<span class="font-caption text-caption">Asistencia</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="font-caption text-caption">Reservas</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-caption text-caption">Perfil</span>
+</a>
+</nav>
+<script>
+        // Simple drag and drop visual simulation
+        const handles = document.querySelectorAll('.drag-handle');
+        handles.forEach(handle => {
+            handle.addEventListener('mousedown', () => {
+                handle.closest('.bg-surface-white').classList.add('opacity-50', 'scale-[0.98]', 'border-primary-container');
+            });
+            handle.addEventListener('mouseup', () => {
+                handle.closest('.bg-surface-white').classList.remove('opacity-50', 'scale-[0.98]', 'border-primary-container');
+            });
+        });
+
+        // Routine Editor Interaction
+        const routineNameInput = document.querySelector('input[value="Fuerza Hipertrofia A"]');
+        routineNameInput.addEventListener('focus', () => {
+            routineNameInput.classList.add('bg-surface-container-low', 'px-2');
+        });
+        routineNameInput.addEventListener('blur', () => {
+            routineNameInput.classList.remove('bg-surface-container-low', 'px-2');
+        });
+    </script>
+</body></html>

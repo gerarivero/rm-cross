@@ -1,0 +1,359 @@
+<!DOCTYPE html><html lang="es" class="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed": "#2c1600",
+                    "primary-container": "#e8973a",
+                    "error": "#F44336",
+                    "on-background": "#1a1c1c",
+                    "error-container": "#ffdad6",
+                    "on-secondary": "#ffffff",
+                    "secondary": "#4f6264",
+                    "surface-bright": "#f9f9f9",
+                    "inverse-primary": "#ffb86e",
+                    "surface-container-highest": "#e2e2e2",
+                    "on-surface-variant": "#534436",
+                    "tertiary": "#006684",
+                    "on-secondary-fixed": "#0c1e20",
+                    "surface": "#f9f9f9",
+                    "on-surface": "#1a1c1c",
+                    "surface-white": "#FFFFFF",
+                    "on-tertiary-fixed": "#001f2a",
+                    "on-error-container": "#93000a",
+                    "surface-tint": "#8a5100",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error": "#ffffff",
+                    "inverse-on-surface": "#f1f1f1",
+                    "surface-container-low": "#f3f3f3",
+                    "surface-container-high": "#e8e8e8",
+                    "info": "#2196F3",
+                    "text-muted": "#757575",
+                    "on-primary": "#ffffff",
+                    "on-secondary-fixed-variant": "#384a4c",
+                    "border": "#D0D0D0",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed-dim": "#b6cacc",
+                    "inverse-surface": "#2f3131",
+                    "primary-fixed-dim": "#ffb86e",
+                    "warning": "#FFC107",
+                    "success": "#4CAF50",
+                    "tertiary-container": "#3cb5e2",
+                    "primary-fixed": "#ffdcbd",
+                    "tertiary-fixed": "#bee9ff",
+                    "on-primary-container": "#5c3400",
+                    "outline": "#857464",
+                    "on-tertiary-container": "#004358",
+                    "surface-variant": "#e2e2e2",
+                    "surface-dim": "#dadada",
+                    "background": "#f9f9f9",
+                    "secondary-container": "#cfe3e6",
+                    "secondary-fixed": "#d2e6e8",
+                    "primary": "#8a5100",
+                    "tertiary-fixed-dim": "#69d3ff",
+                    "on-tertiary-fixed-variant": "#004d64",
+                    "surface-container": "#eeeeee",
+                    "outline-variant": "#d8c3b1",
+                    "on-primary-fixed-variant": "#693c00",
+                    "on-secondary-container": "#536668"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "xs": "4px",
+                    "gutter": "24px",
+                    "container-max": "1280px",
+                    "lg": "24px",
+                    "md": "16px",
+                    "sm": "8px",
+                    "xl": "32px"
+            },
+            "fontFamily": {
+                    "label-bold": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "body-sm": ["Hanken Grotesk"],
+                    "display-lg-mobile": ["Hanken Grotesk"],
+                    "caption": ["Hanken Grotesk"],
+                    "data-mono": ["jetbrainsMono"]
+            },
+            "fontSize": {
+                    "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                    "data-mono": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    }catch(_e){}</script><meta charset="utf-8"></head><body class="bg-background text-on-background min-h-screen flex">
+<!-- SideNavBar -->
+<aside class="h-full w-64 fixed left-0 top-0 bg-secondary dark:bg-on-secondary-fixed border-r border-outline-variant shadow-md flex flex-col py-gutter z-50 transition-all duration-200 ease-in-out hidden md:flex">
+<div class="px-md mb-xl"><div class="flex items-center justify-center py-2"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjWU-3hhnSaL1DlSjn7iMhftj8LmfU66azTAAtebPyJME1-9eCiJrCsUOECKd3_U1Yq0UO9FXzTv72W59tRyMgvNl7_bzpa5ShBfWg_0r6O0cXrXtbZX5AHntpd0b7Xe_lWsW-7haE5tNRBmyKz7_ED7XC3csgfN1DliHUpMvsCH7pDyL_SxPNWyUycZiizhZTugt94892JfbKT5FGhjYnS2OlI-Z_JaTDc7jLFaCzan9X6rqfNgxZD3PWWK9Yo7lhQg" alt="Centro RM Logo" class="w-full h-auto object-contain max-h-24"></div></div>
+<nav class="flex-grow space-y-1">
+<a href="#" class="flex items-center text-primary-container font-bold border-l-4 border-primary-container pl-4 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200">
+<span class="material-symbols-outlined mr-3 active-icon" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-bold text-label-bold">Dashboard</span>
+</a>
+<a href="#" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200">
+<span class="material-symbols-outlined mr-3">group</span>
+<span class="font-label-bold text-label-bold">Alumnos</span>
+</a>
+<a href="#" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200">
+<span class="material-symbols-outlined mr-3">payments</span>
+<span class="font-label-bold text-label-bold">Cuotas</span>
+</a>
+<a href="#" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200">
+<span class="material-symbols-outlined mr-3">fitness_center</span>
+<span class="font-label-bold text-label-bold">Rutinas</span>
+</a>
+<a href="#" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200">
+<span class="material-symbols-outlined mr-3">how_to_reg</span>
+<span class="font-label-bold text-label-bold">Asistencia</span>
+</a>
+<a href="#" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200">
+<span class="material-symbols-outlined mr-3">leaderboard</span>
+<span class="font-label-bold text-label-bold">Estadísticas</span>
+</a>
+<a href="#" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200">
+<span class="material-symbols-outlined mr-3">notifications</span>
+<span class="font-label-bold text-label-bold">Notificaciones</span>
+</a>
+<a href="#" class="flex items-center text-on-secondary opacity-80 hover:opacity-100 pl-5 py-3 hover:bg-on-secondary-fixed-variant transition-colors duration-200">
+<span class="material-symbols-outlined mr-3">settings</span>
+<span class="font-label-bold text-label-bold">Configuración</span>
+</a>
+</nav>
+<div class="mt-auto px-md pt-lg border-t border-outline-variant/30">
+<div class="flex items-center space-x-3">
+<img class="w-10 h-10 rounded-full border-2 border-primary-container object-cover" data-alt="Close-up professional portrait of a fitness center manager, athletic build, wearing a clean branded black polo shirt with 'RM' logo, neutral blurred gym background, bright warm lighting, professional photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwcEXOIE5MVfVUpRVv_rv5QVl-YrZaL4LY0FJVwJOw9zZVbezTLgbyAgJs5b8v30I4LN6Z573Tn5QLYO0qvjuHM9U9PHUPjvQVkHnmF9_ZHR1U89yB2dxbrNKpxC-Tkr6Hh6py60ndjBRDAKqpn-xA0ZrJmLLJo8Pxl8BwO_H9qTzZlBbUvFlsEQjbLgoqXWcM48kqEZV5ipO0ebe7nzfRuPUpi-aGni8KWsq1V1LjQr19oodOxwoh">
+<div class="overflow-hidden">
+<p class="text-on-secondary font-label-bold truncate">Admin Profile</p>
+<p class="text-on-secondary opacity-60 text-caption truncate">info@centrorm.com</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-grow md:ml-64 flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="docked full-width top-0 sticky z-40 bg-surface-white dark:bg-surface-container-lowest border-b border-border dark:border-outline-variant shadow-sm flex justify-between items-center px-lg py-md w-full">
+<div class="flex items-center md:hidden">
+<span class="material-symbols-outlined text-primary cursor-pointer">menu</span>
+<span class="font-display-lg-mobile text-display-lg-mobile font-bold text-primary ml-4">Centro RM</span>
+</div>
+<div class="hidden md:block">
+<h2 class="font-headline-md text-headline-md text-primary">Panel de Control</h2>
+</div>
+<div class="flex items-center space-x-lg">
+<div class="relative hidden sm:block">
+<input class="pl-10 pr-4 py-2 border border-border rounded-lg bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary-container outline-none text-body-sm transition-all" placeholder="Buscar alumno..." type="text">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-[20px]">search</span>
+</div>
+<div class="flex items-center space-x-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-all">notifications</span>
+<span class="material-symbols-outlined text-primary cursor-pointer font-bold text-[32px]">account_circle</span>
+<button class="font-label-bold text-label-bold text-on-surface-variant hover:text-primary transition-all">Logout</button>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<div class="p-lg space-y-lg max-w-[1400px] mx-auto w-full">
+<!-- Quick Actions Banner -->
+<section class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md bg-secondary-container/30 p-md rounded-xl border border-secondary-container">
+<div class="space-y-1">
+<h3 class="font-headline-md text-headline-md text-on-secondary-container">Acciones rápidas</h3>
+<p class="text-body-sm text-on-secondary-container opacity-80">Gestión inmediata para el día de hoy.</p>
+</div>
+<div class="flex flex-wrap gap-sm">
+<button class="bg-[#E8973A] text-white px-md py-sm rounded-lg font-label-bold flex items-center shadow-sm hover:brightness-110 transition-all">
+<span class="material-symbols-outlined mr-2">person_add</span>
+                        Nuevo Alumno
+                    </button>
+<button class="bg-[#2C3E40] text-white px-md py-sm rounded-lg font-label-bold flex items-center shadow-sm hover:brightness-110 transition-all">
+<span class="material-symbols-outlined mr-2">payments</span>
+                        Registrar Pago
+                    </button>
+<button class="border border-primary-container text-primary-container px-md py-sm rounded-lg font-label-bold flex items-center hover:bg-primary-container/10 transition-all">
+<span class="material-symbols-outlined mr-2">add_task</span>
+                        Crear Rutina
+                    </button>
+</div>
+</section>
+<!-- KPI Cards Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<!-- KPI: Alumnos Activos -->
+<div class="bg-surface-white p-lg rounded-xl border border-border shadow-sm flex items-center space-x-lg hover:shadow-md transition-all group">
+<div class="bg-primary-container/20 p-md rounded-full text-primary-container group-hover:bg-primary-container group-hover:text-white transition-all">
+<span class="material-symbols-outlined text-[32px]">group</span>
+</div>
+<div>
+<p class="text-on-surface-variant font-label-bold uppercase tracking-wider text-[12px]">Alumnos Activos</p>
+<h4 class="text-display-lg font-bold text-primary">24</h4>
+<p class="text-success text-caption flex items-center mt-1">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span>
+                            +2 este mes
+                        </p>
+</div>
+</div>
+<!-- KPI: Cuotas-->
+<div class="bg-surface-white p-lg rounded-xl border border-border shadow-sm flex items-center space-x-lg hover:shadow-md transition-all group">
+<div class="bg-error/20 p-md rounded-full text-error group-hover:bg-error group-hover:text-white transition-all">
+<span class="material-symbols-outlined text-[32px]">warning</span>
+</div>
+<div>
+<p class="text-on-surface-variant font-label-bold uppercase tracking-wider text-[12px]">Cuotas Vencidas</p>
+<h4 class="text-display-lg font-bold text-error">3</h4>
+<p class="text-on-surface-variant text-caption flex items-center mt-1">
+                            Requiere atención inmediata
+                        </p>
+</div>
+</div>
+<!-- KPI: Asistencia -->
+<div class="bg-surface-white p-lg rounded-xl border border-border shadow-sm flex items-center space-x-lg hover:shadow-md transition-all group">
+<div class="bg-info/20 p-md rounded-full text-info group-hover:bg-info group-hover:text-white transition-all">
+<span class="material-symbols-outlined text-[32px]">calendar_today</span>
+</div>
+<div class="flex-grow">
+<p class="text-on-surface-variant font-label-bold uppercase tracking-wider text-[12px]">Asistencia</p>
+<div class="flex items-baseline space-x-2">
+<h4 class="text-display-lg font-bold text-info">87%</h4>
+<span class="text-body-sm text-on-surface-variant">promedio</span>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full mt-2">
+<div class="bg-info h-full rounded-full" style="width: 87%"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Content: Alerts and Status -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+<!-- Alerts Section -->
+<section class="bg-surface-white rounded-xl border border-border shadow-sm overflow-hidden flex flex-col">
+<div class="p-lg border-b border-border flex justify-between items-center">
+<h3 class="font-headline-md text-headline-md text-on-surface flex items-center">
+<span class="material-symbols-outlined mr-2 text-error">notification_important</span>
+                            Alertas de Cuotas
+                        </h3>
+<a class="text-primary-container font-label-bold text-body-sm hover:underline" href="#">Ver todas</a>
+</div>
+<div class="divide-y divide-border overflow-y-auto custom-scrollbar max-h-[400px]">
+<!-- Item 🔴-->
+<div class="p-md flex items-center justify-between hover:bg-surface-container-lowest transition-colors">
+<div class="flex items-center space-x-md">
+<div class="w-3 h-3 rounded-full bg-error animate-pulse"></div>
+<div>
+<p class="font-label-bold text-body-lg text-on-surface">Juan García</p>
+<p class="text-caption text-on-surface-variant">Vencimiento: 01/10/2023</p>
+</div>
+</div>
+<span class="bg-error-container text-on-error-container px-sm py-1 rounded-full font-label-bold text-[12px]">Vencida</span>
+</div>
+<!-- Item 🟡 -->
+<div class="p-md flex items-center justify-between hover:bg-surface-container-lowest transition-colors">
+<div class="flex items-center space-x-md">
+<div class="w-3 h-3 rounded-full bg-warning"></div>
+<div>
+<p class="font-label-bold text-body-lg text-on-surface">María López</p>
+<p class="text-caption text-on-surface-variant">Vencimiento: 15/10/2023</p>
+</div>
+</div>
+<span class="bg-warning/20 text-warning px-sm py-1 rounded-full font-label-bold text-[12px]">Por vencer</span>
+</div>
+<!-- Item 🔴 -->
+<div class="p-md flex items-center justify-between hover:bg-surface-container-lowest transition-colors">
+<div class="flex items-center space-x-md">
+<div class="w-3 h-3 rounded-full bg-error"></div>
+<div>
+<p class="font-label-bold text-body-lg text-on-surface">Carlos Ruiz</p>
+<p class="text-caption text-on-surface-variant">Vencimiento: 28/09/2023</p>
+</div>
+</div>
+<span class="bg-error-container text-on-error-container px-sm py-1 rounded-full font-label-bold text-[12px]">Vencida</span>
+</div>
+<!-- Item 🟡 -->
+<div class="p-md flex items-center justify-between hover:bg-surface-container-lowest transition-colors">
+<div class="flex items-center space-x-md">
+<div class="w-3 h-3 rounded-full bg-warning"></div>
+<div>
+<p class="font-label-bold text-body-lg text-on-surface">Ana Belén</p>
+<p class="text-caption text-on-surface-variant">Vencimiento: 12/10/2023</p>
+</div>
+</div>
+<span class="bg-warning/20 text-warning px-sm py-1 rounded-full font-label-bold text-[12px]">Por vencer</span>
+</div>
+</div>
+</section>
+<!-- Activity/Routine Preview -->
+<section class="bg-surface-white rounded-xl border border-border shadow-sm overflow-hidden flex flex-col">
+<div class="p-lg border-b border-border">
+<h3 class="font-headline-md text-headline-md text-on-surface">Próximas Sesiones</h3>
+</div>
+<div class="p-lg space-y-md">
+<div class="relative pl-8 before:absolute before:left-3 before:top-2 before:bottom-0 before:w-0.5 before:bg-outline-variant">
+<div class="mb-lg relative">
+<div class="absolute left-[-26px] top-1 w-4 h-4 rounded-full bg-primary-container border-2 border-surface-white ring-4 ring-primary-container/10"></div>
+<p class="text-caption font-label-bold text-primary-container">16:00 - Entrenamiento Funcional</p>
+<p class="text-body-lg font-bold text-on-surface">Grupo A (12 alumnos)</p>
+<p class="text-body-sm text-on-surface-variant">Enfoque: Resistencia cardiovascular y CORE.</p>
+</div>
+<div class="mb-lg relative">
+<div class="absolute left-[-26px] top-1 w-4 h-4 rounded-full bg-secondary border-2 border-surface-white"></div>
+<p class="text-caption font-label-bold text-secondary">18:30 - Levantamiento Olímpico</p>
+<p class="text-body-lg font-bold text-on-surface">Clase Avanzada</p>
+<p class="text-body-sm text-on-surface-variant">Revisión de técnica Snatch.</p>
+</div>
+</div>
+<button class="w-full py-md border-2 border-dashed border-border rounded-xl text-on-surface-variant font-label-bold hover:bg-surface-container-low transition-all">
+                            + Agendar nueva sesión
+                        </button>
+</div>
+</section>
+</div>
+</div>
+<!-- Footer / Bottom Navigation for Mobile -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-white flex justify-around items-center px-md pb-safe py-2 border-t border-border shadow-lg z-50">
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary-container" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-caption text-caption">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim" href="#">
+<span class="material-symbols-outlined">fitness_center</span>
+<span class="font-caption text-caption">Rutina</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim" href="#">
+<span class="material-symbols-outlined">event_available</span>
+<span class="font-caption text-caption">Asistencia</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-caption text-caption">Perfil</span>
+</a>
+</nav>
+</main>
+<script>
+        // Micro-interactions and effects
+        document.querySelectorAll('button, a').forEach(elem => {
+            elem.addEventListener('mousedown', () => {
+                elem.style.transform = 'scale(0.98)';
+            });
+            elem.addEventListener('mouseup', () => {
+                elem.style.transform = 'scale(1)';
+            });
+            elem.addEventListener('mouseleave', () => {
+                elem.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

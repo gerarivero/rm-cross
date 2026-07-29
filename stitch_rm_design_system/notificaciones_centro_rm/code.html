@@ -1,0 +1,339 @@
+<!DOCTYPE html><html lang="es" class="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#2c1600",
+                        "primary-container": "#e8973a",
+                        "error": "#F44336",
+                        "on-background": "#1a1c1c",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#4f6264",
+                        "surface-bright": "#f9f9f9",
+                        "inverse-primary": "#ffb86e",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-surface-variant": "#534436",
+                        "tertiary": "#006684",
+                        "on-secondary-fixed": "#0c1e20",
+                        "surface": "#f9f9f9",
+                        "on-surface": "#1a1c1c",
+                        "surface-white": "#FFFFFF",
+                        "on-tertiary-fixed": "#001f2a",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#8a5100",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#f1f1f1",
+                        "surface-container-low": "#f3f3f3",
+                        "surface-container-high": "#e8e8e8",
+                        "info": "#2196F3",
+                        "text-muted": "#757575",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed-variant": "#384a4c",
+                        "border": "#D0D0D0",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#b6cacc",
+                        "inverse-surface": "#2f3131",
+                        "primary-fixed-dim": "#ffb86e",
+                        "warning": "#FFC107",
+                        "success": "#4CAF50",
+                        "tertiary-container": "#3cb5e2",
+                        "primary-fixed": "#ffdcbd",
+                        "tertiary-fixed": "#bee9ff",
+                        "on-primary-container": "#5c3400",
+                        "outline": "#857464",
+                        "on-tertiary-container": "#004358",
+                        "surface-variant": "#e2e2e2",
+                        "surface-dim": "#dadada",
+                        "background": "#f9f9f9",
+                        "secondary-container": "#cfe3e6",
+                        "secondary-fixed": "#d2e6e8",
+                        "primary": "#8a5100",
+                        "tertiary-fixed-dim": "#69d3ff",
+                        "on-tertiary-fixed-variant": "#004d64",
+                        "surface-container": "#eeeeee",
+                        "outline-variant": "#d8c3b1",
+                        "on-primary-fixed-variant": "#693c00",
+                        "on-secondary-container": "#536668"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "xs": "4px",
+                        "gutter": "24px",
+                        "container-max": "1280px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "sm": "8px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "label-bold": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-sm": ["Hanken Grotesk"],
+                        "display-lg-mobile": ["Hanken Grotesk"],
+                        "caption": ["Hanken Grotesk"],
+                        "data-mono": ["jetbrainsMono"]
+                    },
+                    "fontSize": {
+                        "label-bold": ["14px", { "lineHeight": "20px", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "display-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "caption": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "data-mono": ["13px", { "lineHeight": "18px", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    }catch(_e){}</script><meta charset="utf-8"></head><body class="bg-background text-on-background min-h-screen flex">
+<!-- SideNavBar (Desktop Only) -->
+<aside class="hidden md:flex flex-col h-screen py-gutter bg-secondary dark:bg-on-secondary-fixed text-on-secondary border-r border-outline-variant shadow-md fixed left-0 top-0 w-64 z-50">
+<div class="px-lg mb-xl">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxqY3hzJcC2LQmtaQxLIQFYfFVckQ5RONfIm0GdoNcKdjUFWI1Ww2VL-tbBcFu-_7N7sSpd_zsNiMAzsK07uAPQGt7SoALB2ST-VcS8bweoO4fqgSV2nb9LZOYWS3Y2mWfPZsNU5mMnwP6VdkfScO_3xQfOEpwZsTDKATJuSlbcYwZem9q8hWEwD4mHOuhsZDwZnjAfJ34Puw1RUX4G82LoNtELzlPOyShVxYUY22wLDmaHof_ok-yEQR2G14h8p2spA" alt="Centro RM Logo" class="w-full h-auto mb-2">
+<p class="font-label-bold text-label-bold opacity-80 uppercase tracking-widest mt-1">Administración</p>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Loop through tab_labels from JSON -->
+<a href="#" class="flex items-center px-5 py-3 text-on-secondary opacity-80 hover:opacity-100 hover:bg-on-secondary-fixed-variant transition-colors group">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+<span class="font-label-bold text-label-bold">Dashboard</span>
+</a>
+<a href="#" class="flex items-center px-5 py-3 text-on-secondary opacity-80 hover:opacity-100 hover:bg-on-secondary-fixed-variant transition-colors group">
+<span class="material-symbols-outlined mr-3">group</span>
+<span class="font-label-bold text-label-bold">Alumnos</span>
+</a>
+<a href="#" class="flex items-center px-5 py-3 text-on-secondary opacity-80 hover:opacity-100 hover:bg-on-secondary-fixed-variant transition-colors group">
+<span class="material-symbols-outlined mr-3">payments</span>
+<span class="font-label-bold text-label-bold">Cuotas</span>
+</a>
+<a href="#" class="flex items-center px-5 py-3 text-on-secondary opacity-80 hover:opacity-100 hover:bg-on-secondary-fixed-variant transition-colors group">
+<span class="material-symbols-outlined mr-3">fitness_center</span>
+<span class="font-label-bold text-label-bold">Rutinas</span>
+</a>
+<a href="#" class="flex items-center px-5 py-3 text-on-secondary opacity-80 hover:opacity-100 hover:bg-on-secondary-fixed-variant transition-colors group">
+<span class="material-symbols-outlined mr-3">how_to_reg</span>
+<span class="font-label-bold text-label-bold">Asistencia</span>
+</a>
+<a href="#" class="flex items-center px-5 py-3 text-on-secondary opacity-80 hover:opacity-100 hover:bg-on-secondary-fixed-variant transition-colors group">
+<span class="material-symbols-outlined mr-3">leaderboard</span>
+<span class="font-label-bold text-label-bold">Estadísticas</span>
+</a>
+<a href="#" class="flex items-center px-4 py-3 text-primary-container font-bold border-l-4 border-primary-container pl-4 bg-on-secondary-fixed-variant">
+<span class="material-symbols-outlined mr-3">notifications</span>
+<span class="font-label-bold text-label-bold">Notificaciones</span>
+</a>
+<a href="#" class="flex items-center px-5 py-3 text-on-secondary opacity-80 hover:opacity-100 hover:bg-on-secondary-fixed-variant transition-colors group">
+<span class="material-symbols-outlined mr-3">settings</span>
+<span class="font-label-bold text-label-bold">Configuración</span>
+</a>
+</nav>
+<div class="mt-auto px-lg pt-lg border-t border-white/10 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold overflow-hidden shadow-inner">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a fitness center administrator, middle-aged with a friendly smile, wearing a professional athletic polo shirt. The background is a clean, modern gym environment with soft bokeh, high-key natural lighting, and a warm, inviting corporate management aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuACRjeZDkWPCqKEh0g22Wo0BarS4Y3JePp10rOvfmrI9lh8RC_iC_-UsAx9AJ8XodZiCPNotnXbTtZ5xQbI-ecbHLiOZUQco_wM8sK99pAzWmXpIoK-jwarwxBsV1KHjr7wtRzuwrqmfVkbB07Fhcqa5wiNPG1Y0CwOifdg3E49EO2xfgBwYOMrlUEMV1_EgOkXtuetQZhm55_z-9k3bndqUekkfNfxDYpiRutOqB429t7hcVuuhpw_">
+</div>
+<div>
+<p class="font-label-bold text-label-bold">Admin Profile</p>
+<p class="text-[10px] opacity-60 uppercase">Manager Nivel 1</p>
+</div>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="flex-1 md:ml-64 flex flex-col pb-20 md:pb-0">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-lg py-md w-full bg-surface-white dark:bg-surface-container-lowest border-b border-border dark:border-outline-variant sticky top-0 z-40 shadow-sm">
+<div class="flex items-center gap-4">
+<button class="md:hidden p-2 hover:bg-surface-container rounded-full">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h2 class="font-display-lg-mobile md:font-headline-md text-display-lg-mobile md:text-headline-md font-bold text-primary dark:text-primary-container">Notificaciones</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center bg-surface-container-low px-4 py-2 rounded-full border border-border">
+<span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm text-on-surface font-body-sm w-48" placeholder="Buscar alertas..." type="text">
+</div>
+<button class="p-2 text-on-surface-variant hover:text-primary-container transition-all">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+<button class="hidden lg:flex px-4 py-2 bg-secondary text-on-secondary rounded-lg font-label-bold text-label-bold hover:bg-secondary-fixed-variant transition-colors">
+                    Logout
+                </button>
+</div>
+</header>
+<!-- Content Area -->
+<section class="p-gutter max-w-container-max mx-auto w-full">
+<!-- Summary Stats Bento Grid Section -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-gutter">
+<div class="md:col-span-2 bg-surface-white border border-border p-lg rounded-xl shadow-sm flex flex-col justify-between">
+<div>
+<span class="px-2 py-1 bg-error-container text-on-error-container text-[10px] font-bold rounded uppercase tracking-wider mb-2 inline-block">Estado Crítico</span>
+<h3 class="font-headline-md text-headline-md mb-2">Resumen de Alertas</h3>
+<p class="text-on-surface-variant font-body-sm text-body-sm">Tienes 3 pagos vencidos hace más de 48hs que requieren atención inmediata del staff administrativo.</p>
+</div>
+<div class="flex gap-4 mt-4">
+<div class="flex flex-col">
+<span class="text-display-lg font-bold text-error">03</span>
+<span class="text-[10px] text-muted uppercase">Urgentes</span>
+</div>
+<div class="flex flex-col">
+<span class="text-display-lg font-bold text-warning">12</span>
+<span class="text-[10px] text-muted uppercase">Recordatorios</span>
+</div>
+</div>
+</div>
+<div class="md:col-span-2 relative overflow-hidden bg-primary text-on-primary p-lg rounded-xl shadow-md group">
+<div class="relative z-10">
+<h3 class="font-headline-md text-headline-md mb-1">Motivación del Día</h3>
+<p class="font-body-lg text-body-lg italic opacity-90">"La disciplina es el puente entre las metas y los logros. ¡Sigue impulsando a tus alumnos!"</p>
+<button class="mt-4 px-4 py-2 bg-white text-primary rounded font-label-bold text-label-bold hover:shadow-lg transition-all active:scale-95">
+                            Ver Campaña Promo
+                        </button>
+</div>
+<!-- Decorative background element -->
+<div class="absolute -right-4 -bottom-4 opacity-20 transform group-hover:scale-110 transition-transform duration-700">
+<span class="material-symbols-outlined text-[120px]" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+</div>
+</div>
+</div>
+<!-- Tabs / Filter Logic -->
+<div class="flex items-center gap-md mb-md overflow-x-auto pb-2 scrollbar-hide">
+<button class="px-4 py-2 bg-primary-container text-on-primary-container rounded-full font-label-bold text-label-bold whitespace-nowrap">Todas (24)</button>
+<button class="px-4 py-2 bg-surface-container-high text-on-surface-variant hover:bg-error-container hover:text-on-error-container rounded-full font-label-bold text-label-bold transition-colors whitespace-nowrap">Urgentes</button>
+<button class="px-4 py-2 bg-surface-container-high text-on-surface-variant hover:bg-secondary-container hover:text-on-secondary-container rounded-full font-label-bold text-label-bold transition-colors whitespace-nowrap">Recordatorios</button>
+<button class="px-4 py-2 bg-surface-container-high text-on-surface-variant hover:bg-tertiary-container hover:text-on-tertiary-container rounded-full font-label-bold text-label-bold transition-colors whitespace-nowrap">Promocionales</button>
+</div>
+<!-- Notifications-->
+<div class="space-y-sm">
+<!-- RED ALERT: Urgent -->
+<article class="notification-card bg-surface-white border border-border rounded-lg p-md flex gap-4 items-start shadow-sm border-l-4 border-l-error">
+<div class="p-2 bg-error-container text-error rounded-xl">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h4 class="font-label-bold text-label-bold text-on-background">Pago Vencido: Juan Perez</h4>
+<span class="text-caption font-caption text-muted">Hace 2 horas</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-1">El alumno tiene la cuota de 'Musculación' vencida desde el 05/10. Su acceso ha sido restringido automáticamente.</p>
+<div class="flex gap-2 mt-3">
+<button class="px-3 py-1 bg-error text-white text-caption font-label-bold rounded hover:bg-red-700">Llamar Alumno</button>
+<button class="px-3 py-1 border border-border text-on-surface-variant text-caption font-label-bold rounded hover:bg-surface-container-low">Ver Perfil</button>
+</div>
+</div>
+</article>
+<!-- YELLOW ALERT: Reminder -->
+<article class="notification-card bg-surface-white border border-border rounded-lg p-md flex gap-4 items-start shadow-sm border-l-4 border-l-warning">
+<div class="p-2 bg-amber-100 text-warning rounded-xl">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications_active</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h4 class="font-label-bold text-label-bold text-on-background">Mantenimiento de Máquinas</h4>
+<span class="text-caption font-caption text-muted">Ayer, 18:45</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-1">Recordatorio: La revisión mensual de la zona de Cardio está programada para mañana a las 09:00 AM.</p>
+<div class="flex gap-2 mt-3">
+<button class="px-3 py-1 bg-secondary text-on-secondary text-caption font-label-bold rounded hover:bg-on-secondary-fixed-variant">Confirmar Turno</button>
+</div>
+</div>
+</article>
+<!-- BLUE ALERT: Promo/Motivational -->
+<article class="notification-card bg-surface-white border border-border rounded-lg p-md flex gap-4 items-start shadow-sm border-l-4 border-l-tertiary">
+<div class="p-2 bg-tertiary-container/20 text-tertiary rounded-xl">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">campaign</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h4 class="font-label-bold text-label-bold text-on-background">Campaña "Verano Fit"</h4>
+<span class="text-caption font-caption text-muted">Mar 10</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-1">¡Nueva promoción disponible! Ofrece un 20% de descuento en planes anuales para atraer nuevos socios este mes.</p>
+<div class="flex gap-2 mt-3">
+<button class="px-3 py-1 bg-tertiary text-on-tertiary text-caption font-label-bold rounded hover:bg-on-tertiary-fixed-variant">Compartir en Redes</button>
+</div>
+</div>
+</article>
+<!-- Motivational / Image Focus Card-->
+<article class="notification-card bg-surface-white border border-border rounded-lg overflow-hidden shadow-sm flex flex-col md:flex-row">
+<div class="w-full md:w-48 h-32 md:h-auto">
+<div class="w-full h-full" data-alt="An ultra-modern, high-performance gym interior during sunrise. Golden natural light floods through massive industrial windows, illuminating professional strength training equipment and premium rubber flooring. The aesthetic is clean, energetic, and sophisticated, utilizing a corporate color palette of deep grays, whites, and warm orange accents to evoke a sense of elite athletic excellence and focus." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD0z54AUCK_k3moZMi_-u-DYCdR0GfX13lsQwGrrt9Q9KiktrDSuxsdPVSWiDDggApxUXFnr7cI69M4niJ_-GLVciuzDl-6gf6foHmogJ72_f2DhmjX8VBAC1dM87wMEERIclscT56QpdZtLW7KQIycXIs7dut4NVtOzDJL0LAMFF1NehVLV3Klt0IpDcBRhZb7UDx2SSenPQQIckYBuXiJFyeh8-Uqz0oNqzAoOTYuel98Johj8Viu')"></div>
+</div>
+<div class="p-md flex-1">
+<div class="flex justify-between items-start">
+<h4 class="font-label-bold text-label-bold text-on-background">¡Nuevas Metas Alcanzadas!</h4>
+<span class="text-caption font-caption text-muted">Lunes</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-1">El Centro RM ha superado los 200 alumnos activos esta semana. ¡Felicita a tu equipo por el excelente trabajo!</p>
+<button class="mt-3 text-primary text-caption font-label-bold hover:underline">Ver reporte de crecimiento</button>
+</div>
+</article>
+<!-- Urgent: Stock Alert -->
+<article class="notification-card bg-surface-white border border-border rounded-lg p-md flex gap-4 items-start shadow-sm border-l-4 border-l-error">
+<div class="p-2 bg-error-container text-error rounded-xl">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h4 class="font-label-bold text-label-bold text-on-background">Stock Bajo: Proteína Whey</h4>
+<span class="text-caption font-caption text-muted">Hace 4 horas</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-1">Solo quedan 2 unidades disponibles en recepción. Es necesario realizar un pedido de reposición hoy.</p>
+<div class="flex gap-2 mt-3">
+<button class="px-3 py-1 bg-primary-container text-on-primary-container text-caption font-label-bold rounded hover:brightness-95">Pedir Stock</button>
+</div>
+</div>
+</article>
+</div>
+<!-- Pagination / Load More -->
+<div class="mt-xl flex justify-center pb-gutter">
+<button class="px-lg py-md border border-border rounded-full font-label-bold text-label-bold text-on-surface-variant hover:bg-surface-container-low transition-colors flex items-center gap-2">
+                    Cargar más notificaciones
+                    <span class="material-symbols-outlined text-[18px]">expand_more</span>
+</button>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-md pb-safe bg-surface-white border-t border-border shadow-lg z-50 rounded-t-xl h-16">
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">fitness_center</span>
+<span class="font-caption text-caption">Rutina</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">event_available</span>
+<span class="font-caption text-caption">Asistencia</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="font-caption text-caption">Reservas</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications</span>
+<span class="font-caption text-caption">Avisos</span>
+</a>
+</nav>
+<!-- Micro-interaction script -->
+<script>
+        document.querySelectorAll('.notification-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.classList.add('shadow-md');
+            });
+            card.addEventListener('mouseleave', () => {
+                card.classList.remove('shadow-md');
+            });
+        });
+    </script>
+
+</body></html>
