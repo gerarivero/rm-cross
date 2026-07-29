@@ -1,7 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { buscarAdminAutorizador } from "@/lib/supabase/admin";
 import { createServerClient } from "@/lib/supabase/server";
+import { crearCuotaInicial } from "../cuotas/actions";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -17,14 +19,6 @@ function opcionalNumero(formData: FormData, campo: string): number | null {
   if (valor === null) return null;
   const num = Number(valor);
   return Number.isNaN(num) ? null : num;
-}
-
-// Todavía no hay login/auth real (createServerClient usa la service role key sin
-// sesión de usuario). Hasta que exista, el "profesor que autoriza" un precio
-// promocional es el usuario admin sembrado por la migración 0002.
-async function buscarAdminAutorizador(supabase: SupabaseClient): Promise<string | null> {
-  const { data } = await supabase.from("usuario").select("id").eq("es_admin", true).limit(1).maybeSingle();
-  return data?.id ?? null;
 }
 
 const POSTGRES_FOREIGN_KEY_VIOLATION = "23503";
@@ -145,21 +139,49 @@ export async function crearAlumno(formData: FormData): Promise<ActionResult> {
     }
   }
 
-  const { error: inscripcionError } = await supabase.from("inscripcion").insert({
-    alumno_id: alumno.id,
-    plan_id,
-    fecha_inicio: new Date().toISOString().slice(0, 10),
-    precio_acordado,
-    promocion_id,
-    autorizado_por,
-  });
+  const fechaInicio = new Date().toISOString().slice(0, 10);
 
-  if (inscripcionError) {
-    return { ok: false, error: `Alumno creado, pero falló la asignación del plan: ${inscripcionError.message}` };
+  const { data: inscripcion, error: inscripcionError } = await supabase
+    .from("inscripcion")
+    .insert({
+      alumno_id: alumno.id,
+      plan_id,
+      fecha_inicio: fechaInicio,
+      precio_acordado,
+      promocion_id,
+      autorizado_por,
+    })
+    .select("id")
+    .single();
+
+  if (inscripcionError || !inscripcion) {
+    return { ok: false, error: `Alumno creado, pero falló la asignación del plan: ${inscripcionError?.message ?? "error desconocido"}` };
+  }
+
+  // La cuota se cobra por precio_acordado si se aplicó promoción; si no, por el
+  // precio de lista vigente del plan (mismo patrón que ya usa src/app/planes/data.ts).
+  let montoCuota = precio_acordado;
+  if (montoCuota === null) {
+    const { data: precioVigenteRow, error: precioError } = await supabase
+      .from("plan_precio_historico")
+      .select("precio")
+      .eq("plan_id", plan_id)
+      .is("vigente_hasta", null)
+      .maybeSingle();
+    if (precioError) {
+      return { ok: false, error: `Alumno y plan asignados, pero no se pudo leer el precio del plan: ${precioError.message}` };
+    }
+    montoCuota = precioVigenteRow?.precio ?? null;
+  }
+
+  if (montoCuota !== null) {
+    const { error: cuotaError } = await crearCuotaInicial(supabase, inscripcion.id, montoCuota, fechaInicio);
+    if (cuotaError) return { ok: false, error: `Alumno y plan asignados, pero ${cuotaError}` };
   }
 
   revalidatePath("/alumnos");
   revalidatePath("/planes");
+  revalidatePath("/cuotas");
   return { ok: true };
 }
 

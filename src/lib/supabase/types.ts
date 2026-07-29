@@ -110,3 +110,44 @@ export type PlanDetalle = PlanConPrecio & {
 export type AlumnoDetalle = AlumnoConPlan & {
   promocion_nombre: string | null;
 };
+
+export type EstadoCuota = "adeudada" | "pagada" | "vencida" | "anulada";
+
+export type Cuota = {
+  id: string;
+  inscripcion_id: string;
+  periodo_desde: string;
+  periodo_hasta: string;
+  fecha_vencimiento: string;
+  monto_base: number;
+  recargo_aplicado: number;
+  estado: EstadoCuota;
+  creado_en: string;
+};
+
+export type ConfiguracionPagos = {
+  id: string;
+  dias_gracia: number;
+  tipo_recargo: "porcentaje" | "monto_fijo";
+  valor_recargo: number;
+};
+
+export type MedioPago = "efectivo" | "transferencia" | "mercadopago" | "tarjeta";
+
+export type Pago = {
+  id: string;
+  cuota_id: string;
+  monto: number;
+  fecha_pago: string;
+  medio: MedioPago;
+  referencia: string | null;
+};
+
+// Vista de lista que usa la pantalla de Cuotas: cuota + alumno + plan, con el
+// estado/recargo ya resueltos "al vuelo" (ver src/app/cuotas/estado.ts).
+export type CuotaConDetalle = Cuota & {
+  alumno: Pick<Alumno, "id" | "dni" | "nombre" | "apellido">;
+  plan: Pick<Plan, "id" | "nombre">;
+  estado_efectivo: EstadoCuota;
+  recargo_efectivo: number;
+};

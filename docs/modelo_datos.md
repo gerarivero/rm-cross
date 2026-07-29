@@ -6,12 +6,17 @@ precios, cuotas con prorrateo, pagos, asistencia (alumnos y profesores), reserva
 rutinas y seguimiento físico.
 
 > **Estado de implementación:** este documento describe el modelo completo (algunas
-> tablas todavía son aspiracionales, ej. `profesor`, `clase`, `cuota`, `rutina`).
+> tablas todavía son aspiracionales, ej. `profesor`, `clase`, `rutina`).
 > Lo ya migrado a la base real vive en `supabase/migrations/`:
 > `0001_planes.sql` (disciplina, usuario mínimo, plan + precios, promocion, alumno
-> mínimo, inscripcion) y `0002_alumnos_promociones.sql` (turno, alumno completo con
-> DNI, `promocion_plan`, seed de un usuario admin). Donde el código real difiere de
-> este doc (por simplificación o por no estar construido todavía), se aclara inline.
+> mínimo, inscripcion), `0002_alumnos_promociones.sql` (turno, alumno completo con
+> DNI, `promocion_plan`, seed de un usuario admin), `0003_fotos_alumno.sql`
+> (foto_inicial_url/foto_actual_url + bucket de Storage) y `0004_cuotas.sql`
+> (`configuracion_pagos`, `cuota`, `pago`). Donde el código real difiere de este doc
+> (por simplificación o por no estar construido todavía), se aclara inline — el caso
+> más importante es **cuotas**: lo implementado usa un ciclo por aniversario sin
+> prorrateo (sección 3 más abajo), distinto del ciclo por mes calendario con
+> prorrateo que describía originalmente este documento.
 
 ---
 
@@ -223,65 +228,45 @@ create table reserva (
 );
 
 -- =========================================================
--- CONFIGURACIÓN DE VENCIMIENTOS Y RECARGOS
+-- CONFIGURACIÓN DE VENCIMIENTOS, CUOTAS Y PAGOS
+-- Implementado tal cual en supabase/migrations/0004_cuotas.sql — ver sección 3
+-- para el motor de estados (ciclo por aniversario, sin prorrateo, sin cron).
 -- =========================================================
 
--- Fila única (o versionada por vigente_desde si en el futuro cambia el criterio).
--- Ejemplo: dias_gracia=5, tipo_recargo='porcentaje', valor_recargo=10
---   -> cuota vence el 10, queda 'adeudada' del 10 al 15, si al día 16 no hay pago
---      pasa a 'vencida' y se le suma 10% de recargo sobre monto_final.
-create type tipo_recargo as enum ('porcentaje', 'monto_fijo');
-
+-- Fila única. Seed: dias_gracia=10, tipo_recargo='porcentaje', valor_recargo=10.
 create table configuracion_pagos (
   id              uuid primary key default gen_random_uuid(),
-  dias_gracia     smallint not null default 5,
-  tipo_recargo    tipo_recargo not null default 'porcentaje',
+  dias_gracia     smallint not null default 10,
+  tipo_recargo    text not null default 'porcentaje' check (tipo_recargo in ('porcentaje', 'monto_fijo')),
   valor_recargo   numeric(12,2) not null default 10,
-  vigente_desde   date not null default current_date,
-  activo          boolean not null default true
+  actualizado_en  timestamptz not null default now()
 );
 
--- =========================================================
--- CUOTAS, PAGOS Y PRORRATEO
--- =========================================================
-
--- 'adeudada': generada y sin pago, todavía dentro del rango de gracia post-vencimiento.
--- 'vencida': pasó el rango de gracia sin pago -> se le aplica recargo.
 create type estado_cuota as enum ('adeudada', 'pagada', 'vencida', 'anulada');
 
-create type motivo_cuota as enum (
-  'alta', 'mensual', 'cambio_plan_saliente', 'cambio_plan_entrante', 'baja'
-);
-
+-- periodo_desde = fecha_inicio de la inscripción; periodo_hasta = fecha_vencimiento
+-- = periodo_desde + 1 mes (ciclo por aniversario). Sin campos de prorrateo: siempre
+-- se cobra monto_base completo. recargo_aplicado queda en 0 hasta que se registra
+-- un pago fuera de la ventana de gracia (ver src/app/cuotas/estado.ts).
 create table cuota (
   id                  uuid primary key default gen_random_uuid(),
   inscripcion_id      uuid not null references inscripcion(id),
-  periodo             date not null,             -- primer día del mes que factura, ej 2026-08-01
-  motivo              motivo_cuota not null default 'mensual',
-  monto_base          numeric(12,2) not null,     -- precio de lista del plan vigente
-  es_prorrateada      boolean not null default false,
-  dias_del_mes        smallint,                   -- solo si es_prorrateada
-  dias_facturados     smallint,                   -- solo si es_prorrateada
-  monto_final         numeric(12,2) not null,      -- monto_base o el prorrateado, sin recargo
+  periodo_desde       date not null,
+  periodo_hasta       date not null,
   fecha_vencimiento   date not null,
-  estado              estado_cuota not null default 'adeudada',
-  fecha_paso_a_vencida date,                       -- se completa cuando estado pasa a 'vencida'
+  monto_base          numeric(12,2) not null check (monto_base > 0),
   recargo_aplicado    numeric(12,2) not null default 0,
+  estado              estado_cuota not null default 'adeudada',
   creado_en           timestamptz not null default now(),
-  unique (inscripcion_id, periodo, motivo)
+  unique (inscripcion_id, periodo_desde)
 );
-
--- monto_total_a_pagar = monto_final + recargo_aplicado (calculado en el backend, no columna generada
--- para poder auditar el detalle del recargo tal como se cobró)
-
-create type medio_pago as enum ('efectivo', 'transferencia', 'mercadopago', 'tarjeta');
 
 create table pago (
   id              uuid primary key default gen_random_uuid(),
   cuota_id        uuid not null references cuota(id),
   monto           numeric(12,2) not null,
   fecha_pago      timestamptz not null default now(),
-  medio           medio_pago not null,
+  medio           text not null check (medio in ('efectivo', 'transferencia', 'mercadopago', 'tarjeta')),
   referencia      text,                          -- nro. de operación MP / transferencia
   registrado_por  uuid references usuario(id)
 );
@@ -390,96 +375,93 @@ create table notificacion (
 
 ---
 
-## 3. Motor de estados de cuota y recargos por mora
+## 3. Motor de estados de cuota y recargos por mora (implementado, `0004_cuotas.sql`)
 
-Tres estados visibles para el admin (coinciden con lo que pidió el profesor principal):
-**Pagada**, **Adeudada**, **Vencida** (+ `anulada` para casos administrativos, ej. baja
-retroactiva).
+> Esta sección reemplaza el diseño original de más abajo (ciclo por mes calendario con
+> prorrateo). Definición final, cerrada con el profesor principal: **ciclo por
+> aniversario, sin prorrateo**.
 
-**Transición de estados** (evaluada por un job diario — ver más abajo):
+**Ciclo por aniversario:** cada cuota cubre 1 mes exacto desde `inscripcion.fecha_inicio`
+(no desde el 1º del mes calendario). La cuota 1 va de `fecha_inicio` a
+`fecha_inicio + 1 mes` (`periodo_desde` / `periodo_hasta`, calculados con
+`sumarMeses()` en `src/app/cuotas/estado.ts`, que respeta fin de mes: 31/ene + 1 mes →
+28 o 29/feb). `fecha_vencimiento = periodo_hasta`.
+
+**Sin prorrateo:** la inscripción siempre genera la cuota por el monto completo —
+`inscripcion.precio_acordado` si se aplicó una promoción al dar de alta, o si no el
+precio vigente del plan en `plan_precio_historico`. Nunca se cobra un monto parcial.
+(El profesor principal pidió originalmente la opción de prorratear el primer mes, pero
+al no encajar con un ciclo por aniversario —no hay período parcial que prorratear—
+se descartó explícitamente a favor de este modelo más simple.)
+
+Tres estados visibles para el admin: **Pagada**, **Adeudada**, **Vencida** (+ `anulada`
+reservado para casos administrativos, sin uso todavía).
 
 ```
 fecha_actual ≤ fecha_vencimiento + dias_gracia   →  ADEUDADA  (sin recargo)
 fecha_actual > fecha_vencimiento + dias_gracia   →  VENCIDA   (con recargo)
-pago registrado que cubre el total                →  PAGADA   (en cualquier momento)
+pago registrado                                   →  PAGADA   (en cualquier momento)
 ```
 
-**Cálculo del recargo**, al momento en que una cuota pasa a `vencida`:
+`dias_gracia` por defecto es **10** (`configuracion_pagos`, editable desde la pantalla
+de Cuotas).
+
+**Cálculo del recargo:**
 
 ```
-si tipo_recargo = 'porcentaje':  recargo_aplicado = monto_final * (valor_recargo / 100)
-si tipo_recargo = 'monto_fijo':  recargo_aplicado = valor_recargo
-
-monto_total_a_pagar = monto_final + recargo_aplicado
+si tipo_recargo = 'porcentaje':  recargo = monto_base * (valor_recargo / 100)
+si tipo_recargo = 'monto_fijo':  recargo = valor_recargo
 ```
 
-El recargo se calcula **una sola vez**, en el momento de la transición a `vencida`, y
-queda guardado en `cuota.recargo_aplicado` (no se recalcula día a día) — así el monto a
-cobrar es estable y auditable aunque el admin cambie la configuración después. Si en el
-futuro el gimnasio quiere recargos que se acumulan cada N días de mora adicionales, es
-una variante a definir con vos más adelante (no incluida en el MVP).
+**Sin cron job (decisión técnica):** no hay infraestructura de tareas programadas
+todavía, así que en vez de un job diario que actualice `cuota.estado` a `vencida` día a
+día, el estado `Vencida` y el recargo se **calculan al vuelo** con la función pura
+`calcularEstadoYRecargo()` (`src/app/cuotas/estado.ts`), tanto para mostrar la lista de
+cuotas como en el momento exacto de registrar un pago — ahí es cuando el recargo se
+calcula de verdad y se persiste en `cuota.recargo_aplicado`, quedando fijo para siempre
+aunque después cambie la configuración. Mientras nadie paga, la fila en la base sigue
+diciendo `adeudada` aunque ya haya pasado la ventana de gracia — es coherente: el dato
+derivado (lo que se ve en pantalla) es correcto, lo único que no existe es un proceso en
+background que "cierre" filas viejas. El día que haya una Supabase Edge Function con
+cron, se puede sumar ese job sin cambiar la lógica de cálculo.
 
-**Implementación:** un job diario (cron / Supabase Edge Function programada) recorre las
-cuotas en estado `adeudada` cuya `fecha_vencimiento + dias_gracia < hoy`, las pasa a
-`vencida`, calcula `recargo_aplicado` con la `configuracion_pagos` vigente, y completa
-`fecha_paso_a_vencida`. También dispara la notificación `cuota_vencida` (módulo G).
+**Precio promocional (por inscripción):** si la `inscripcion` tiene `precio_acordado`
+seteado, ese valor reemplaza al precio de lista como `monto_base` de la cuota. Solo un
+profesor con `es_admin = true` puede cargarlo (por eso `autorizado_por` es obligatorio
+cuando se define uno) — mismo workaround temporal sin auth real que se explica en la
+sección 6.
+
+**Fuera de alcance por ahora:** la generación automática de la cuota del mes 2, 3, etc.
+(hoy solo se genera la cuota 1 al dar de alta al alumno) y el comprobante de pago
+(PDF/envío, ya maquetado en Stitch pero no construido).
 
 ---
 
-## 4. Lógica de prorrateo (por días del mes)
+## 4. Diseño original de prorrateo (no implementado, referencia histórica)
 
-Regla acordada: **prorrateo por días calendario del mes**.
+> **Superado por la sección 3.** Esta era la propuesta inicial (ciclo por mes
+> calendario, con prorrateo en altas/bajas a mitad de mes) antes de que el profesor
+> principal confirmara el ciclo por aniversario sin prorrateo. Se deja documentada por
+> si en el futuro el gimnasio prefiere volver a un ciclo calendario — el cambio de plan
+> con dos cuotas prorrateadas en particular seguía sin implementarse de todos modos
+> (ver "Fuera de alcance" de la sección 3).
+
+Regla original: **prorrateo por días calendario del mes**.
 
 ```
 monto_final = round( (monto_base / dias_del_mes) * dias_facturados , 2 )
 ```
 
-- `dias_del_mes`: cantidad de días del mes calendario en el que se genera la cuota
-  (28/29/30/31, usar `extract(day from (date_trunc('month', periodo) + interval '1 month - 1 day'))`).
+- `dias_del_mes`: cantidad de días del mes calendario en el que se genera la cuota.
 - `dias_facturados`: desde `fecha_inicio` de la inscripción (inclusive) hasta el fin de
   ese mes calendario (inclusive).
-- Se aplica **solo** en el primer período de cada inscripción (alta a mitad de mes) y en
-  el último período si hay baja a mitad de mes con `fecha_fin` seteada. Los meses
-  completos intermedios facturan `monto_base` sin prorrateo.
-- `monto_base` toma el precio vigente de `plan_precio_historico` para la fecha del
-  período, no el precio "actual" del plan — así un cambio de precio no altera cuotas ya
-  emitidas.
+- Se aplicaría solo en el primer período de cada inscripción y en el último si hay baja
+  a mitad de mes. Los meses completos intermedios facturarían `monto_base` sin
+  prorrateo.
 
-**Precio promocional (por inscripción):** si la `inscripcion` tiene `precio_acordado`
-seteado, ese valor reemplaza al precio de lista como `monto_base` de todas las cuotas de
-esa inscripción — el prorrateo se sigue calculando igual, solo cambia la base:
-
-```
-monto_base = inscripcion.precio_acordado ?? precio_vigente(plan, período)
-```
-
-Solo un profesor con `es_admin = true` puede cargar `precio_acordado` (por eso
-`autorizado_por` es obligatorio cuando se define uno). Esto cubre el caso de
-promociones puntuales al dar de alta a un alumno (ej. "Promo Verano", convenios,
-descuentos por grupo familiar) sin tener que crear un plan nuevo en el catálogo por
-cada excepción de precio.
-
-**Cambio de plan a mitad de mes (definido):** se generan **dos cuotas prorrateadas**,
-una por cada plan, ambas dentro del mismo período. El modelo ya lo soporta sin cambios
-de estructura, porque un cambio de plan es en realidad **cerrar una inscripción y abrir
-otra**:
-
-1. Se actualiza la `inscripcion` vigente: `fecha_fin = día_del_cambio - 1`, `estado = 'finalizada'`.
-   → Esto genera su cuota final prorrateada (`monto_base` del plan viejo, días desde el
-   1º del mes o desde el inicio de la inscripción hasta `fecha_fin`).
-2. Se crea una nueva `inscripcion` con el plan nuevo: `fecha_inicio = día_del_cambio`.
-   → Esto genera su cuota inicial prorrateada (`monto_base` del plan nuevo, días desde
-   `fecha_inicio` hasta fin de mes).
-
-Como la restricción `unique (inscripcion_id, periodo)` es por inscripción y no por
-alumno, ambas cuotas del mismo mes conviven sin conflicto. Para trazabilidad conviene
-sumar un campo `motivo` a `cuota` (`alta`, `mensual`, `cambio_plan_saliente`,
-`cambio_plan_entrante`, `baja`) — lo agrego en el schema de la sección 2 si te parece
-bien antes de implementarlo.
-
-Este cálculo se implementa como función pura en el backend (ej. `calcularProrrateo()`),
-no en la base — así queda testeable con casos límite (alta el día 1, alta el día 31 de un
-mes de 30 días, año bisiesto, etc.).
+**Cambio de plan a mitad de mes** (tampoco implementado, sigue fuera de alcance): se
+generarían dos cuotas prorrateadas, una por cada plan, cerrando la inscripción vigente
+(`fecha_fin = día_del_cambio - 1`) y abriendo una nueva (`fecha_inicio = día_del_cambio`).
 
 ---
 
