@@ -381,11 +381,25 @@ create table notificacion (
 > prorrateo). Definición final, cerrada con el profesor principal: **ciclo por
 > aniversario, sin prorrateo**.
 
-**Ciclo por aniversario:** cada cuota cubre 1 mes exacto desde `inscripcion.fecha_inicio`
-(no desde el 1º del mes calendario). La cuota 1 va de `fecha_inicio` a
-`fecha_inicio + 1 mes` (`periodo_desde` / `periodo_hasta`, calculados con
-`sumarMeses()` en `src/app/cuotas/estado.ts`, que respeta fin de mes: 31/ene + 1 mes →
-28 o 29/feb). `fecha_vencimiento = periodo_hasta`.
+**Ciclo por aniversario, pago por adelantado:** cada cuota cubre 1 mes exacto desde
+`inscripcion.fecha_inicio` (no desde el 1º del mes calendario), y **se paga por
+adelantado, no a mes vencido** — el alumno tiene que estar al día ANTES de empezar a
+entrenar ese período, no después de usarlo. Por eso `fecha_vencimiento` de una cuota es
+el mismo día en que arranca su período (`periodo_desde`), no el día en que termina:
+
+```
+periodo_desde      = inicio del período (fecha_inicio de la inscripción, para la cuota 1)
+periodo_hasta       = periodo_desde + 1 mes (sumarMeses(), respeta fin de mes: 31/ene → 28/29 feb)
+fecha_vencimiento   = periodo_desde   -- ¡no periodo_hasta!
+```
+
+Ejemplo real: alta el 29/jul → cuota 1 con `periodo_desde = 29/jul`,
+`periodo_hasta = 29/ago`, `fecha_vencimiento = 29/jul`. Con 10 días de gracia, la fecha
+límite de pago sin recargo es el **8/ago**. La cuota 2 (mes siguiente, generación
+todavía no implementada — ver "Fuera de alcance") tendría `periodo_desde =
+fecha_vencimiento = 29/ago` otra vez, con su propia fecha límite el 8/sep.
+`periodo_hasta` queda solo como referencia del rango cubierto, no participa en el
+cálculo de vencimiento/gracia.
 
 **Sin prorrateo:** la inscripción siempre genera la cuota por el monto completo —
 `inscripcion.precio_acordado` si se aplicó una promoción al dar de alta, o si no el

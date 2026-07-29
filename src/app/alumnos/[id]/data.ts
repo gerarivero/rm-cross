@@ -19,7 +19,7 @@ export async function getAlumnoDetalle(alumnoId: string): Promise<AlumnoDetalle>
 
   const { data: inscripcion, error: inscError } = await supabase
     .from("inscripcion")
-    .select("precio_acordado, plan:plan_id(id, nombre, plan_precio_historico(precio, vigente_hasta)), promocion:promocion_id(nombre)")
+    .select("fecha_inicio, precio_acordado, plan:plan_id(id, nombre, plan_precio_historico(precio, vigente_hasta)), promocion:promocion_id(nombre)")
     .eq("alumno_id", alumnoId)
     .eq("estado", "activa")
     .maybeSingle();
@@ -35,6 +35,7 @@ export async function getAlumnoDetalle(alumnoId: string): Promise<AlumnoDetalle>
     turno: (alumnoRow as any).turno,
     plan: insc?.plan ? { id: insc.plan.id, nombre: insc.plan.nombre } : null,
     precio: insc ? insc.precio_acordado ?? precioVigente : null,
+    fecha_inscripcion: insc?.fecha_inicio ?? null,
     promocion_nombre: insc?.promocion?.nombre ?? null,
   } as AlumnoDetalle;
 }

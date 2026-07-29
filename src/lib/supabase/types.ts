@@ -96,6 +96,7 @@ export type AlumnoConPlan = Alumno & {
   turno: Pick<Turno, "id" | "nombre"> | null;
   plan: Pick<Plan, "id" | "nombre"> | null;
   precio: number | null;
+  fecha_inscripcion: string | null;
 };
 
 // Vista compuesta de la página de detalle: plan + historial completo de precios

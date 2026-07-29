@@ -40,20 +40,24 @@ export async function getAlumnos(): Promise<AlumnoConPlan[]> {
       .order("fecha_alta", { ascending: false }),
     supabase
       .from("inscripcion")
-      .select("alumno_id, precio_acordado, plan:plan_id(id, nombre, plan_precio_historico(precio, vigente_hasta))")
+      .select("alumno_id, fecha_inicio, precio_acordado, plan:plan_id(id, nombre, plan_precio_historico(precio, vigente_hasta))")
       .eq("estado", "activa"),
   ]);
 
   if (error) throw new Error(`No se pudieron cargar los alumnos: ${error.message}`);
   if (inscError) throw new Error(`No se pudo cargar el plan de los alumnos: ${inscError.message}`);
 
-  const planPorAlumno = new Map<string, { plan: { id: string; nombre: string } | null; precio: number | null }>();
+  const planPorAlumno = new Map<
+    string,
+    { plan: { id: string; nombre: string } | null; precio: number | null; fecha_inscripcion: string }
+  >();
   for (const insc of (inscripciones ?? []) as any[]) {
     const historico = (insc.plan?.plan_precio_historico ?? []) as { precio: number; vigente_hasta: string | null }[];
     const precioVigente = historico.find((p) => p.vigente_hasta === null)?.precio ?? null;
     planPorAlumno.set(insc.alumno_id, {
       plan: insc.plan ? { id: insc.plan.id, nombre: insc.plan.nombre } : null,
       precio: insc.precio_acordado ?? precioVigente,
+      fecha_inscripcion: insc.fecha_inicio,
     });
   }
 
@@ -64,6 +68,7 @@ export async function getAlumnos(): Promise<AlumnoConPlan[]> {
       turno: row.turno,
       plan: info?.plan ?? null,
       precio: info?.precio ?? null,
+      fecha_inscripcion: info?.fecha_inscripcion ?? null,
     } as AlumnoConPlan;
   });
 }

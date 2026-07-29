@@ -10,21 +10,26 @@ export type ActionResult = { ok: true } | { ok: false; error: string };
 type SupabaseClient = ReturnType<typeof createServerClient>;
 
 // Se llama desde crearAlumno (src/app/alumnos/actions.ts) justo después de crear la
-// inscripción. Ciclo por aniversario, sin prorrateo: la cuota 1 cubre 1 mes exacto
-// desde la fecha de inicio, por el monto completo.
+// inscripción. Ciclo por aniversario, sin prorrateo, se paga por adelantado (no se
+// paga a mes vencido): la cuota se debe abonar ANTES de empezar a entrenar, por eso
+// `fecha_vencimiento` es el mismo día de inicio del período, no el día que termina.
+// Los `dias_gracia` de la configuración corren desde ahí — ej. alta el 29/jul con 10
+// días de gracia => fecha límite de pago sin recargo el 8/ago. `periodo_hasta` (fin
+// de la cobertura, = fecha_inicio + 1 mes) queda solo para mostrar el rango cubierto
+// y como referencia de cuándo arrancaría la cuota siguiente.
 export async function crearCuotaInicial(
   supabase: SupabaseClient,
   inscripcionId: string,
   montoBase: number,
   fechaInicioISO: string
 ): Promise<{ error: string | null }> {
-  const fechaVencimiento = sumarMeses(fechaInicioISO, 1);
+  const periodoHasta = sumarMeses(fechaInicioISO, 1);
 
   const { error } = await supabase.from("cuota").insert({
     inscripcion_id: inscripcionId,
     periodo_desde: fechaInicioISO,
-    periodo_hasta: fechaVencimiento,
-    fecha_vencimiento: fechaVencimiento,
+    periodo_hasta: periodoHasta,
+    fecha_vencimiento: fechaInicioISO,
     monto_base: montoBase,
   });
 

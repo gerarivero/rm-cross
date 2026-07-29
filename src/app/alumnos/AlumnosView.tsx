@@ -27,6 +27,11 @@ function formatoMoneda(valor: number | null) {
   return valor.toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
 }
 
+function formatoFecha(valor: string | null) {
+  if (!valor) return "—";
+  return new Date(`${valor}T00:00:00`).toLocaleDateString("es-AR");
+}
+
 export function AlumnosView({
   alumnos,
   planes,
@@ -170,6 +175,7 @@ export function AlumnosView({
                   <th className="px-lg py-4 font-label-bold text-label-bold">DNI</th>
                   <th className="px-lg py-4 font-label-bold text-label-bold">Alumno</th>
                   <th className="px-lg py-4 font-label-bold text-label-bold">Plan</th>
+                  <th className="px-lg py-4 font-label-bold text-label-bold">Fecha de inscripción</th>
                   <th className="px-lg py-4 font-label-bold text-label-bold">Turno</th>
                   <th className="px-lg py-4 font-label-bold text-label-bold">Estado</th>
                   <th className="px-lg py-4 font-label-bold text-label-bold text-right">Acciones</th>
@@ -178,7 +184,7 @@ export function AlumnosView({
               <tbody className="divide-y divide-border">
                 {paginatedAlumnos.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-lg py-lg text-center text-body-sm text-text-muted">
+                    <td colSpan={7} className="px-lg py-lg text-center text-body-sm text-text-muted">
                       {alumnos.length === 0
                         ? "Todavía no hay alumnos cargados. Creá el primero con el botón \"Nuevo Alumno\"."
                         : "Ningún alumno coincide con la búsqueda/filtro."}
@@ -206,6 +212,7 @@ export function AlumnosView({
                         "—"
                       )}
                     </td>
+                    <td className="px-lg py-4 text-body-sm text-on-surface-variant">{formatoFecha(alumno.fecha_inscripcion)}</td>
                     <td className="px-lg py-4 text-body-sm text-on-surface-variant">{alumno.turno?.nombre ?? "—"}</td>
                     <td className="px-lg py-4">
                       <span className={`px-3 py-1 rounded-full text-caption font-label-bold ${ESTADO_ESTILO[alumno.estado]}`}>
