@@ -1,17 +1,28 @@
 import { Sidebar } from "@/components/Sidebar";
-import { getAlumnoDetalle, getCuotasDeAlumno, getHistorialInscripciones, getPlanes, getPromocionesActivas, getTurnos } from "./data";
+import {
+  getAlumnoDetalle,
+  getCuotasDeAlumno,
+  getHistorialInscripciones,
+  getPlanes,
+  getPromocionesActivas,
+  getRutinaAsignada,
+  getRutinasDisponibles,
+  getTurnos,
+} from "./data";
 import { AlumnoDetalleView } from "./AlumnoDetalleView";
 
 export const dynamic = "force-dynamic";
 
 export default async function AlumnoDetallePage({ params }: { params: { id: string } }) {
-  const [alumno, planes, turnos, promociones, cuotas, historialInscripciones] = await Promise.all([
+  const [alumno, planes, turnos, promociones, cuotas, historialInscripciones, rutinaAsignada, rutinasDisponibles] = await Promise.all([
     getAlumnoDetalle(params.id),
     getPlanes(),
     getTurnos(),
     getPromocionesActivas(),
     getCuotasDeAlumno(params.id),
     getHistorialInscripciones(params.id),
+    getRutinaAsignada(params.id),
+    getRutinasDisponibles(),
   ]);
 
   return (
@@ -25,6 +36,8 @@ export default async function AlumnoDetallePage({ params }: { params: { id: stri
           promociones={promociones}
           cuotas={cuotas}
           historialInscripciones={historialInscripciones}
+          rutinaAsignada={rutinaAsignada}
+          rutinasDisponibles={rutinasDisponibles}
         />
       </main>
     </>

@@ -176,3 +176,121 @@ export type CuotaDeAlumno = Cuota & {
   saldo_capital: number;
   total_adeudado: number;
 };
+
+// =========================================================
+// Rutinas
+// =========================================================
+
+export type Musculo = {
+  id: string;
+  nombre: string;
+  descripcion: string | null;
+  activo: boolean;
+};
+
+export type Ejercicio = {
+  id: string;
+  musculo_id: string;
+  nombre: string;
+  descripcion: string | null;
+  activo: boolean;
+  creado_en: string;
+};
+
+// Vista que usa el catálogo y el selector del builder: ejercicio + su músculo.
+export type EjercicioConMusculo = Ejercicio & {
+  musculo: Pick<Musculo, "id" | "nombre">;
+};
+
+export type TipoActividad = "calentamiento" | "musculacion" | "recuperacion";
+export type TipoIntensidad = "baja" | "media" | "alta";
+
+export type Rutina = {
+  id: string;
+  nombre: string;
+  descripcion: string | null;
+  activo: boolean;
+  creado_en: string;
+};
+
+// Vista de lista: rutina + cantidad de alumnos con esa rutina asignada activa
+// (mismo patrón que PlanConPrecio.alumnos_count).
+export type RutinaConResumen = Rutina & {
+  alumnos_count: number;
+};
+
+export type RutinaSemana = {
+  id: string;
+  rutina_id: string;
+  numero_semana: number;
+};
+
+export type RutinaDia = {
+  id: string;
+  semana_id: string;
+  numero_dia: number;
+};
+
+export type RutinaActividad = {
+  id: string;
+  dia_id: string;
+  tipo: TipoActividad;
+  orden: number;
+};
+
+export type RutinaEjercicio = {
+  id: string;
+  actividad_id: string;
+  ejercicio_id: string;
+  orden: number;
+  intensidad: TipoIntensidad | null;
+  series: number | null;
+  repeticiones: number | null;
+  duracion_minutos: number | null;
+  notas: string | null;
+};
+
+// Estructura completa anidada que arma el builder de una rutina (4 semanas ->
+// días -> actividades -> ejercicios, con el ejercicio+músculo embebidos).
+export type RutinaEjercicioConDetalle = RutinaEjercicio & {
+  ejercicio: Pick<Ejercicio, "id" | "nombre"> & { musculo: Pick<Musculo, "id" | "nombre"> };
+};
+
+export type RutinaActividadConEjercicios = RutinaActividad & {
+  ejercicios: RutinaEjercicioConDetalle[];
+};
+
+export type RutinaDiaConActividades = RutinaDia & {
+  actividades: RutinaActividadConEjercicios[];
+};
+
+export type RutinaSemanaConDias = RutinaSemana & {
+  dias: RutinaDiaConActividades[];
+};
+
+export type RutinaDetalle = Rutina & {
+  semanas: RutinaSemanaConDias[];
+};
+
+export type EstadoAsignacion = "activa" | "finalizada";
+
+export type RutinaAsignacion = {
+  id: string;
+  rutina_id: string;
+  alumno_id: string;
+  fecha_inicio: string;
+  estado: EstadoAsignacion;
+  creado_en: string;
+};
+
+// Vista que usa el detalle de Rutina para listar a quién está/estuvo asignada.
+export type RutinaAsignacionConAlumno = RutinaAsignacion & {
+  alumno: Pick<Alumno, "id" | "dni" | "nombre" | "apellido">;
+};
+
+// Vista que usa el detalle de Alumno: la rutina activa asignada (si tiene).
+export type RutinaAsignadaDeAlumno = {
+  asignacion_id: string;
+  fecha_inicio: string;
+  rutina: Pick<Rutina, "id" | "nombre">;
+};

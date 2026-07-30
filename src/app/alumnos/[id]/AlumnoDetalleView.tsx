@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import type { AlumnoDetalle, CuotaDeAlumno, InscripcionHistorial, PlanConPrecio, Turno } from "@/lib/supabase/types";
+import type { AlumnoDetalle, CuotaDeAlumno, InscripcionHistorial, PlanConPrecio, RutinaAsignadaDeAlumno, Turno } from "@/lib/supabase/types";
 import { AlumnoFormModal } from "../AlumnoFormModal";
+import { AsignarRutinaAlumnoModal } from "../AsignarRutinaAlumnoModal";
 import { ReinscribirModal } from "../ReinscribirModal";
 
 const ESTADO_ESTILO: Record<string, string> = {
@@ -48,6 +49,8 @@ export function AlumnoDetalleView({
   promociones,
   cuotas,
   historialInscripciones,
+  rutinaAsignada,
+  rutinasDisponibles,
 }: {
   alumno: AlumnoDetalle;
   planes: PlanConPrecio[];
@@ -55,9 +58,12 @@ export function AlumnoDetalleView({
   promociones: { id: string; nombre: string; plan_ids: string[] }[];
   cuotas: CuotaDeAlumno[];
   historialInscripciones: InscripcionHistorial[];
+  rutinaAsignada: RutinaAsignadaDeAlumno | null;
+  rutinasDisponibles: { id: string; nombre: string }[];
 }) {
   const [modalEditarOpen, setModalEditarOpen] = useState(false);
   const [modalReinscribirOpen, setModalReinscribirOpen] = useState(false);
+  const [modalAsignarRutinaOpen, setModalAsignarRutinaOpen] = useState(false);
   const nombreCompleto = alumno.nombre || alumno.apellido ? `${alumno.nombre ?? ""} ${alumno.apellido ?? ""}`.trim() : `DNI ${alumno.dni}`;
 
   return (
@@ -203,6 +209,46 @@ export function AlumnoDetalleView({
           )}
         </div>
 
+        {/* Card: Rutina asignada */}
+        <div className="bg-surface-white border border-border rounded-xl shadow-sm p-lg">
+          <h3 className="font-headline-md text-headline-md text-on-background mb-md">Rutina asignada</h3>
+          {rutinaAsignada ? (
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-label-bold text-label-bold text-on-surface">{rutinaAsignada.rutina.nombre}</p>
+                <p className="text-caption font-caption text-text-muted">Desde {formatoFecha(rutinaAsignada.fecha_inicio)}</p>
+              </div>
+              <div className="flex items-center gap-sm">
+                <a
+                  href={`/rutinas/${rutinaAsignada.rutina.id}`}
+                  className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors"
+                  title="Ver rutina"
+                >
+                  <span className="material-symbols-outlined text-[20px]">visibility</span>
+                </a>
+                <button
+                  onClick={() => setModalAsignarRutinaOpen(true)}
+                  className="flex items-center gap-xs px-lg py-2 border border-border text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors font-label-bold text-label-bold"
+                >
+                  <span className="material-symbols-outlined text-[18px]">sync_alt</span>
+                  Cambiar Rutina
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between">
+              <p className="text-body-sm text-text-muted">Este alumno no tiene una rutina asignada.</p>
+              <button
+                onClick={() => setModalAsignarRutinaOpen(true)}
+                className="flex items-center gap-xs px-lg py-2 bg-primary-container text-on-primary-container rounded-lg hover:opacity-90 transition-opacity font-label-bold text-label-bold"
+              >
+                <span className="material-symbols-outlined text-[18px]">person_add</span>
+                Asignar Rutina
+              </button>
+            </div>
+          )}
+        </div>
+
         {/* Card: Registro de Cuotas */}
         <div className="bg-surface-white border border-border rounded-xl shadow-sm overflow-hidden">
           <div className="px-lg py-md border-b border-border flex items-center justify-between">
@@ -293,6 +339,9 @@ export function AlumnoDetalleView({
       )}
       {modalReinscribirOpen && (
         <ReinscribirModal alumno={alumno} planes={planes} promociones={promociones} onClose={() => setModalReinscribirOpen(false)} />
+      )}
+      {modalAsignarRutinaOpen && (
+        <AsignarRutinaAlumnoModal alumnoId={alumno.id} rutinas={rutinasDisponibles} onClose={() => setModalAsignarRutinaOpen(false)} />
       )}
     </>
   );

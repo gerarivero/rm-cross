@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
-import type { AlumnoDetalle, InscripcionHistorial } from "@/lib/supabase/types";
+import type { AlumnoDetalle, InscripcionHistorial, RutinaAsignadaDeAlumno } from "@/lib/supabase/types";
 import { calcularDuracion } from "../duracion";
 
 export { getPlanes } from "../../planes/data";
@@ -64,4 +64,30 @@ export async function getHistorialInscripciones(alumnoId: string): Promise<Inscr
     plan: row.plan,
     duracion: calcularDuracion(row.fecha_inicio, row.fecha_fin),
   })) as InscripcionHistorial[];
+}
+
+// Rutina activa asignada al alumno (si tiene), para la card "Rutina asignada"
+// del detalle de Alumno.
+export async function getRutinaAsignada(alumnoId: string): Promise<RutinaAsignadaDeAlumno | null> {
+  const supabase = createServerClient();
+
+  const { data, error } = await supabase
+    .from("rutina_asignacion")
+    .select("id, fecha_inicio, rutina:rutina_id(id, nombre)")
+    .eq("alumno_id", alumnoId)
+    .eq("estado", "activa")
+    .maybeSingle();
+
+  if (error) throw new Error(`No se pudo cargar la rutina asignada: ${error.message}`);
+  if (!data) return null;
+
+  return { asignacion_id: data.id, fecha_inicio: data.fecha_inicio, rutina: (data as any).rutina };
+}
+
+// Rutinas activas disponibles para asignar desde el detalle de Alumno.
+export async function getRutinasDisponibles(): Promise<{ id: string; nombre: string }[]> {
+  const supabase = createServerClient();
+  const { data, error } = await supabase.from("rutina").select("id, nombre").eq("activo", true).order("nombre");
+  if (error) throw new Error(`No se pudieron cargar las rutinas: ${error.message}`);
+  return data ?? [];
 }

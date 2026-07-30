@@ -523,6 +523,43 @@ soportara. Ahora:
 
 ---
 
+## 3.5. Módulo de Rutinas (implementado, `0007_rutinas.sql`)
+
+Una **rutina** es una plantilla reutilizable (no atada a un alumno desde el vamos): el
+profesor la arma una vez y después la **asigna** a uno o varios alumnos con su propia
+fecha de inicio. Jerarquía fija:
+
+```
+rutina (plantilla)
+  -> rutina_semana (1 a 4, se crean las 4 automáticamente al crear la rutina)
+    -> rutina_dia (N por semana, elegidos por el profesor, slots genéricos: Día 1, Día 2...)
+      -> rutina_actividad (tipo: calentamiento | musculacion | recuperacion)
+        -> rutina_ejercicio (ejercicio + intensidad/series/repeticiones/duración)
+```
+
+**Decisión de modelado clave: el músculo NO se guarda en la actividad.** Solo vive en
+`ejercicio.musculo_id`. En el flujo del profesor, el músculo es un filtro para elegir
+el ejercicio (elegís músculo → te muestra sus ejercicios → elegís uno), no un dato de
+la actividad — así una actividad de "Musculación" puede tener ejercicios de varios
+músculos sin conflicto (ej. pecho + hombros el mismo día).
+
+**Catálogo base:** `musculo` (simple, igual forma que `disciplina`) y `ejercicio`
+(pertenece a un músculo, `on delete restrict` — no se puede borrar del catálogo si está
+usado en alguna rutina, mismo criterio que "un plan no se puede eliminar si está
+asignado a un alumno").
+
+**Asignación (`rutina_asignacion`):** una rutina puede asignarse a varios alumnos; un
+alumno tiene como máximo una rutina `activa` a la vez (índice único parcial
+`rutina_activa_unica_por_alumno`, mismo patrón que `precio_vigente_unico_por_plan`). Al
+asignar una rutina nueva, cualquier asignación `activa` previa del alumno se cierra
+automáticamente a `finalizada` — no hay una fecha de fin explícita, es historial simple.
+
+**Fuera de alcance por ahora:** vista de la rutina desde la perspectiva del alumno (no
+hay login de alumnos todavía), exportar/imprimir en PDF, marcar ejercicios como
+"completados" (seguimiento de cumplimiento), y duplicar una semana dentro del builder.
+
+---
+
 ## 4. Diseño original de prorrateo (no implementado, referencia histórica)
 
 > **Superado por la sección 3.** Esta era la propuesta inicial (ciclo por mes
