@@ -425,30 +425,55 @@ reservado para casos administrativos, sin uso todavía).
 ```
 fecha_actual ≤ fecha_vencimiento + dias_gracia   →  ADEUDADA  (sin recargo)
 fecha_actual > fecha_vencimiento + dias_gracia   →  VENCIDA   (con recargo)
-pago registrado                                   →  PAGADA   (en cualquier momento)
+suma de pagos ≥ monto_base                        →  PAGADA   (en cualquier momento)
 ```
 
 `dias_gracia` por defecto es **10** (`configuracion_pagos`, editable desde la pantalla
 de Cuotas).
 
-**Cálculo del recargo:**
+**Pagos parciales y saldo (implementado, `0006_pagos_parciales.sql`):** una cuota puede
+tener varios `pago` asociados (pago total en una vez, o varios pagos parciales). El
+saldo de capital pendiente es siempre `monto_base - suma(pago.monto)`. La cuota pasa a
+`Pagada` recién cuando ese saldo llega a 0 (o menos). Mientras haya saldo pendiente, la
+pantalla de Cuotas muestra tanto el saldo (columna "Saldo") como el detalle de cada pago
+parcial hecho hasta la fecha (acción "Ver Detalle").
+
+**Cálculo del recargo — sobre el saldo, no sobre el monto_base completo:**
 
 ```
-si tipo_recargo = 'porcentaje':  recargo = monto_base * (valor_recargo / 100)
+si tipo_recargo = 'porcentaje':  recargo = saldo_al_vencer * (valor_recargo / 100)
 si tipo_recargo = 'monto_fijo':  recargo = valor_recargo
 ```
 
+`saldo_al_vencer = monto_base - suma(pagos con fecha_pago <= fecha_vencimiento + dias_gracia)`.
+Es decir: los pagos hechos **antes** de que la cuota entre en mora reducen la base sobre
+la que se calcula el interés (si alguien ya pagó parte antes de vencer, el recargo es
+menor). Los pagos hechos **después** de vencida solo descuentan del total a pagar, pero
+no vuelven a recalcular el interés ya generado — si no, el interés "desaparecería" con
+solo pagar el capital y dejar el recargo sin abonar. El total adeudado hoy sobre una
+cuota vencida es siempre `saldo_capital_actual + recargo` (`src/app/cuotas/estado.ts`,
+función `calcularEstadoCuota`).
+
 **Sin cron job (decisión técnica):** no hay infraestructura de tareas programadas
 todavía, así que en vez de un job diario que actualice `cuota.estado` a `vencida` día a
-día, el estado `Vencida` y el recargo se **calculan al vuelo** con la función pura
-`calcularEstadoYRecargo()` (`src/app/cuotas/estado.ts`), tanto para mostrar la lista de
-cuotas como en el momento exacto de registrar un pago — ahí es cuando el recargo se
-calcula de verdad y se persiste en `cuota.recargo_aplicado`, quedando fijo para siempre
-aunque después cambie la configuración. Mientras nadie paga, la fila en la base sigue
-diciendo `adeudada` aunque ya haya pasado la ventana de gracia — es coherente: el dato
-derivado (lo que se ve en pantalla) es correcto, lo único que no existe es un proceso en
-background que "cierre" filas viejas. El día que haya una Supabase Edge Function con
-cron, se puede sumar ese job sin cambiar la lógica de cálculo.
+día, el estado `Vencida`, el recargo y el saldo se **calculan al vuelo** con la función
+pura `calcularEstadoCuota()` (`src/app/cuotas/estado.ts`), a partir de `monto_base`,
+`fecha_vencimiento` y la lista completa de `pago` de la cuota — tanto para mostrar la
+lista de cuotas como en el momento exacto de registrar un pago. Cuando la suma de pagos
+cubre el total (capital + recargo si corresponde), se llama a la función SQL
+`asignar_numero_comprobante()`, que marca `cuota.estado = 'pagada'` y le asigna un
+número de comprobante correlativo (`cuota.numero_comprobante`, desde la secuencia
+`comprobante_numero_seq`) en una sola operación atómica. Mientras nadie termina de
+pagar, la fila en la base sigue diciendo `adeudada` aunque ya haya pasado la ventana de
+gracia — es coherente: el dato derivado (lo que se ve en pantalla) es correcto, lo único
+que no existe es un proceso en background que "cierre" filas viejas.
+
+**Comprobante de pago (implementado):** una vez que una cuota queda `Pagada`, la acción
+"Generar Comprobante" abre `/cuotas/[id]/comprobante` — una página imprimible (estilo
+del mockup `stitch_rm_design_system/stitch_rm_comprobante_de_pago/`) con el número de
+comprobante, el detalle de cada pago (parcial o total) y el recargo si lo hubo. Se
+imprime con el diálogo nativo del navegador (`window.print()`); no hay generación de PDF
+en el servidor ni envío por WhatsApp/Email todavía.
 
 **Precio promocional (por inscripción):** si la `inscripcion` tiene `precio_acordado`
 seteado, ese valor reemplaza al precio de lista como `monto_base` de la cuota. Solo un
@@ -456,9 +481,45 @@ profesor con `es_admin = true` puede cargarlo (por eso `autorizado_por` es oblig
 cuando se define uno) — mismo workaround temporal sin auth real que se explica en la
 sección 6.
 
-**Fuera de alcance por ahora:** la generación automática de la cuota del mes 2, 3, etc.
-(hoy solo se genera la cuota 1 al dar de alta al alumno) y el comprobante de pago
-(PDF/envío, ya maquetado en Stitch pero no construido).
+**Generación automática de la cuota del próximo período (implementado):** cuando una
+cuota queda 100% pagada (`registrarPago`, justo después de `asignar_numero_comprobante`),
+se genera automáticamente la cuota del período siguiente — sin cron ni botón manual,
+disparada por esa misma acción de pago (`crearProximaCuota`, `src/app/cuotas/actions.ts`).
+`periodo_desde` de la cuota nueva es el `periodo_hasta` de la que se acaba de pagar
+(mismo criterio del ejemplo del 29/jul de más arriba). El monto se resuelve igual que en
+el alta: `precio_acordado` de la inscripción si existe (una promoción sigue aplicando
+período tras período), si no el precio de lista **vigente en ese momento** — así un
+aumento de precio ya se refleja en la próxima cuota, no el precio que tenía la anterior.
+Si la inscripción ya no está `activa` (alumno dado de baja), no se genera nada. Si no hay
+precio vigente para el plan, el pago igual queda registrado pero `registrarPago` devuelve
+un error ("Pago registrado, pero...") para que quede visible que la próxima cuota no se
+pudo generar — deliberado: al no haber otro disparador (se descartó un botón manual), un
+fallo silencioso dejaría a un alumno sin facturar sin que nadie lo note.
+
+**Fuera de alcance por ahora:** el envío del comprobante por WhatsApp/Email o su descarga
+como PDF generado en el servidor.
+
+**Re-inscripción de alumnos (implementado):** un alumno puede tener varias
+`inscripcion` a lo largo del tiempo — el modelo nunca lo impidió (sin constraint de
+unicidad sobre `alumno_id`), pero hasta esta vuelta no había ninguna acción que lo
+soportara. Ahora:
+
+- Al dar de baja a un alumno (`alumno.estado = 'de_baja'` desde "Editar"), se cierra
+  automáticamente su `inscripcion` activa: `estado = 'finalizada'`, `fecha_fin = hoy`.
+  Así la duración de ese período queda registrada con precisión, en vez de quedar
+  abierta hasta que el alumno (si es que) vuelve.
+- La acción **Reinscribir** (visible en el detalle de alumno cuando no tiene plan
+  activo) crea una `inscripcion` nueva con un plan y una fecha de inicio elegidos
+  (pueden ser distintos a los de la inscripción anterior), reactiva al alumno
+  (`estado = 'activo'`) y dispara su cuota inicial con el mismo mecanismo que el alta
+  (`crearInscripcionConCuota`, helper compartido con `crearAlumno` en
+  `src/app/alumnos/actions.ts`).
+- El detalle de alumno muestra un **Historial de Inscripciones** con cada período
+  (plan, desde, hasta, duración calculada con `src/app/alumnos/duracion.ts`, y estado),
+  incluida la que sigue en curso.
+- Fuera de alcance: cambiar de plan a un alumno que ya tiene una inscripción activa
+  (implicaría cerrar/prorratear cuotas en curso) — "Reinscribir" solo aplica cuando no
+  hay inscripción activa.
 
 ---
 

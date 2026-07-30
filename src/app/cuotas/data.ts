@@ -1,6 +1,6 @@
 import { createServerClient } from "@/lib/supabase/server";
-import type { ConfiguracionPagos, CuotaConDetalle, CuotaDeAlumno } from "@/lib/supabase/types";
-import { calcularEstadoYRecargo } from "./estado";
+import type { ConfiguracionPagos, CuotaConDetalle, CuotaDeAlumno, Pago } from "@/lib/supabase/types";
+import { calcularEstadoCuota } from "./estado";
 
 export async function getConfiguracionPagos(): Promise<ConfiguracionPagos> {
   const supabase = createServerClient();
@@ -10,13 +10,19 @@ export async function getConfiguracionPagos(): Promise<ConfiguracionPagos> {
   return data;
 }
 
+function ordenarPagos(pagos: Pago[]): Pago[] {
+  return [...pagos].sort((a, b) => a.fecha_pago.localeCompare(b.fecha_pago));
+}
+
 export async function getCuotas(): Promise<CuotaConDetalle[]> {
   const supabase = createServerClient();
 
   const [{ data: cuotas, error }, config] = await Promise.all([
     supabase
       .from("cuota")
-      .select("*, inscripcion:inscripcion_id(alumno:alumno_id(id, dni, nombre, apellido), plan:plan_id(id, nombre))")
+      .select(
+        "*, inscripcion:inscripcion_id(alumno:alumno_id(id, dni, nombre, apellido), plan:plan_id(id, nombre)), pago(id, cuota_id, monto, fecha_pago, medio, referencia)"
+      )
       .order("fecha_vencimiento", { ascending: false }),
     getConfiguracionPagos(),
   ]);
@@ -26,7 +32,8 @@ export async function getCuotas(): Promise<CuotaConDetalle[]> {
   const hoy = new Date().toISOString().slice(0, 10);
 
   return (cuotas ?? []).map((row: any) => {
-    const { estado, recargo } = calcularEstadoYRecargo(row, config, hoy);
+    const pagos = ordenarPagos(row.pago ?? []);
+    const resultado = calcularEstadoCuota(row, pagos, config, hoy);
     return {
       id: row.id,
       inscripcion_id: row.inscripcion_id,
@@ -37,10 +44,15 @@ export async function getCuotas(): Promise<CuotaConDetalle[]> {
       recargo_aplicado: row.recargo_aplicado,
       estado: row.estado,
       creado_en: row.creado_en,
+      numero_comprobante: row.numero_comprobante,
       alumno: row.inscripcion.alumno,
       plan: row.inscripcion.plan,
-      estado_efectivo: estado,
-      recargo_efectivo: recargo,
+      pagos,
+      estado_efectivo: resultado.estado,
+      recargo_efectivo: resultado.recargo,
+      total_pagado: resultado.totalPagado,
+      saldo_capital: resultado.saldoCapital,
+      total_adeudado: resultado.totalAdeudado,
     } as CuotaConDetalle;
   });
 }
@@ -63,7 +75,7 @@ export async function getCuotasDeAlumno(alumnoId: string): Promise<CuotaDeAlumno
 
   const { data: cuotas, error } = await supabase
     .from("cuota")
-    .select("*")
+    .select("*, pago(id, cuota_id, monto, fecha_pago, medio, referencia)")
     .in("inscripcion_id", inscripcionIds)
     .order("fecha_vencimiento", { ascending: false });
 
@@ -72,12 +84,46 @@ export async function getCuotasDeAlumno(alumnoId: string): Promise<CuotaDeAlumno
   const hoy = new Date().toISOString().slice(0, 10);
 
   return (cuotas ?? []).map((row: any) => {
-    const { estado, recargo } = calcularEstadoYRecargo(row, config, hoy);
+    const pagos = ordenarPagos(row.pago ?? []);
+    const resultado = calcularEstadoCuota(row, pagos, config, hoy);
+    const { pago, ...cuota } = row;
     return {
-      ...row,
+      ...cuota,
       plan: planPorInscripcion.get(row.inscripcion_id) ?? { id: "", nombre: "—" },
-      estado_efectivo: estado,
-      recargo_efectivo: recargo,
+      pagos,
+      estado_efectivo: resultado.estado,
+      recargo_efectivo: resultado.recargo,
+      total_pagado: resultado.totalPagado,
+      saldo_capital: resultado.saldoCapital,
+      total_adeudado: resultado.totalAdeudado,
     } as CuotaDeAlumno;
   });
+}
+
+// Cuota puntual con sus pagos, para el comprobante imprimible.
+export async function getComprobanteCuota(cuotaId: string) {
+  const supabase = createServerClient();
+
+  const { data: row, error } = await supabase
+    .from("cuota")
+    .select(
+      "*, inscripcion:inscripcion_id(alumno:alumno_id(id, dni, nombre, apellido), plan:plan_id(id, nombre)), pago(id, cuota_id, monto, fecha_pago, medio, referencia)"
+    )
+    .eq("id", cuotaId)
+    .maybeSingle();
+
+  if (error) throw new Error(`No se pudo cargar la cuota: ${error.message}`);
+  if (!row) return null;
+
+  return {
+    id: row.id,
+    numero_comprobante: row.numero_comprobante as number | null,
+    periodo_desde: row.periodo_desde as string,
+    periodo_hasta: row.periodo_hasta as string,
+    monto_base: row.monto_base as number,
+    recargo_aplicado: row.recargo_aplicado as number,
+    alumno: (row as any).inscripcion.alumno,
+    plan: (row as any).inscripcion.plan,
+    pagos: ordenarPagos((row as any).pago ?? []),
+  };
 }

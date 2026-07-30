@@ -90,6 +90,13 @@ export type InscripcionConAlumno = Inscripcion & {
   alumno: Pick<Alumno, "id" | "nombre" | "apellido" | "email">;
 };
 
+// Fila del historial de inscripciones de un alumno (card "Historial de
+// Inscripciones" del detalle de Alumno) — cada período con su plan y duración.
+export type InscripcionHistorial = Pick<Inscripcion, "id" | "fecha_inicio" | "fecha_fin" | "estado"> & {
+  plan: Pick<Plan, "id" | "nombre">;
+  duracion: string;
+};
+
 // Vista de lista que usa la tabla de Alumnos: alumno + su inscripción activa
 // (plan + precio) + turno.
 export type AlumnoConPlan = Alumno & {
@@ -124,6 +131,7 @@ export type Cuota = {
   recargo_aplicado: number;
   estado: EstadoCuota;
   creado_en: string;
+  numero_comprobante: number | null;
 };
 
 export type ConfiguracionPagos = {
@@ -145,18 +153,26 @@ export type Pago = {
 };
 
 // Vista de lista que usa la pantalla de Cuotas: cuota + alumno + plan, con el
-// estado/recargo ya resueltos "al vuelo" (ver src/app/cuotas/estado.ts).
+// estado/recargo/saldo ya resueltos "al vuelo" (ver src/app/cuotas/estado.ts).
 export type CuotaConDetalle = Cuota & {
   alumno: Pick<Alumno, "id" | "dni" | "nombre" | "apellido">;
   plan: Pick<Plan, "id" | "nombre">;
+  pagos: Pago[];
   estado_efectivo: EstadoCuota;
   recargo_efectivo: number;
+  total_pagado: number;
+  saldo_capital: number;
+  total_adeudado: number;
 };
 
-// Vista que usa el detalle de Alumno: mismo cálculo de estado/recargo, sin repetir
-// los datos del alumno (ya se conocen en esa pantalla).
+// Vista que usa el detalle de Alumno: mismo cálculo de estado/recargo/saldo, sin
+// repetir los datos del alumno (ya se conocen en esa pantalla).
 export type CuotaDeAlumno = Cuota & {
   plan: Pick<Plan, "id" | "nombre">;
+  pagos: Pago[];
   estado_efectivo: EstadoCuota;
   recargo_efectivo: number;
+  total_pagado: number;
+  saldo_capital: number;
+  total_adeudado: number;
 };

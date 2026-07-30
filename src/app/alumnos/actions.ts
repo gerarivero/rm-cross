@@ -80,14 +80,83 @@ function leerYValidarDatosPersonales(formData: FormData): { ok: true; datos: Dat
   };
 }
 
+// Crea la inscripción (con precio promocional opcional) y su cuota inicial para
+// un alumno ya existente. Usado tanto por el alta de alumno (crearAlumno) como
+// por la re-inscripción de un alumno que no tiene plan activo (reinscribirAlumno).
+async function crearInscripcionConCuota(
+  supabase: SupabaseClient,
+  alumnoId: string,
+  formData: FormData,
+  fechaInicio: string
+): Promise<{ error: string | null }> {
+  const plan_id = String(formData.get("plan_id") ?? "");
+  if (!plan_id) return { error: "Elegí un plan para el alumno." };
+
+  const aplicaPromocion = formData.get("aplicar_promocion") === "on";
+  let precio_acordado: number | null = null;
+  let promocion_id: string | null = null;
+  let autorizado_por: string | null = null;
+
+  if (aplicaPromocion) {
+    precio_acordado = opcionalNumero(formData, "precio");
+    if (precio_acordado === null || precio_acordado <= 0) {
+      return { error: "el precio de la promoción no es válido (debe ser mayor a 0)." };
+    }
+    promocion_id = opcional(formData, "promocion_id");
+    autorizado_por = await buscarAdminAutorizador(supabase);
+    if (!autorizado_por) {
+      return { error: "no se encontró un usuario administrador para autorizar el precio promocional." };
+    }
+  }
+
+  const { data: inscripcion, error: inscripcionError } = await supabase
+    .from("inscripcion")
+    .insert({
+      alumno_id: alumnoId,
+      plan_id,
+      fecha_inicio: fechaInicio,
+      precio_acordado,
+      promocion_id,
+      autorizado_por,
+    })
+    .select("id")
+    .single();
+
+  if (inscripcionError || !inscripcion) {
+    return { error: `falló la asignación del plan: ${inscripcionError?.message ?? "error desconocido"}` };
+  }
+
+  // La cuota se cobra por precio_acordado si se aplicó promoción; si no, por el
+  // precio de lista vigente del plan (mismo patrón que ya usa src/app/planes/data.ts).
+  let montoCuota = precio_acordado;
+  if (montoCuota === null) {
+    const { data: precioVigenteRow, error: precioError } = await supabase
+      .from("plan_precio_historico")
+      .select("precio")
+      .eq("plan_id", plan_id)
+      .is("vigente_hasta", null)
+      .maybeSingle();
+    if (precioError) {
+      return { error: `no se pudo leer el precio del plan: ${precioError.message}` };
+    }
+    montoCuota = precioVigenteRow?.precio ?? null;
+  }
+
+  if (montoCuota !== null) {
+    const { error: cuotaError } = await crearCuotaInicial(supabase, inscripcion.id, montoCuota, fechaInicio);
+    if (cuotaError) return { error: cuotaError };
+  }
+
+  return { error: null };
+}
+
 export async function crearAlumno(formData: FormData): Promise<ActionResult> {
   const supabase = createServerClient();
 
   const parsed = leerYValidarDatosPersonales(formData);
   if (!parsed.ok) return parsed;
 
-  const plan_id = String(formData.get("plan_id") ?? "");
-  if (!plan_id) return { ok: false, error: "Elegí un plan para el alumno." };
+  if (!String(formData.get("plan_id") ?? "")) return { ok: false, error: "Elegí un plan para el alumno." };
 
   const { data: alumno, error: alumnoError } = await supabase.from("alumno").insert(parsed.datos).select("id").single();
 
@@ -118,67 +187,42 @@ export async function crearAlumno(formData: FormData): Promise<ActionResult> {
     if (fotosError) return { ok: false, error: `Alumno creado, pero no se pudieron guardar las fotos: ${fotosError.message}` };
   }
 
-  const aplicaPromocion = formData.get("aplicar_promocion") === "on";
-  let precio_acordado: number | null = null;
-  let promocion_id: string | null = null;
-  let autorizado_por: string | null = null;
-
-  if (aplicaPromocion) {
-    precio_acordado = opcionalNumero(formData, "precio");
-    if (precio_acordado === null || precio_acordado <= 0) {
-      return { ok: false, error: "Alumno creado, pero el precio de la promoción no es válido (debe ser mayor a 0)." };
-    }
-    promocion_id = opcional(formData, "promocion_id");
-    autorizado_por = await buscarAdminAutorizador(supabase);
-    if (!autorizado_por) {
-      return {
-        ok: false,
-        error: "Alumno creado, pero no se encontró un usuario administrador para autorizar el precio promocional.",
-      };
-    }
-  }
-
   const fechaInicio = new Date().toISOString().slice(0, 10);
-
-  const { data: inscripcion, error: inscripcionError } = await supabase
-    .from("inscripcion")
-    .insert({
-      alumno_id: alumno.id,
-      plan_id,
-      fecha_inicio: fechaInicio,
-      precio_acordado,
-      promocion_id,
-      autorizado_por,
-    })
-    .select("id")
-    .single();
-
-  if (inscripcionError || !inscripcion) {
-    return { ok: false, error: `Alumno creado, pero falló la asignación del plan: ${inscripcionError?.message ?? "error desconocido"}` };
-  }
-
-  // La cuota se cobra por precio_acordado si se aplicó promoción; si no, por el
-  // precio de lista vigente del plan (mismo patrón que ya usa src/app/planes/data.ts).
-  let montoCuota = precio_acordado;
-  if (montoCuota === null) {
-    const { data: precioVigenteRow, error: precioError } = await supabase
-      .from("plan_precio_historico")
-      .select("precio")
-      .eq("plan_id", plan_id)
-      .is("vigente_hasta", null)
-      .maybeSingle();
-    if (precioError) {
-      return { ok: false, error: `Alumno y plan asignados, pero no se pudo leer el precio del plan: ${precioError.message}` };
-    }
-    montoCuota = precioVigenteRow?.precio ?? null;
-  }
-
-  if (montoCuota !== null) {
-    const { error: cuotaError } = await crearCuotaInicial(supabase, inscripcion.id, montoCuota, fechaInicio);
-    if (cuotaError) return { ok: false, error: `Alumno y plan asignados, pero ${cuotaError}` };
-  }
+  const { error: inscripcionError } = await crearInscripcionConCuota(supabase, alumno.id, formData, fechaInicio);
+  if (inscripcionError) return { ok: false, error: `Alumno creado, pero ${inscripcionError}` };
 
   revalidatePath("/alumnos");
+  revalidatePath("/planes");
+  revalidatePath("/cuotas");
+  return { ok: true };
+}
+
+// Re-inscribe a un alumno que no tiene una inscripción activa (dado de baja, o
+// con la inscripción anterior finalizada) — a una fecha y un plan elegidos, que
+// pueden ser distintos a los de la inscripción anterior.
+export async function reinscribirAlumno(alumnoId: string, formData: FormData): Promise<ActionResult> {
+  const supabase = createServerClient();
+
+  const fechaInicio = opcional(formData, "fecha_inicio") ?? new Date().toISOString().slice(0, 10);
+
+  // Cierre defensivo: normalmente no debería quedar ninguna inscripción activa acá
+  // (actualizarAlumno ya cierra la inscripción al dar de baja), pero cubre el caso
+  // de reinscribir sin haber pasado por "de baja" primero.
+  const { error: cierreError } = await supabase
+    .from("inscripcion")
+    .update({ estado: "finalizada", fecha_fin: fechaInicio })
+    .eq("alumno_id", alumnoId)
+    .eq("estado", "activa");
+  if (cierreError) return { ok: false, error: `No se pudo cerrar la inscripción anterior: ${cierreError.message}` };
+
+  const { error: alumnoError } = await supabase.from("alumno").update({ estado: "activo" }).eq("id", alumnoId);
+  if (alumnoError) return { ok: false, error: `No se pudo reactivar al alumno: ${alumnoError.message}` };
+
+  const { error: inscripcionError } = await crearInscripcionConCuota(supabase, alumnoId, formData, fechaInicio);
+  if (inscripcionError) return { ok: false, error: `Alumno reactivado, pero ${inscripcionError}` };
+
+  revalidatePath("/alumnos");
+  revalidatePath(`/alumnos/${alumnoId}`);
   revalidatePath("/planes");
   revalidatePath("/cuotas");
   return { ok: true };
@@ -191,6 +235,18 @@ export async function actualizarAlumno(alumnoId: string, formData: FormData): Pr
   if (!parsed.ok) return parsed;
 
   const estado = String(formData.get("estado") ?? "activo");
+
+  // Al dar de baja, se cierra la inscripción activa (si hay una) con fecha_fin =
+  // hoy, para que el historial de inscripciones registre cuánto duró el período
+  // real, en vez de dejarlo abierto hasta que el alumno se reinscriba.
+  if (estado === "de_baja") {
+    const { error: cierreError } = await supabase
+      .from("inscripcion")
+      .update({ estado: "finalizada", fecha_fin: new Date().toISOString().slice(0, 10) })
+      .eq("alumno_id", alumnoId)
+      .eq("estado", "activa");
+    if (cierreError) return { ok: false, error: `No se pudo cerrar la inscripción activa: ${cierreError.message}` };
+  }
 
   const fotoInicial = await subirFotoSiCorresponde(supabase, alumnoId, formData, "foto_inicial");
   if (fotoInicial.error) return { ok: false, error: fotoInicial.error };

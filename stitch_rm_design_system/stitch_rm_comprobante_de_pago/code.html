@@ -1,0 +1,239 @@
+<!DOCTYPE html><html lang="es" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Comprobante de Pago - Centro RM</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#3cb5e2",
+                        "on-primary-fixed-variant": "#693c00",
+                        "inverse-primary": "#ffb86e",
+                        "primary-container": "#e8973a",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#8a5100",
+                        "on-background": "#1a1c1c",
+                        "on-primary": "#ffffff",
+                        "background": "#f9f9f9",
+                        "surface-container-lowest": "#ffffff",
+                        "info": "#2196F3",
+                        "on-error": "#ffffff",
+                        "surface-bright": "#f9f9f9",
+                        "inverse-surface": "#2f3131",
+                        "on-tertiary-container": "#004358",
+                        "inverse-on-surface": "#f1f1f1",
+                        "primary": "#8a5100",
+                        "secondary": "#4f6264",
+                        "outline": "#857464",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#ffdcbd",
+                        "on-tertiary-fixed": "#001f2a",
+                        "surface": "#f9f9f9",
+                        "secondary-fixed-dim": "#b6cacc",
+                        "error": "#F44336",
+                        "border": "#D0D0D0",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f3f3f3",
+                        "on-surface-variant": "#534436",
+                        "surface-white": "#FFFFFF",
+                        "on-secondary-container": "#536668",
+                        "secondary-fixed": "#d2e6e8",
+                        "on-tertiary-fixed-variant": "#004d64",
+                        "tertiary": "#006684",
+                        "surface-variant": "#e2e2e2",
+                        "tertiary-fixed-dim": "#69d3ff",
+                        "warning": "#FFC107",
+                        "on-secondary-fixed-variant": "#384a4c",
+                        "on-primary-fixed": "#2c1600",
+                        "tertiary-fixed": "#bee9ff",
+                        "on-primary-container": "#5c3400",
+                        "on-surface": "#1a1c1c",
+                        "on-secondary-fixed": "#0c1e20",
+                        "surface-container-highest": "#e2e2e2",
+                        "surface-container": "#eeeeee",
+                        "secondary-container": "#cfe3e6",
+                        "success": "#4CAF50",
+                        "text-muted": "#757575",
+                        "surface-dim": "#dadada",
+                        "outline-variant": "#d8c3b1",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#ffb86e",
+                        "surface-container-high": "#e8e8e8"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "lg": "24px",
+                        "container-max": "1280px",
+                        "gutter": "24px",
+                        "xs": "4px",
+                        "sm": "8px",
+                        "xl": "32px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "label-bold": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "data-mono": ["JetBrains Mono"],
+                        "caption": ["Hanken Grotesk"],
+                        "body-sm": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        @media print {
+            body { background: white; }
+            .no-print { display: none; }
+            .print-container { 
+                box-shadow: none !important; 
+                border: none !important;
+                width: 148mm;
+                height: 210mm;
+                padding: 10mm;
+            }
+        }
+        .receipt-card {
+            max-width: 500px;
+            margin: 40px auto;
+            border: 1px solid #D0D0D0;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-lg text-on-surface min-h-screen p-md flex flex-col items-center">
+<!-- Action Bar (Not for Print) -->
+<div class="no-print w-full max-w-[500px] mb-md flex justify-between items-center">
+<button class="flex items-center gap-xs px-md py-sm bg-primary-container text-on-primary font-label-bold text-label-bold rounded-lg hover:brightness-95 transition-all" onclick="window.print()">
+<span class="material-symbols-outlined text-[20px]">print</span>
+            Imprimir Recibo
+        </button>
+<button class="flex items-center gap-xs px-md py-sm bg-secondary text-on-secondary font-label-bold text-label-bold rounded-lg hover:brightness-95 transition-all">
+<span class="material-symbols-outlined text-[20px]">share</span>
+            Compartir
+        </button>
+</div>
+<!-- Receipt Canvas -->
+<div class="print-container receipt-card bg-surface-white rounded-lg p-lg relative overflow-hidden" style="transition: 0.3s ease-out;">
+<!-- Subtle Background Decorative Element -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary-container/5 rounded-full -mr-16 -mt-16"></div>
+<!-- Header -->
+<div class="flex justify-between items-start mb-lg relative">
+<div class="flex items-center gap-sm">
+<img alt="Centro RM Logo" class="w-16 h-16 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQDZ3AbmfmTbqzVUxM1tc3kR5ziHQi1G6L6ReH1fvOMjh9tLL506spv6fmUswp69wY1Y2tcM8Ah_N8_SrS3aCpKP1bxNzwkj87fnRTjGANwBX35AaYXjwlUUPeB004GYQ2OqgOV2pYD6TP9nGqOoUx5VAb4XaZQEwQ9a-BafJma2GrqQ-tziwGdDEaVBH4NQjmBOMo7uQxwHKE7gvzux7Q9DMDZ2H2bevHuCx6E9PDw0ZBKx1mz5uZEPgdh9iottlmGg">
+<div>
+<h1 class="font-display-lg text-headline-md text-primary uppercase tracking-tight leading-none">Centro RM</h1>
+<p class="font-caption text-caption text-text-muted mt-xs">Gestión Deportiva Profesional</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label-bold text-label-bold text-secondary">N° 001-0004829</p>
+<p class="font-caption text-caption text-text-muted mt-xs">Fecha: 15/08/2024</p>
+</div>
+</div>
+<!-- Title -->
+<div class="border-y border-outline-variant py-sm mb-lg">
+<h2 class="font-display-lg text-headline-md text-center text-secondary tracking-widest uppercase">Comprobante de Pago</h2>
+</div>
+<!-- Student Info Section -->
+<div class="grid grid-cols-2 gap-md mb-lg">
+<div class="space-y-xs">
+<p class="font-caption text-caption text-text-muted uppercase tracking-wider">Alumno</p>
+<p class="font-label-bold text-body-lg text-secondary">Javier Méndez</p>
+</div>
+<div class="space-y-xs">
+<p class="font-caption text-caption text-text-muted uppercase tracking-wider">DNI / Documento</p>
+<p class="font-data-mono text-data-mono text-on-surface">34.928.112</p>
+</div>
+<div class="space-y-xs">
+<p class="font-caption text-caption text-text-muted uppercase tracking-wider">Estado de Socio</p>
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-success"></span>
+<p class="font-label-bold text-label-bold text-success uppercase">Activo</p>
+</div>
+</div>
+<div class="space-y-xs">
+<p class="font-caption text-caption text-text-muted uppercase tracking-wider">Sucursal</p>
+<p class="font-body-sm text-body-sm text-on-surface">Av. Principal 123</p>
+</div>
+</div>
+<!-- Payment Details Table -->
+<div class="mb-lg">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-secondary text-on-secondary">
+<th class="p-sm font-label-bold text-label-bold rounded-l-lg">Concepto</th>
+<th class="p-sm font-label-bold text-label-bold text-right rounded-r-lg">Monto</th>
+</tr>
+</thead>
+<tbody class="font-body-sm">
+<tr class="border-b border-outline-variant">
+<td class="p-sm py-md">
+<span class="block font-label-bold text-on-surface">Cuota Mensual - Musculación</span>
+<span class="text-text-muted">Período: Agosto 2024</span>
+</td>
+<td class="p-sm py-md text-right font-data-mono text-body-lg">$2.500,00</td>
+</tr><tr class="border-b border-outline-variant"><td class="p-sm py-md"><span class="block font-label-bold text-on-surface">Intereses por pago vencido</span><span class="text-text-muted">Recargo por mora</span></td><td class="p-sm py-md text-right font-data-mono text-body-lg">$250,00</td></tr>
+<tr>
+<td class="p-sm pt-md text-right font-label-bold text-secondary">Total Pagado</td>
+<td class="p-sm pt-md text-right font-display-lg text-headline-md text-primary">$2.750,00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Metadata -->
+<div class="bg-surface-container-low rounded-lg p-md mb-lg grid grid-cols-2 gap-sm">
+<div class="space-y-xs">
+<p class="font-caption text-caption text-text-muted uppercase">Medio de Pago</p>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px] text-secondary">payments</span>
+<p class="font-label-bold text-label-bold text-secondary">Efectivo</p>
+</div>
+</div>
+<div class="space-y-xs text-right">
+<p class="font-caption text-caption text-text-muted uppercase">Estado Final</p>
+<span class="inline-flex items-center px-sm py-xs bg-success/10 text-success rounded-full font-label-bold text-caption">
+<span class="material-symbols-outlined text-[14px] mr-xs" style="font-variation-settings: &quot;FILL&quot; 1;">check_circle</span>
+                    PAGADO - AL DÍA
+                </span>
+</div>
+</div>
+<!-- Footer / QR -->
+<div class="flex justify-between items-end pt-md border-t border-dashed border-outline">
+<div class="max-w-[60%]">
+<p class="font-label-bold text-label-bold text-secondary mb-xs">¡Gracias por entrenar con nosotros!</p>
+<p class="font-caption text-caption text-text-muted">Centro RM - Dirección: Av. Principal 123, Ciudad. Tel: +54 9 11 2233-4455.</p>
+</div>
+
+</div>
+</div>
+<!-- Bottom Spacing for screen view -->
+<div class="h-10 no-print"></div>
+<script>
+        // Micro-interaction for hover effects on the receipt when in browser
+        const receipt = document.querySelector('.receipt-card');
+        receipt.addEventListener('mouseenter', () => {
+            receipt.classList.add('scale-[1.005]');
+            receipt.style.transition = 'all 0.3s ease-out';
+        });
+        receipt.addEventListener('mouseleave', () => {
+            receipt.classList.remove('scale-[1.005]');
+        });
+    </script>
+
+
+</body></html>

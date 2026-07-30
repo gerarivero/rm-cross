@@ -3,6 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import type { ConfiguracionPagos, CuotaConDetalle } from "@/lib/supabase/types";
 import { RegistrarPagoModal } from "./RegistrarPagoModal";
+import { DetallePagosModal } from "./DetallePagosModal";
 import { actualizarConfiguracionPagos } from "./actions";
 
 const PAGE_SIZES = [10, 25, 50] as const;
@@ -32,6 +33,7 @@ export function CuotasView({ cuotas, configuracion }: { cuotas: CuotaConDetalle[
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(PAGE_SIZES[0]);
   const [cuotaPagando, setCuotaPagando] = useState<CuotaConDetalle | null>(null);
+  const [cuotaDetalle, setCuotaDetalle] = useState<CuotaConDetalle | null>(null);
 
   const [configError, setConfigError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -191,6 +193,7 @@ export function CuotasView({ cuotas, configuracion }: { cuotas: CuotaConDetalle[
                   <th className="px-lg py-4 font-label-bold text-label-bold">Vencimiento</th>
                   <th className="px-lg py-4 font-label-bold text-label-bold">Monto</th>
                   <th className="px-lg py-4 font-label-bold text-label-bold">Recargo</th>
+                  <th className="px-lg py-4 font-label-bold text-label-bold">Saldo</th>
                   <th className="px-lg py-4 font-label-bold text-label-bold">Estado</th>
                   <th className="px-lg py-4 font-label-bold text-label-bold text-right">Acciones</th>
                 </tr>
@@ -198,7 +201,7 @@ export function CuotasView({ cuotas, configuracion }: { cuotas: CuotaConDetalle[
               <tbody className="divide-y divide-border">
                 {paginatedCuotas.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="px-lg py-lg text-center text-body-sm text-text-muted">
+                    <td colSpan={9} className="px-lg py-lg text-center text-body-sm text-text-muted">
                       {cuotas.length === 0
                         ? "Todavía no hay cuotas generadas. Se crean automáticamente al dar de alta un alumno con un plan."
                         : "Ninguna cuota coincide con la búsqueda."}
@@ -225,21 +228,48 @@ export function CuotasView({ cuotas, configuracion }: { cuotas: CuotaConDetalle[
                       <td className="px-lg py-4 font-data-mono text-data-mono text-error">
                         {cuota.recargo_efectivo > 0 ? `+${formatoMoneda(cuota.recargo_efectivo)}` : "—"}
                       </td>
+                      <td className="px-lg py-4 font-data-mono text-data-mono">
+                        {cuota.estado_efectivo === "pagada" ? (
+                          <span className="text-success">Pagada</span>
+                        ) : (
+                          formatoMoneda(cuota.total_adeudado)
+                        )}
+                      </td>
                       <td className="px-lg py-4">
                         <span className={`px-3 py-1 rounded-full text-caption font-label-bold ${ESTADO_ESTILO[cuota.estado_efectivo]}`}>
                           {ESTADO_LABEL[cuota.estado_efectivo]}
                         </span>
                       </td>
-                      <td className="px-lg py-4 text-right">
-                        {cuota.estado_efectivo !== "pagada" && (
+                      <td className="px-lg py-4">
+                        <div className="flex items-center justify-end gap-1">
+                          {cuota.estado_efectivo !== "pagada" && (
+                            <button
+                              onClick={() => setCuotaPagando(cuota)}
+                              title="Registrar Pago"
+                              className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-low rounded-lg transition-colors"
+                            >
+                              <span className="material-symbols-outlined text-[20px]">payments</span>
+                            </button>
+                          )}
                           <button
-                            onClick={() => setCuotaPagando(cuota)}
-                            className="flex items-center gap-1 ml-auto px-3 py-1.5 bg-primary-container text-on-primary-container rounded-lg text-caption font-label-bold hover:opacity-90 transition-opacity"
+                            onClick={() => setCuotaDetalle(cuota)}
+                            title="Ver Detalle"
+                            className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-low rounded-lg transition-colors"
                           >
-                            <span className="material-symbols-outlined text-[16px]">add_card</span>
-                            Registrar Pago
+                            <span className="material-symbols-outlined text-[20px]">visibility</span>
                           </button>
-                        )}
+                          {cuota.estado_efectivo === "pagada" && (
+                            <a
+                              href={`/cuotas/${cuota.id}/comprobante`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title="Generar Comprobante"
+                              className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-low rounded-lg transition-colors"
+                            >
+                              <span className="material-symbols-outlined text-[20px]">receipt_long</span>
+                            </a>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
@@ -283,6 +313,7 @@ export function CuotasView({ cuotas, configuracion }: { cuotas: CuotaConDetalle[
       </div>
 
       {cuotaPagando && <RegistrarPagoModal cuota={cuotaPagando} onClose={() => setCuotaPagando(null)} />}
+      {cuotaDetalle && <DetallePagosModal cuota={cuotaDetalle} onClose={() => setCuotaDetalle(null)} />}
     </>
   );
 }

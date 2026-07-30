@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import type { AlumnoDetalle, CuotaDeAlumno, PlanConPrecio, Turno } from "@/lib/supabase/types";
+import type { AlumnoDetalle, CuotaDeAlumno, InscripcionHistorial, PlanConPrecio, Turno } from "@/lib/supabase/types";
 import { AlumnoFormModal } from "../AlumnoFormModal";
+import { ReinscribirModal } from "../ReinscribirModal";
 
 const ESTADO_ESTILO: Record<string, string> = {
   activo: "bg-success/10 text-success",
@@ -46,14 +47,17 @@ export function AlumnoDetalleView({
   turnos,
   promociones,
   cuotas,
+  historialInscripciones,
 }: {
   alumno: AlumnoDetalle;
   planes: PlanConPrecio[];
   turnos: Turno[];
   promociones: { id: string; nombre: string; plan_ids: string[] }[];
   cuotas: CuotaDeAlumno[];
+  historialInscripciones: InscripcionHistorial[];
 }) {
   const [modalEditarOpen, setModalEditarOpen] = useState(false);
+  const [modalReinscribirOpen, setModalReinscribirOpen] = useState(false);
   const nombreCompleto = alumno.nombre || alumno.apellido ? `${alumno.nombre ?? ""} ${alumno.apellido ?? ""}`.trim() : `DNI ${alumno.dni}`;
 
   return (
@@ -140,7 +144,62 @@ export function AlumnoDetalleView({
               )}
             </div>
           ) : (
-            <p className="text-body-sm text-text-muted">Este alumno no tiene un plan activo.</p>
+            <div className="flex items-center justify-between">
+              <p className="text-body-sm text-text-muted">Este alumno no tiene un plan activo.</p>
+              <button
+                onClick={() => setModalReinscribirOpen(true)}
+                className="flex items-center gap-xs px-lg py-2 bg-primary-container text-on-primary-container rounded-lg hover:opacity-90 transition-opacity font-label-bold text-label-bold"
+              >
+                <span className="material-symbols-outlined text-[18px]">redo</span>
+                Reinscribir
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Card: Historial de Inscripciones */}
+        <div className="bg-surface-white border border-border rounded-xl shadow-sm overflow-hidden">
+          <div className="px-lg py-md border-b border-border">
+            <h3 className="font-headline-md text-headline-md text-on-background">Historial de Inscripciones</h3>
+          </div>
+          {historialInscripciones.length === 0 ? (
+            <p className="px-lg py-lg text-center text-body-sm text-text-muted">Este alumno todavía no tiene inscripciones registradas.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-secondary text-on-secondary">
+                    <th className="px-lg py-4 font-label-bold text-label-bold">Plan</th>
+                    <th className="px-lg py-4 font-label-bold text-label-bold">Desde</th>
+                    <th className="px-lg py-4 font-label-bold text-label-bold">Hasta</th>
+                    <th className="px-lg py-4 font-label-bold text-label-bold">Duración</th>
+                    <th className="px-lg py-4 font-label-bold text-label-bold">Estado</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {historialInscripciones.map((insc, i) => (
+                    <tr key={insc.id} className={i % 2 === 1 ? "bg-surface-container-lowest" : ""}>
+                      <td className="px-lg py-4 text-body-sm text-on-surface">{insc.plan.nombre}</td>
+                      <td className="px-lg py-4 text-body-sm text-on-surface-variant">{formatoFecha(insc.fecha_inicio)}</td>
+                      <td className="px-lg py-4 text-body-sm text-on-surface-variant">{insc.fecha_fin ? formatoFecha(insc.fecha_fin) : "—"}</td>
+                      <td className="px-lg py-4 text-body-sm text-on-surface">
+                        {insc.duracion}
+                        {!insc.fecha_fin && <span className="text-text-muted"> (en curso)</span>}
+                      </td>
+                      <td className="px-lg py-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-caption font-label-bold ${
+                            insc.estado === "activa" ? "bg-success/10 text-success" : "bg-surface-container-high text-on-surface-variant"
+                          }`}
+                        >
+                          {insc.estado === "activa" ? "Activa" : insc.estado === "pausada" ? "Pausada" : "Finalizada"}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
 
@@ -231,6 +290,9 @@ export function AlumnoDetalleView({
           promociones={promociones}
           onClose={() => setModalEditarOpen(false)}
         />
+      )}
+      {modalReinscribirOpen && (
+        <ReinscribirModal alumno={alumno} planes={planes} promociones={promociones} onClose={() => setModalReinscribirOpen(false)} />
       )}
     </>
   );
