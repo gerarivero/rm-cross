@@ -35,6 +35,23 @@ export type PlanConPrecio = Plan & {
   alumnos_count: number;
 };
 
+export type Profesor = {
+  id: string;
+  dni: string;
+  nombre: string;
+  apellido: string;
+  email: string | null;
+  celular: string | null;
+  fecha_nacimiento: string | null;
+  fecha_alta: string;
+  activo: boolean;
+  creado_en: string;
+};
+
+export type ProfesorConDisciplinas = Profesor & {
+  disciplinas: Pick<Disciplina, "id" | "nombre">[];
+};
+
 export type EstadoPersona = "activo" | "inactivo" | "de_baja" | "suspendido";
 
 export type Alumno = {

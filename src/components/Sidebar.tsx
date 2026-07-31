@@ -18,7 +18,7 @@ const NAV_ITEMS = [
 
 // Rutas ya implementadas con datos reales. El resto navega pero muestra un
 // aviso de "en construcción" hasta que se porten desde la maqueta de Stitch.
-const RUTAS_IMPLEMENTADAS = new Set(["/dashboard", "/planes", "/alumnos", "/cuotas", "/rutinas"]);
+const RUTAS_IMPLEMENTADAS = new Set(["/dashboard", "/planes", "/alumnos", "/profesores", "/cuotas", "/rutinas"]);
 
 export function Sidebar({ activo }: { activo: string }) {
   const [hovered, setHovered] = useState(false);

@@ -638,6 +638,28 @@ a cobrar → aniversarios; dentro de cada tipo, por fecha):
 
 ---
 
+## 3.8. Módulo de Profesores (implementado, `0009_profesores.sql`)
+
+`/profesores` — roster de profesores + qué disciplinas dicta cada uno. Tabla
+`profesor` propia (no deriva de `usuario`, que sigue siendo solo un actor mínimo de
+auditoría/placeholder sin auth real — ver sección 6) con `dni`/`nombre`/`apellido`
+obligatorios (a diferencia de `alumno`, acá no hay flujo de alta apurada: el
+administrador carga los datos completos de una) y `activo` booleano simple (sin el
+enum de 4 estados de `alumno`, que existe por el ciclo de vida de
+inscripción/cuotas — un profesor no lo tiene en esta entrega).
+
+`profesor_disciplina` es la relación muchos-a-muchos con el catálogo `disciplina` ya
+existente (mismo patrón que `promocion_plan`): un profesor puede dictar varias
+disciplinas, sincronizada en cada alta/edición (`sincronizarDisciplinasDeProfesor`,
+`src/app/profesores/actions.ts`) con el patrón delete-then-insert ya usado en
+Promociones.
+
+Fuera de alcance de esta entrega: turnos/horario por profesor, asistencia de
+profesores, y cualquier vínculo con `rutina.creado_por` o con el futuro sistema de
+autenticación — el módulo queda intencionalmente aislado del resto del schema.
+
+---
+
 ## 4. Diseño original de prorrateo (no implementado, referencia histórica)
 
 > **Superado por la sección 3.** Esta era la propuesta inicial (ciclo por mes
