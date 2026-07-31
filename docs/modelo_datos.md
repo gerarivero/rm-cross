@@ -597,6 +597,45 @@ para esta planilla específica, sin que eso cambie la lógica de datos.
 hay login de alumnos todavía), marcar ejercicios como "completados" (seguimiento de
 cumplimiento), y duplicar una semana dentro del builder.
 
+## 3.6. Fecha de fin de la asignación de rutina + alerta de revisión (implementado, `0008_rutina_fecha_fin.sql`)
+
+`rutina_asignacion` suma `fecha_fin` (obligatoria en la UI para asignaciones nuevas,
+`check (fecha_fin >= fecha_inicio)`). Sin cron: la alerta de "esta rutina necesita
+revisión" es **derivada**, no un flag persistido — se calcula comparando `fecha_fin`
+con hoy en el momento de leer los datos (`estado = 'activa' && fecha_fin <= hoy`),
+igual criterio que `vencida` en Cuotas. Se refleja en dos lugares: el ícono "Ver
+detalle" de la tabla de Alumnos pasa a amarillo con un punto pulsante
+(`src/app/alumnos/AlumnosView.tsx`, primer uso de `animate-ping` en el proyecto), y una
+franja de aviso en la card "Rutina asignada" del detalle de Alumno. Se resuelve sola
+cuando el profesor asigna una rutina nueva — no hay botón de "descartar alerta".
+
+**Reasignar antes de vencer, o repetir la misma rutina:** `asignarRutina` siempre
+cierra la asignación `activa` del alumno y crea una fila nueva, sin importar si ya
+pasó la `fecha_fin` ni si la rutina elegida es la misma que tenía — no hay ninguna
+restricción "una rutina, una vez por alumno". Cada asignación queda como su propia fila
+con `fecha_inicio`/`fecha_fin` propios, así que repetir una rutina arma naturalmente un
+historial de "ciclos" en `rutina_asignacion`.
+
+## 3.7. Dashboard (implementado)
+
+`/dashboard` — antes solo un ítem deshabilitado del Sidebar. Cards: Total de Alumnos
+activos, Altas del mes con diferencial contra el mes pasado, Saldo de Deuda del Mes
+(cuotas adeudadas + vencidas del mes actual, reutiliza `getCuotas()` de Cuotas) y
+Cobrado este Mes (suma de cuotas `pagada` del mes — agregado no pedido explícitamente,
+complementa la card de deuda mostrando qué tan bien se está cobrando).
+
+Tabla de "Eventos Próximos" (`src/app/dashboard/data.ts`, `getEventosDashboard()`),
+combina cuatro fuentes y las ordena por urgencia (vencidas → revisión de rutina →
+a cobrar → aniversarios; dentro de cada tipo, por fecha):
+- **Cuotas vencidas**: `getCuotasVencidasGlobal()` (`src/app/cuotas/data.ts`) — a
+  diferencia de `getCuotas()` (acotada al mes actual), recorre **todas** las cuotas
+  todavía `adeudada` en la base sin importar el mes, para no perder deuda vencida de
+  períodos anteriores.
+- **Cuotas a cobrar**: adeudadas del mes actual (`getCuotas()`).
+- **Revisión de rutina**: mismo cálculo que la alerta de la sección 3.6.
+- **Aniversarios**: alumnos activos cuyo `fecha_alta` cumple mes/día dentro del mes
+  actual, con al menos 1 año cumplido.
+
 ---
 
 ## 4. Diseño original de prorrateo (no implementado, referencia histórica)

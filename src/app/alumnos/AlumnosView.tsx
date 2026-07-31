@@ -246,9 +246,19 @@ export function AlumnosView({
                       <div className="flex items-center justify-end gap-sm">
                         <a
                           href={`/alumnos/${alumno.id}`}
-                          className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors"
-                          title="Ver detalle"
+                          className={`relative p-2 rounded-lg transition-colors ${
+                            alumno.rutina_requiere_revision
+                              ? "text-warning hover:bg-warning/10"
+                              : "text-on-surface-variant hover:bg-surface-container-low"
+                          }`}
+                          title={alumno.rutina_requiere_revision ? "Revisar rutina vencida" : "Ver detalle"}
                         >
+                          {alumno.rutina_requiere_revision && (
+                            <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-warning opacity-75" />
+                              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-warning" />
+                            </span>
+                          )}
                           <span className="material-symbols-outlined text-[20px]">visibility</span>
                         </a>
                         <button

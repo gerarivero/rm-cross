@@ -142,6 +142,9 @@ export async function asignarRutina(rutinaId: string, formData: FormData): Promi
   const alumno_id = String(formData.get("alumno_id") ?? "");
   if (!alumno_id) return { ok: false, error: "Elegí un alumno." };
   const fecha_inicio = String(formData.get("fecha_inicio") ?? "").trim() || new Date().toISOString().slice(0, 10);
+  const fecha_fin = String(formData.get("fecha_fin") ?? "").trim();
+  if (!fecha_fin) return { ok: false, error: "Elegí una fecha de fin." };
+  if (fecha_fin < fecha_inicio) return { ok: false, error: "La fecha de fin no puede ser anterior a la de inicio." };
 
   const supabase = createServerClient();
 
@@ -152,7 +155,7 @@ export async function asignarRutina(rutinaId: string, formData: FormData): Promi
     .eq("estado", "activa");
   if (cierreError) return { ok: false, error: `No se pudo cerrar la rutina anterior del alumno: ${cierreError.message}` };
 
-  const { error } = await supabase.from("rutina_asignacion").insert({ rutina_id: rutinaId, alumno_id, fecha_inicio });
+  const { error } = await supabase.from("rutina_asignacion").insert({ rutina_id: rutinaId, alumno_id, fecha_inicio, fecha_fin });
   if (error) return { ok: false, error: `No se pudo asignar la rutina: ${error.message}` };
 
   revalidarRutina(rutinaId);

@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Modal } from "@/components/Modal";
+import { sumarMeses } from "../cuotas/estado";
 import { asignarRutina } from "../rutinas/[id]/actions";
 
 export function AsignarRutinaAlumnoModal({
@@ -16,6 +17,13 @@ export function AsignarRutinaAlumnoModal({
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const hoy = new Date().toISOString().slice(0, 10);
+  const [fechaInicio, setFechaInicio] = useState(hoy);
+  const [fechaFin, setFechaFin] = useState(sumarMeses(hoy, 1));
+
+  function handleFechaInicioChange(value: string) {
+    setFechaInicio(value);
+    setFechaFin(sumarMeses(value, 1));
+  }
 
   function handleSubmit(formData: FormData) {
     setError(null);
@@ -57,18 +65,32 @@ export function AsignarRutinaAlumnoModal({
             ))}
           </select>
         </div>
-        <div>
-          <label className="font-label-bold text-label-bold text-on-surface-variant">Fecha de inicio</label>
-          <input
-            name="fecha_inicio"
-            type="date"
-            required
-            defaultValue={hoy}
-            className="mt-1 w-full border border-border rounded-lg px-3 py-2 outline-none focus:border-primary-container"
-          />
+        <div className="grid grid-cols-2 gap-md">
+          <div>
+            <label className="font-label-bold text-label-bold text-on-surface-variant">Fecha de inicio</label>
+            <input
+              name="fecha_inicio"
+              type="date"
+              required
+              value={fechaInicio}
+              onChange={(e) => handleFechaInicioChange(e.target.value)}
+              className="mt-1 w-full border border-border rounded-lg px-3 py-2 outline-none focus:border-primary-container"
+            />
+          </div>
+          <div>
+            <label className="font-label-bold text-label-bold text-on-surface-variant">Fecha de fin</label>
+            <input
+              name="fecha_fin"
+              type="date"
+              required
+              value={fechaFin}
+              onChange={(e) => setFechaFin(e.target.value)}
+              className="mt-1 w-full border border-border rounded-lg px-3 py-2 outline-none focus:border-primary-container"
+            />
+          </div>
         </div>
         <p className="text-caption font-caption text-text-muted">
-          Si el alumno ya tiene otra rutina activa, se cierra automáticamente al asignar esta.
+          Si el alumno ya tiene otra rutina activa (incluida esta misma), se cierra automáticamente al asignar esta.
         </p>
         <div className="flex justify-end gap-sm">
           <button

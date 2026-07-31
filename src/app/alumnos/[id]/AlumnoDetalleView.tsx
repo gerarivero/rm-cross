@@ -225,11 +225,20 @@ export function AlumnoDetalleView({
         {/* Card: Rutina asignada */}
         <div className="bg-surface-white border border-border rounded-xl shadow-sm p-lg">
           <h3 className="font-headline-md text-headline-md text-on-background mb-md">Rutina asignada</h3>
+          {rutinaAsignada?.requiere_revision && (
+            <div className="flex items-center gap-2 bg-warning/10 text-warning rounded-lg px-md py-2 mb-md text-body-sm font-label-bold">
+              <span className="material-symbols-outlined text-[20px]">warning</span>
+              Esta rutina venció el {formatoFecha(rutinaAsignada.fecha_fin)} — revisala y asignale una nueva o extendé la fecha.
+            </div>
+          )}
           {rutinaAsignada ? (
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-label-bold text-label-bold text-on-surface">{rutinaAsignada.rutina.nombre}</p>
-                <p className="text-caption font-caption text-text-muted">Desde {formatoFecha(rutinaAsignada.fecha_inicio)}</p>
+                <p className="text-caption font-caption text-text-muted">
+                  Desde {formatoFecha(rutinaAsignada.fecha_inicio)}
+                  {rutinaAsignada.fecha_fin && ` — Hasta ${formatoFecha(rutinaAsignada.fecha_fin)}`}
+                </p>
               </div>
               <div className="flex items-center gap-sm">
                 <a

@@ -89,6 +89,23 @@ export async function getCuotasHistorico(): Promise<CuotaConDetalle[]> {
   return (cuotas ?? []).map((row: any) => mapearCuota(row, config, hoy));
 }
 
+// Cuotas todavía no pagadas, de cualquier mes, que ya están vencidas — a diferencia
+// de getCuotas() (acotada al mes actual), esto no pierde deuda de meses anteriores.
+// Usado por el Dashboard para el saldo/eventos de "cuotas vencidas".
+export async function getCuotasVencidasGlobal(): Promise<CuotaConDetalle[]> {
+  const supabase = createServerClient();
+
+  const [{ data: cuotas, error }, config] = await Promise.all([
+    supabase.from("cuota").select(CUOTA_SELECT).eq("estado", "adeudada").order("fecha_vencimiento"),
+    getConfiguracionPagos(),
+  ]);
+
+  if (error) throw new Error(`No se pudieron cargar las cuotas vencidas: ${error.message}`);
+
+  const hoy = new Date().toISOString().slice(0, 10);
+  return (cuotas ?? []).map((row: any) => mapearCuota(row, config, hoy)).filter((c) => c.estado_efectivo === "vencida");
+}
+
 // Historial de cuotas de un alumno puntual (todas sus inscripciones, no solo la
 // activa), para la card "Registro de Cuotas" del detalle de Alumno.
 export async function getCuotasDeAlumno(alumnoId: string): Promise<CuotaDeAlumno[]> {

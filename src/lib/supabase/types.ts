@@ -98,13 +98,15 @@ export type InscripcionHistorial = Pick<Inscripcion, "id" | "fecha_inicio" | "fe
 };
 
 // Vista de lista que usa la tabla de Alumnos: alumno + su inscripción activa
-// (plan + precio) + turno + rutina activa asignada (si tiene).
+// (plan + precio) + turno + rutina activa asignada (si tiene). rutina_requiere_revision:
+// la rutina activa ya pasó su fecha_fin — calculado al vuelo, sin cron.
 export type AlumnoConPlan = Alumno & {
   turno: Pick<Turno, "id" | "nombre"> | null;
   plan: Pick<Plan, "id" | "nombre"> | null;
   precio: number | null;
   fecha_inscripcion: string | null;
   rutina: Pick<Rutina, "id" | "nombre"> | null;
+  rutina_requiere_revision: boolean;
 };
 
 // Vista compuesta de la página de detalle: plan + historial completo de precios
@@ -284,6 +286,7 @@ export type RutinaAsignacion = {
   rutina_id: string;
   alumno_id: string;
   fecha_inicio: string;
+  fecha_fin: string | null;
   estado: EstadoAsignacion;
   creado_en: string;
 };
@@ -293,9 +296,12 @@ export type RutinaAsignacionConAlumno = RutinaAsignacion & {
   alumno: Pick<Alumno, "id" | "dni" | "nombre" | "apellido">;
 };
 
-// Vista que usa el detalle de Alumno: la rutina activa asignada (si tiene).
+// Vista que usa el detalle de Alumno: la rutina activa asignada (si tiene). requiere_revision:
+// la fecha de fin ya pasó y sigue activa — calculado al vuelo, sin cron (ver src/app/alumnos/data.ts).
 export type RutinaAsignadaDeAlumno = {
   asignacion_id: string;
   fecha_inicio: string;
+  fecha_fin: string | null;
+  requiere_revision: boolean;
   rutina: Pick<Rutina, "id" | "nombre">;
 };

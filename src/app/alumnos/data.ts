@@ -43,16 +43,19 @@ export async function getAlumnos(): Promise<AlumnoConPlan[]> {
         .from("inscripcion")
         .select("alumno_id, fecha_inicio, precio_acordado, plan:plan_id(id, nombre, plan_precio_historico(precio, vigente_hasta))")
         .eq("estado", "activa"),
-      supabase.from("rutina_asignacion").select("alumno_id, rutina:rutina_id(id, nombre)").eq("estado", "activa"),
+      supabase.from("rutina_asignacion").select("alumno_id, fecha_fin, rutina:rutina_id(id, nombre)").eq("estado", "activa"),
     ]);
 
   if (error) throw new Error(`No se pudieron cargar los alumnos: ${error.message}`);
   if (inscError) throw new Error(`No se pudo cargar el plan de los alumnos: ${inscError.message}`);
   if (asignacionesError) throw new Error(`No se pudo cargar la rutina de los alumnos: ${asignacionesError.message}`);
 
+  const hoy = new Date().toISOString().slice(0, 10);
   const rutinaPorAlumno = new Map<string, { id: string; nombre: string }>();
+  const revisionPorAlumno = new Map<string, boolean>();
   for (const a of (asignaciones ?? []) as any[]) {
     if (a.rutina) rutinaPorAlumno.set(a.alumno_id, a.rutina);
+    revisionPorAlumno.set(a.alumno_id, a.fecha_fin !== null && a.fecha_fin <= hoy);
   }
 
   const planPorAlumno = new Map<
@@ -78,6 +81,7 @@ export async function getAlumnos(): Promise<AlumnoConPlan[]> {
       precio: info?.precio ?? null,
       fecha_inscripcion: info?.fecha_inscripcion ?? null,
       rutina: rutinaPorAlumno.get(row.id) ?? null,
+      rutina_requiere_revision: revisionPorAlumno.get(row.id) ?? false,
     } as AlumnoConPlan;
   });
 }

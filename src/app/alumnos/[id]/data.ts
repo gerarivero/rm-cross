@@ -77,7 +77,7 @@ export async function getRutinaAsignada(alumnoId: string): Promise<RutinaAsignad
 
   const { data, error } = await supabase
     .from("rutina_asignacion")
-    .select("id, fecha_inicio, rutina:rutina_id(id, nombre)")
+    .select("id, fecha_inicio, fecha_fin, rutina:rutina_id(id, nombre)")
     .eq("alumno_id", alumnoId)
     .eq("estado", "activa")
     .maybeSingle();
@@ -85,7 +85,14 @@ export async function getRutinaAsignada(alumnoId: string): Promise<RutinaAsignad
   if (error) throw new Error(`No se pudo cargar la rutina asignada: ${error.message}`);
   if (!data) return null;
 
-  return { asignacion_id: data.id, fecha_inicio: data.fecha_inicio, rutina: (data as any).rutina };
+  const hoy = new Date().toISOString().slice(0, 10);
+  return {
+    asignacion_id: data.id,
+    fecha_inicio: data.fecha_inicio,
+    fecha_fin: data.fecha_fin,
+    requiere_revision: data.fecha_fin !== null && data.fecha_fin <= hoy,
+    rutina: (data as any).rutina,
+  };
 }
 
 // Rutinas activas disponibles para asignar desde el detalle de Alumno.
