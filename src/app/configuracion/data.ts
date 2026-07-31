@@ -2,18 +2,17 @@ import { createServerClient } from "@/lib/supabase/server";
 import type { Disciplina, Turno, UsuarioAdmin } from "@/lib/supabase/types";
 
 export { getConfiguracionPagos } from "../cuotas/data";
-export { getProfesores } from "../profesores/data";
 
 export async function getAdministradores(): Promise<UsuarioAdmin[]> {
   const supabase = createServerClient();
   const { data, error } = await supabase
     .from("usuario")
-    .select("id, nombre, email, activo, creado_en, profesor_id, profesor:profesor_id(id, nombre, apellido)")
+    .select("id, nombre, email, activo, creado_en, auth_user_id")
     .eq("es_admin", true)
     .order("nombre");
 
   if (error) throw new Error(`No se pudieron cargar los administradores: ${error.message}`);
-  return (data ?? []) as unknown as UsuarioAdmin[];
+  return (data ?? []) as UsuarioAdmin[];
 }
 
 // A diferencia de getDisciplinas (Planes, filtra activo = true), acá la pantalla

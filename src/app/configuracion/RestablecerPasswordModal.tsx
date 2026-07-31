@@ -4,30 +4,18 @@ import { useState, useTransition } from "react";
 import { Modal } from "@/components/Modal";
 import { PasswordInput } from "@/components/PasswordInput";
 import type { UsuarioAdmin } from "@/lib/supabase/types";
-import { actualizarAdministrador, crearAdministrador } from "./actions";
+import { restablecerPasswordAdministrador } from "./actions";
 
-const inputClass = "mt-1 w-full border border-border rounded-lg px-3 py-2 outline-none focus:border-primary-container";
 const labelClass = "font-label-bold text-label-bold text-on-surface-variant";
 
-export function AdministradorFormModal({
-  mode,
-  administrador,
-  onClose,
-}: {
-  mode: "create" | "edit";
-  administrador?: UsuarioAdmin;
-  onClose: () => void;
-}) {
+export function RestablecerPasswordModal({ administrador, onClose }: { administrador: UsuarioAdmin; onClose: () => void }) {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   function handleSubmit(formData: FormData) {
     setError(null);
     startTransition(async () => {
-      const result =
-        mode === "edit" && administrador
-          ? await actualizarAdministrador(administrador.id, formData)
-          : await crearAdministrador(formData);
+      const result = await restablecerPasswordAdministrador(administrador.id, formData);
       if (!result.ok) {
         setError(result.error);
         return;
@@ -37,23 +25,17 @@ export function AdministradorFormModal({
   }
 
   return (
-    <Modal title={mode === "edit" ? "Editar Administrador" : "Nuevo Administrador"} onClose={onClose} maxWidth="max-w-md">
+    <Modal title={`Restablecer contraseña de ${administrador.nombre}`} onClose={onClose} maxWidth="max-w-md">
       {error && <div className="bg-error/10 border border-error/30 text-error rounded-lg p-sm text-body-sm mb-md">{error}</div>}
       <form action={handleSubmit} className="space-y-md">
         <div>
-          <label className={labelClass}>Nombre</label>
-          <input name="nombre" required defaultValue={administrador?.nombre} className={inputClass} />
+          <label className={labelClass}>Nueva contraseña</label>
+          <PasswordInput name="password" required minLength={8} autoComplete="new-password" />
         </div>
         <div>
-          <label className={labelClass}>Email</label>
-          <input name="email" type="email" required defaultValue={administrador?.email} className={inputClass} />
+          <label className={labelClass}>Confirmar contraseña</label>
+          <PasswordInput name="confirmar" required minLength={8} autoComplete="new-password" />
         </div>
-        {mode === "create" && (
-          <div>
-            <label className={labelClass}>Contraseña inicial</label>
-            <PasswordInput name="password" required minLength={8} autoComplete="new-password" />
-          </div>
-        )}
         <div className="flex justify-end gap-sm">
           <button
             type="button"
@@ -68,7 +50,7 @@ export function AdministradorFormModal({
             type="submit"
             className="bg-primary-container text-on-primary-container px-lg py-2 rounded-lg font-label-bold text-label-bold disabled:opacity-50"
           >
-            {isPending ? "Guardando..." : "Guardar Administrador"}
+            {isPending ? "Guardando..." : "Restablecer Contraseña"}
           </button>
         </div>
       </form>

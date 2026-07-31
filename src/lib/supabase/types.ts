@@ -58,8 +58,7 @@ export type UsuarioAdmin = {
   email: string;
   activo: boolean;
   creado_en: string;
-  profesor_id: string | null;
-  profesor: Pick<Profesor, "id" | "nombre" | "apellido"> | null;
+  auth_user_id: string;
 };
 
 export type EstadoPersona = "activo" | "inactivo" | "de_baja" | "suspendido";

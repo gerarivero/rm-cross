@@ -31,25 +31,27 @@ export type UsuarioActual = {
   email: string;
   tipo: "profesor" | "alumno";
   es_admin: boolean;
-  profesor_id: string | null;
+  auth_user_id: string;
 };
 
 // Usuario logueado (Supabase Auth) + su fila en `usuario` (perfil de aplicación),
-// vinculados por email. `usuario` no tiene RLS todavía, así que esa parte se
-// resuelve con el cliente service-role ya existente.
+// vinculados por usuario.auth_user_id (no por email — el email es editable desde
+// Configuración, así que dejó de servir como clave de matching). `usuario` no
+// tiene RLS todavía, así que esa parte se resuelve con el cliente service-role ya
+// existente.
 export async function getUsuarioActual(): Promise<UsuarioActual | null> {
   const supabase = createSessionClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user?.email) return null;
+  if (!user) return null;
 
   const admin = createServiceRoleClient();
   const { data } = await admin
     .from("usuario")
-    .select("id, nombre, email, tipo, es_admin, profesor_id")
-    .eq("email", user.email)
+    .select("id, nombre, email, tipo, es_admin, auth_user_id")
+    .eq("auth_user_id", user.id)
     .maybeSingle();
 
   return data as UsuarioActual | null;

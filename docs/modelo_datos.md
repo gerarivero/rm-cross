@@ -774,25 +774,34 @@ La credencial del usuario admin sembrado (`admin@centrorm.local`,
 `0002_alumnos_promociones.sql`) se creó como Auth user con un paso manual único
 (Admin API), no vía migración SQL.
 
-## 6.2. Vínculo usuario ↔ profesor + gestión de administradores (implementado, `0011_usuario_profesor.sql`)
+## 6.2. Gestión completa de administradores (implementado, `0012_revertir_usuario_profesor.sql`)
 
-`usuario.profesor_id` (nullable, `on delete set null`) vincula opcionalmente un
-login administrador con su fila correspondiente en el roster `profesor`
-(`0009_profesores.sql`) — esa migración había dejado ambas tablas explícitamente
-sin relación; acá se agrega el vínculo, siempre opcional (un admin puede no estar
-en el roster, y un profesor del roster puede no tener login).
+El vínculo `usuario.profesor_id` con el roster (`0011_usuario_profesor.sql`) se
+revirtió — no tenía ningún consumidor real en la app. En su lugar, esta migración
+agrega `usuario.auth_user_id` (`references auth.users(id) on delete cascade`):
+`getUsuarioActual()` (`src/lib/supabase/session.ts`) ahora matchea por esa columna
+en vez de por email, porque el email de un administrador pasó a ser editable y
+dejó de servir como clave estable.
 
-- **Autogestión** (`/cuenta`, `src/app/cuenta/actions.ts` → `vincularProfesor`):
-  cualquier usuario logueado puede vincular/desvincular su propia cuenta con un
-  profesor activo del roster.
-- **Alta de administradores** (`/configuracion`, card "Administradores"): antes solo
-  existía el admin sembrado manualmente; ahora `crearAdministrador`
-  (`src/app/configuracion/actions.ts`) crea la Auth user (Admin API, mismo mecanismo
-  que el alta manual original) + la fila en `usuario` (`es_admin = true`) en un solo
-  paso, con vínculo a profesor opcional. `alternarActivoAdministrador` reutiliza
-  `usuario.activo` (ya validado en `iniciarSesion`) para revocar acceso sin borrar
-  el login — con un guard explícito: un admin no puede desactivarse a sí mismo desde
-  esta pantalla (evita bloquearse el acceso por error).
+Alta, edición, revocación y borrado de administradores, todo en `/configuracion`
+(card "Administradores", `src/app/configuracion/actions.ts`):
+
+- **`crearAdministrador`**: crea la Auth user (Admin API) + la fila en `usuario`
+  (`es_admin = true`, `auth_user_id` guardado) en un solo paso.
+- **`actualizarAdministrador`**: nombre y **email** — si el email cambió, primero
+  actualiza la Auth user (`auth.admin.updateUserById`) y recién después `usuario`,
+  para no desincronizarlos si la Auth API rechaza el nuevo email.
+- **`restablecerPasswordAdministrador`**: un admin le pone una contraseña nueva a
+  otro sin necesitar la anterior (`auth.admin.updateUserById`) — para cuando alguien
+  se queda afuera de su cuenta.
+- **`alternarActivoAdministrador`** / **`eliminarAdministrador`**: revocar acceso
+  (soft) o borrarlo del todo (Auth user + fila `usuario`). Ambas tienen guard: un
+  admin no puede desactivarse ni eliminarse a sí mismo desde esta pantalla.
+
+Los campos de contraseña de toda la app (login, cambiar mi contraseña, alta de
+administrador, restablecer contraseña de otro) usan
+`src/components/PasswordInput.tsx`, un input reutilizable con ícono de
+mostrar/ocultar.
 
 ## 7. Preguntas abiertas para vos
 

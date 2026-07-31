@@ -92,7 +92,6 @@ export async function crearAdministrador(formData: FormData): Promise<ActionResu
   const nombre = String(formData.get("nombre") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
-  const profesor_id = String(formData.get("profesor_id") ?? "").trim() || null;
 
   if (!nombre || !email) return { ok: false, error: "Nombre y email son obligatorios." };
   if (password.length < 8) return { ok: false, error: "La contraseña debe tener al menos 8 caracteres." };
@@ -110,7 +109,7 @@ export async function crearAdministrador(formData: FormData): Promise<ActionResu
 
   const { error: insertError } = await supabase
     .from("usuario")
-    .insert({ nombre, email, tipo: "profesor", es_admin: true, activo: true, profesor_id });
+    .insert({ nombre, email, tipo: "profesor", es_admin: true, activo: true, auth_user_id: authUser.user.id });
 
   if (insertError) {
     await supabase.auth.admin.deleteUser(authUser.user.id);
@@ -123,14 +122,48 @@ export async function crearAdministrador(formData: FormData): Promise<ActionResu
 
 export async function actualizarAdministrador(usuarioId: string, formData: FormData): Promise<ActionResult> {
   const nombre = String(formData.get("nombre") ?? "").trim();
-  if (!nombre) return { ok: false, error: "El nombre es obligatorio." };
-  const profesor_id = String(formData.get("profesor_id") ?? "").trim() || null;
+  const email = String(formData.get("email") ?? "").trim();
+  if (!nombre || !email) return { ok: false, error: "Nombre y email son obligatorios." };
 
   const supabase = createServerClient();
-  const { error } = await supabase.from("usuario").update({ nombre, profesor_id }).eq("id", usuarioId);
+
+  const { data: actual, error: fetchError } = await supabase
+    .from("usuario")
+    .select("email, auth_user_id")
+    .eq("id", usuarioId)
+    .single();
+  if (fetchError || !actual) return { ok: false, error: "No se encontró el administrador a actualizar." };
+
+  if (email !== actual.email) {
+    const { error: authError } = await supabase.auth.admin.updateUserById(actual.auth_user_id, { email });
+    if (authError) return { ok: false, error: `No se pudo actualizar el email: ${authError.message}` };
+  }
+
+  const { error } = await supabase.from("usuario").update({ nombre, email }).eq("id", usuarioId);
   if (error) return { ok: false, error: `No se pudo actualizar el administrador: ${error.message}` };
 
   revalidatePath("/configuracion");
+  return { ok: true };
+}
+
+export async function restablecerPasswordAdministrador(usuarioId: string, formData: FormData): Promise<ActionResult> {
+  const password = String(formData.get("password") ?? "");
+  const confirmar = String(formData.get("confirmar") ?? "");
+
+  if (password.length < 8) return { ok: false, error: "La contraseña debe tener al menos 8 caracteres." };
+  if (password !== confirmar) return { ok: false, error: "Las contraseñas no coinciden." };
+
+  const supabase = createServerClient();
+  const { data: usuario, error: fetchError } = await supabase
+    .from("usuario")
+    .select("auth_user_id")
+    .eq("id", usuarioId)
+    .single();
+  if (fetchError || !usuario) return { ok: false, error: "No se encontró el administrador." };
+
+  const { error } = await supabase.auth.admin.updateUserById(usuario.auth_user_id, { password });
+  if (error) return { ok: false, error: `No se pudo restablecer la contraseña: ${error.message}` };
+
   return { ok: true };
 }
 
@@ -145,6 +178,29 @@ export async function alternarActivoAdministrador(usuarioId: string, activo: boo
   const supabase = createServerClient();
   const { error } = await supabase.from("usuario").update({ activo }).eq("id", usuarioId);
   if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/configuracion");
+  return { ok: true };
+}
+
+export async function eliminarAdministrador(usuarioId: string): Promise<ActionResult> {
+  const usuarioActual = await getUsuarioActual();
+  if (usuarioActual?.id === usuarioId) {
+    return { ok: false, error: "No podés eliminar tu propio acceso." };
+  }
+
+  const supabase = createServerClient();
+  const { data: usuario, error: fetchError } = await supabase
+    .from("usuario")
+    .select("auth_user_id")
+    .eq("id", usuarioId)
+    .single();
+  if (fetchError || !usuario) return { ok: false, error: "No se encontró el administrador." };
+
+  const { error: authError } = await supabase.auth.admin.deleteUser(usuario.auth_user_id);
+  if (authError) return { ok: false, error: `No se pudo eliminar el acceso: ${authError.message}` };
+
+  await supabase.from("usuario").delete().eq("id", usuarioId);
 
   revalidatePath("/configuracion");
   return { ok: true };

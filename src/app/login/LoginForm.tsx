@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { PasswordInput } from "@/components/PasswordInput";
 import { iniciarSesion } from "./actions";
 
 const inputClass = "mt-1 w-full border border-border rounded-lg px-3 py-2 outline-none focus:border-primary-container";
@@ -27,7 +28,7 @@ export function LoginForm() {
       </div>
       <div>
         <label className={labelClass}>Contraseña</label>
-        <input name="password" type="password" required autoComplete="current-password" className={inputClass} />
+        <PasswordInput name="password" required autoComplete="current-password" />
       </div>
       <button
         disabled={isPending}

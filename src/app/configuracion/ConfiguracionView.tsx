@@ -1,14 +1,16 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { ConfirmModal } from "@/components/ConfirmModal";
 import { useMobileNav } from "@/components/MobileNavProvider";
 import { useUsuarioActual } from "@/components/UsuarioActualProvider";
-import type { ConfiguracionPagos, Disciplina, ProfesorConDisciplinas, Turno, UsuarioAdmin } from "@/lib/supabase/types";
+import type { ConfiguracionPagos, Disciplina, Turno, UsuarioAdmin } from "@/lib/supabase/types";
 import { actualizarConfiguracionPagos } from "../cuotas/actions";
 import { AdministradorFormModal } from "./AdministradorFormModal";
 import { DisciplinaFormModal } from "./DisciplinaFormModal";
+import { RestablecerPasswordModal } from "./RestablecerPasswordModal";
 import { TurnoFormModal } from "./TurnoFormModal";
-import { alternarActivoAdministrador, alternarActivoDisciplina, alternarActivoTurno } from "./actions";
+import { alternarActivoAdministrador, alternarActivoDisciplina, alternarActivoTurno, eliminarAdministrador } from "./actions";
 
 function formatoHora(valor: string) {
   return valor.slice(0, 5);
@@ -23,13 +25,11 @@ export function ConfiguracionView({
   disciplinas,
   turnos,
   administradores,
-  profesores,
 }: {
   configuracion: ConfiguracionPagos;
   disciplinas: Disciplina[];
   turnos: Turno[];
   administradores: UsuarioAdmin[];
-  profesores: ProfesorConDisciplinas[];
 }) {
   const { toggleMobileNav } = useMobileNav();
   const usuarioActual = useUsuarioActual();
@@ -47,6 +47,8 @@ export function ConfiguracionView({
 
   const [modalAdminOpen, setModalAdminOpen] = useState(false);
   const [adminEditando, setAdminEditando] = useState<UsuarioAdmin | null>(null);
+  const [adminRestableciendo, setAdminRestableciendo] = useState<UsuarioAdmin | null>(null);
+  const [adminEliminando, setAdminEliminando] = useState<UsuarioAdmin | null>(null);
 
   function handleGuardarConfiguracion(formData: FormData) {
     setConfigError(null);
@@ -77,6 +79,16 @@ export function ConfiguracionView({
     startTransition(async () => {
       const result = await alternarActivoAdministrador(admin.id, !admin.activo);
       if (!result.ok) setError(result.error);
+    });
+  }
+
+  function handleConfirmarEliminarAdmin() {
+    if (!adminEliminando) return;
+    setError(null);
+    startTransition(async () => {
+      const result = await eliminarAdministrador(adminEliminando.id);
+      if (!result.ok) setError(result.error);
+      setAdminEliminando(null);
     });
   }
 
@@ -308,7 +320,6 @@ export function ConfiguracionView({
                 <tr className="bg-secondary text-on-secondary">
                   <th className="px-lg py-4 font-label-bold text-label-bold">Nombre</th>
                   <th className="px-lg py-4 font-label-bold text-label-bold">Email</th>
-                  <th className="px-lg py-4 font-label-bold text-label-bold">Profesor vinculado</th>
                   <th className="px-lg py-4 font-label-bold text-label-bold">Estado</th>
                   <th className="px-lg py-4 font-label-bold text-label-bold text-right">Acciones</th>
                 </tr>
@@ -316,7 +327,7 @@ export function ConfiguracionView({
               <tbody className="divide-y divide-border">
                 {administradores.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-lg py-lg text-center text-body-sm text-text-muted">
+                    <td colSpan={4} className="px-lg py-lg text-center text-body-sm text-text-muted">
                       Todavía no hay administradores cargados.
                     </td>
                   </tr>
@@ -330,9 +341,6 @@ export function ConfiguracionView({
                         <p className="text-caption font-caption text-text-muted">Alta: {formatoFecha(a.creado_en)}</p>
                       </td>
                       <td className="px-lg py-4 text-body-sm text-on-surface-variant">{a.email}</td>
-                      <td className="px-lg py-4 text-body-sm text-on-surface-variant">
-                        {a.profesor ? `${a.profesor.nombre} ${a.profesor.apellido}` : "—"}
-                      </td>
                       <td className="px-lg py-4">
                         <span
                           className={`px-3 py-1 rounded-full text-caption font-label-bold ${
@@ -353,6 +361,14 @@ export function ConfiguracionView({
                             <span className="material-symbols-outlined text-[20px]">edit</span>
                           </button>
                           <button
+                            disabled={isPending}
+                            onClick={() => setAdminRestableciendo(a)}
+                            className="p-2 text-info hover:bg-info/10 rounded-lg transition-colors disabled:opacity-50"
+                            title="Restablecer contraseña"
+                          >
+                            <span className="material-symbols-outlined text-[20px]">key</span>
+                          </button>
+                          <button
                             disabled={isPending || (a.activo && esUsuarioActual)}
                             onClick={() => handleToggleAdmin(a)}
                             className={`p-2 rounded-lg transition-colors disabled:opacity-50 ${
@@ -361,6 +377,14 @@ export function ConfiguracionView({
                             title={esUsuarioActual ? "No podés desactivar tu propio acceso" : a.activo ? "Desactivar" : "Reactivar"}
                           >
                             <span className="material-symbols-outlined text-[20px]">{a.activo ? "toggle_on" : "toggle_off"}</span>
+                          </button>
+                          <button
+                            disabled={isPending || esUsuarioActual}
+                            onClick={() => setAdminEliminando(a)}
+                            className="p-2 text-error hover:bg-error/10 rounded-lg transition-colors disabled:opacity-50"
+                            title={esUsuarioActual ? "No podés eliminar tu propio acceso" : "Eliminar"}
+                          >
+                            <span className="material-symbols-outlined text-[20px]">delete</span>
                           </button>
                         </div>
                       </td>
@@ -379,15 +403,22 @@ export function ConfiguracionView({
       )}
       {modalTurnoOpen && <TurnoFormModal mode="create" onClose={() => setModalTurnoOpen(false)} />}
       {turnoEditando && <TurnoFormModal mode="edit" turno={turnoEditando} onClose={() => setTurnoEditando(null)} />}
-      {modalAdminOpen && (
-        <AdministradorFormModal mode="create" profesores={profesores} onClose={() => setModalAdminOpen(false)} />
-      )}
+      {modalAdminOpen && <AdministradorFormModal mode="create" onClose={() => setModalAdminOpen(false)} />}
       {adminEditando && (
-        <AdministradorFormModal
-          mode="edit"
-          administrador={adminEditando}
-          profesores={profesores}
-          onClose={() => setAdminEditando(null)}
+        <AdministradorFormModal mode="edit" administrador={adminEditando} onClose={() => setAdminEditando(null)} />
+      )}
+      {adminRestableciendo && (
+        <RestablecerPasswordModal administrador={adminRestableciendo} onClose={() => setAdminRestableciendo(null)} />
+      )}
+      {adminEliminando && (
+        <ConfirmModal
+          title="Eliminar administrador"
+          message={`¿Eliminar el acceso de "${adminEliminando.nombre}"? Esta acción no se puede deshacer.`}
+          confirmLabel="Eliminar"
+          danger
+          pending={isPending}
+          onConfirm={handleConfirmarEliminarAdmin}
+          onCancel={() => setAdminEliminando(null)}
         />
       )}
     </>
