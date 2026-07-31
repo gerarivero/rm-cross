@@ -2,36 +2,26 @@
 
 import { useMemo, useState, useTransition } from "react";
 import type { ConfiguracionPagos, CuotaConDetalle } from "@/lib/supabase/types";
+import { CuotasTable } from "./CuotasTable";
 import { RegistrarPagoModal } from "./RegistrarPagoModal";
 import { DetallePagosModal } from "./DetallePagosModal";
 import { actualizarConfiguracionPagos } from "./actions";
 
-const PAGE_SIZES = [10, 25, 50] as const;
+type EstadoResumen = "pagada" | "adeudada" | "vencida";
 
-const ESTADO_ESTILO: Record<string, string> = {
-  pagada: "bg-success/10 text-success",
-  adeudada: "bg-warning/10 text-warning",
-  vencida: "bg-error/10 text-error",
-};
-
-const ESTADO_LABEL: Record<string, string> = {
-  pagada: "Pagada",
-  adeudada: "Adeudada",
-  vencida: "Vencida",
-};
+const RESUMEN_CARDS: { estado: EstadoResumen; label: string; colorTexto: string; colorAnillo: string }[] = [
+  { estado: "pagada", label: "Pagadas", colorTexto: "text-success", colorAnillo: "ring-success" },
+  { estado: "adeudada", label: "Adeudadas", colorTexto: "text-warning", colorAnillo: "ring-warning" },
+  { estado: "vencida", label: "Vencidas", colorTexto: "text-error", colorAnillo: "ring-error" },
+];
 
 function formatoMoneda(valor: number) {
   return valor.toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
 }
 
-function formatoFecha(valor: string) {
-  return new Date(`${valor}T00:00:00`).toLocaleDateString("es-AR");
-}
-
 export function CuotasView({ cuotas, configuracion }: { cuotas: CuotaConDetalle[]; configuracion: ConfiguracionPagos }) {
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState<number>(PAGE_SIZES[0]);
+  const [estadoFiltro, setEstadoFiltro] = useState<EstadoResumen | null>(null);
   const [cuotaPagando, setCuotaPagando] = useState<CuotaConDetalle | null>(null);
   const [cuotaDetalle, setCuotaDetalle] = useState<CuotaConDetalle | null>(null);
 
@@ -39,34 +29,35 @@ export function CuotasView({ cuotas, configuracion }: { cuotas: CuotaConDetalle[
   const [isPending, startTransition] = useTransition();
 
   const resumen = useMemo(() => {
-    const acc = { pagada: 0, adeudada: 0, vencida: 0 };
-    for (const c of cuotas) acc[c.estado_efectivo as "pagada" | "adeudada" | "vencida"]++;
+    const acc: Record<EstadoResumen, { cantidad: number; monto: number }> = {
+      pagada: { cantidad: 0, monto: 0 },
+      adeudada: { cantidad: 0, monto: 0 },
+      vencida: { cantidad: 0, monto: 0 },
+    };
+    for (const c of cuotas) {
+      const estado = c.estado_efectivo as EstadoResumen;
+      acc[estado].cantidad++;
+      acc[estado].monto += estado === "pagada" ? c.total_pagado : c.total_adeudado;
+    }
     return acc;
   }, [cuotas]);
 
   const filteredCuotas = useMemo(() => {
     const term = search.trim().toLowerCase();
-    if (!term) return cuotas;
     return cuotas.filter((c) => {
+      if (estadoFiltro && c.estado_efectivo !== estadoFiltro) return false;
+      if (!term) return true;
       const nombreCompleto = `${c.alumno.nombre ?? ""} ${c.alumno.apellido ?? ""}`.toLowerCase();
       return c.alumno.dni.toLowerCase().includes(term) || nombreCompleto.includes(term) || c.plan.nombre.toLowerCase().includes(term);
     });
-  }, [cuotas, search]);
-
-  const totalPages = Math.max(1, Math.ceil(filteredCuotas.length / pageSize));
-  const currentPage = Math.min(page, totalPages);
-  const paginatedCuotas = filteredCuotas.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-  const desde = filteredCuotas.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
-  const hasta = Math.min(currentPage * pageSize, filteredCuotas.length);
+  }, [cuotas, search, estadoFiltro]);
 
   function handleSearchChange(value: string) {
     setSearch(value);
-    setPage(1);
   }
 
-  function handlePageSizeChange(value: number) {
-    setPageSize(value);
-    setPage(1);
+  function handleToggleEstadoFiltro(estado: EstadoResumen) {
+    setEstadoFiltro((actual) => (actual === estado ? null : estado));
   }
 
   function handleGuardarConfiguracion(formData: FormData) {
@@ -92,6 +83,13 @@ export function CuotasView({ cuotas, configuracion }: { cuotas: CuotaConDetalle[
               type="text"
             />
           </div>
+          <a
+            href="/cuotas/historico"
+            className="flex items-center gap-xs px-lg py-2.5 border border-border text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors font-label-bold text-label-bold"
+          >
+            <span className="material-symbols-outlined text-[18px]">history</span>
+            Ver Histórico
+          </a>
           <button className="p-2 text-on-surface-variant hover:text-primary-container transition-all duration-200">
             <span className="material-symbols-outlined">account_circle</span>
           </button>
@@ -99,20 +97,28 @@ export function CuotasView({ cuotas, configuracion }: { cuotas: CuotaConDetalle[
       </header>
 
       <div className="p-lg space-y-gutter flex-1">
+        <p className="text-body-sm font-body-sm text-text-muted">
+          Mostrando las cuotas con vencimiento en el mes actual. Para ver otros períodos, usá &quot;Ver Histórico&quot;.
+        </p>
+
         {/* Resumen */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-gutter">
-          <div className="bg-surface-white border border-border rounded-xl p-lg shadow-sm">
-            <p className="text-on-surface-variant font-label-bold text-label-bold">Pagadas</p>
-            <p className="font-display-lg text-display-lg text-success mt-xs">{resumen.pagada}</p>
-          </div>
-          <div className="bg-surface-white border border-border rounded-xl p-lg shadow-sm">
-            <p className="text-on-surface-variant font-label-bold text-label-bold">Adeudadas</p>
-            <p className="font-display-lg text-display-lg text-warning mt-xs">{resumen.adeudada}</p>
-          </div>
-          <div className="bg-surface-white border border-border rounded-xl p-lg shadow-sm">
-            <p className="text-on-surface-variant font-label-bold text-label-bold">Vencidas</p>
-            <p className="font-display-lg text-display-lg text-error mt-xs">{resumen.vencida}</p>
-          </div>
+          {RESUMEN_CARDS.map(({ estado, label, colorTexto, colorAnillo }) => {
+            const activa = estadoFiltro === estado;
+            return (
+              <button
+                key={estado}
+                onClick={() => handleToggleEstadoFiltro(estado)}
+                className={`text-left bg-surface-white border border-border rounded-xl p-lg shadow-sm transition-all hover:shadow-md ${
+                  activa ? `ring-2 ${colorAnillo}` : ""
+                }`}
+              >
+                <p className="text-on-surface-variant font-label-bold text-label-bold">{label}</p>
+                <p className={`font-display-lg text-display-lg mt-xs ${colorTexto}`}>{resumen[estado].cantidad}</p>
+                <p className="text-body-sm font-body-sm text-on-surface-variant mt-1">{formatoMoneda(resumen[estado].monto)}</p>
+              </button>
+            );
+          })}
         </div>
 
         {/* Configuración de Vencimientos y Recargos */}
@@ -164,152 +170,13 @@ export function CuotasView({ cuotas, configuracion }: { cuotas: CuotaConDetalle[
           </form>
         </div>
 
-        {/* Tabla */}
-        <div className="bg-surface-white border border-border rounded-xl shadow-sm overflow-hidden flex flex-col">
-          <div className="p-md border-b border-border flex justify-between items-center bg-surface-container-low">
-            <h4 className="font-label-bold text-label-bold text-on-surface">Detalle de Cuotas</h4>
-            <div className="flex items-center gap-xs">
-              <span className="text-body-sm font-body-sm text-on-surface-variant">Mostrar</span>
-              <select
-                value={pageSize}
-                onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-                className="bg-surface-white border border-border rounded-lg text-caption px-2 py-1 outline-none"
-              >
-                {PAGE_SIZES.map((size) => (
-                  <option key={size} value={size}>
-                    {size}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-secondary text-on-secondary">
-                  <th className="px-lg py-4 font-label-bold text-label-bold">Alumno</th>
-                  <th className="px-lg py-4 font-label-bold text-label-bold">Plan</th>
-                  <th className="px-lg py-4 font-label-bold text-label-bold">Período</th>
-                  <th className="px-lg py-4 font-label-bold text-label-bold">Vencimiento</th>
-                  <th className="px-lg py-4 font-label-bold text-label-bold">Monto</th>
-                  <th className="px-lg py-4 font-label-bold text-label-bold">Recargo</th>
-                  <th className="px-lg py-4 font-label-bold text-label-bold">Saldo</th>
-                  <th className="px-lg py-4 font-label-bold text-label-bold">Estado</th>
-                  <th className="px-lg py-4 font-label-bold text-label-bold text-right">Acciones</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {paginatedCuotas.length === 0 && (
-                  <tr>
-                    <td colSpan={9} className="px-lg py-lg text-center text-body-sm text-text-muted">
-                      {cuotas.length === 0
-                        ? "Todavía no hay cuotas generadas. Se crean automáticamente al dar de alta un alumno con un plan."
-                        : "Ninguna cuota coincide con la búsqueda."}
-                    </td>
-                  </tr>
-                )}
-                {paginatedCuotas.map((cuota, i) => {
-                  const nombreAlumno =
-                    cuota.alumno.nombre || cuota.alumno.apellido
-                      ? `${cuota.alumno.nombre ?? ""} ${cuota.alumno.apellido ?? ""}`.trim()
-                      : `DNI ${cuota.alumno.dni}`;
-                  return (
-                    <tr key={cuota.id} className={i % 2 === 1 ? "bg-surface-container-lowest" : ""}>
-                      <td className="px-lg py-4">
-                        <p className="font-label-bold text-on-surface">{nombreAlumno}</p>
-                        <p className="text-caption font-caption text-text-muted">DNI {cuota.alumno.dni}</p>
-                      </td>
-                      <td className="px-lg py-4 text-body-sm text-on-surface-variant">{cuota.plan.nombre}</td>
-                      <td className="px-lg py-4 text-body-sm text-on-surface-variant">
-                        {formatoFecha(cuota.periodo_desde)} — {formatoFecha(cuota.periodo_hasta)}
-                      </td>
-                      <td className="px-lg py-4 text-body-sm font-label-bold text-on-surface">{formatoFecha(cuota.fecha_vencimiento)}</td>
-                      <td className="px-lg py-4 font-data-mono text-data-mono">{formatoMoneda(cuota.monto_base)}</td>
-                      <td className="px-lg py-4 font-data-mono text-data-mono text-error">
-                        {cuota.recargo_efectivo > 0 ? `+${formatoMoneda(cuota.recargo_efectivo)}` : "—"}
-                      </td>
-                      <td className="px-lg py-4 font-data-mono text-data-mono">
-                        {cuota.estado_efectivo === "pagada" ? (
-                          <span className="text-success">Pagada</span>
-                        ) : (
-                          formatoMoneda(cuota.total_adeudado)
-                        )}
-                      </td>
-                      <td className="px-lg py-4">
-                        <span className={`px-3 py-1 rounded-full text-caption font-label-bold ${ESTADO_ESTILO[cuota.estado_efectivo]}`}>
-                          {ESTADO_LABEL[cuota.estado_efectivo]}
-                        </span>
-                      </td>
-                      <td className="px-lg py-4">
-                        <div className="flex items-center justify-end gap-1">
-                          {cuota.estado_efectivo !== "pagada" && (
-                            <button
-                              onClick={() => setCuotaPagando(cuota)}
-                              title="Registrar Pago"
-                              className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-low rounded-lg transition-colors"
-                            >
-                              <span className="material-symbols-outlined text-[20px]">payments</span>
-                            </button>
-                          )}
-                          <button
-                            onClick={() => setCuotaDetalle(cuota)}
-                            title="Ver Detalle"
-                            className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-low rounded-lg transition-colors"
-                          >
-                            <span className="material-symbols-outlined text-[20px]">visibility</span>
-                          </button>
-                          {cuota.estado_efectivo === "pagada" && (
-                            <a
-                              href={`/cuotas/${cuota.id}/comprobante`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              title="Generar Comprobante"
-                              className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-low rounded-lg transition-colors"
-                            >
-                              <span className="material-symbols-outlined text-[20px]">receipt_long</span>
-                            </a>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          <div className="p-md border-t border-border flex flex-col md:flex-row justify-between items-center gap-md bg-surface-white">
-            <p className="text-caption font-caption text-text-muted">
-              {filteredCuotas.length === 0 ? "Sin resultados" : `Mostrando ${desde}-${hasta} de ${filteredCuotas.length} resultados`}
-            </p>
-            <div className="flex items-center gap-sm">
-              <button
-                disabled={currentPage <= 1}
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="p-2 border border-border rounded-lg hover:bg-surface-container disabled:opacity-50 transition-colors"
-              >
-                <span className="material-symbols-outlined">chevron_left</span>
-              </button>
-              {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((n) => (
-                <button
-                  key={n}
-                  onClick={() => setPage(n)}
-                  className={`w-10 h-10 font-label-bold text-label-bold rounded-lg flex items-center justify-center ${
-                    n === currentPage ? "bg-primary-container text-on-primary-container" : "border border-border hover:bg-surface-container"
-                  }`}
-                >
-                  {n}
-                </button>
-              ))}
-              <button
-                disabled={currentPage >= totalPages}
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                className="p-2 border border-border rounded-lg hover:bg-surface-container disabled:opacity-50 transition-colors"
-              >
-                <span className="material-symbols-outlined">chevron_right</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        <CuotasTable
+          cuotas={filteredCuotas}
+          totalSinFiltrar={cuotas.length}
+          mensajeVacio='Todavía no hay cuotas con vencimiento este mes. Se crean automáticamente al dar de alta un alumno con un plan, o al pagarse la cuota del período anterior.'
+          onRegistrarPago={setCuotaPagando}
+          onVerDetalle={setCuotaDetalle}
+        />
       </div>
 
       {cuotaPagando && <RegistrarPagoModal cuota={cuotaPagando} onClose={() => setCuotaPagando(null)} />}

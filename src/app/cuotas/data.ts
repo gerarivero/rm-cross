@@ -14,15 +14,55 @@ function ordenarPagos(pagos: Pago[]): Pago[] {
   return [...pagos].sort((a, b) => a.fecha_pago.localeCompare(b.fecha_pago));
 }
 
+const CUOTA_SELECT =
+  "*, inscripcion:inscripcion_id(alumno:alumno_id(id, dni, nombre, apellido), plan:plan_id(id, nombre)), pago(id, cuota_id, monto, fecha_pago, medio, referencia)";
+
+function mapearCuota(row: any, config: ConfiguracionPagos, hoy: string): CuotaConDetalle {
+  const pagos = ordenarPagos(row.pago ?? []);
+  const resultado = calcularEstadoCuota(row, pagos, config, hoy);
+  return {
+    id: row.id,
+    inscripcion_id: row.inscripcion_id,
+    periodo_desde: row.periodo_desde,
+    periodo_hasta: row.periodo_hasta,
+    fecha_vencimiento: row.fecha_vencimiento,
+    monto_base: row.monto_base,
+    recargo_aplicado: row.recargo_aplicado,
+    estado: row.estado,
+    creado_en: row.creado_en,
+    numero_comprobante: row.numero_comprobante,
+    alumno: row.inscripcion.alumno,
+    plan: row.inscripcion.plan,
+    pagos,
+    estado_efectivo: resultado.estado,
+    recargo_efectivo: resultado.recargo,
+    total_pagado: resultado.totalPagado,
+    saldo_capital: resultado.saldoCapital,
+    total_adeudado: resultado.totalAdeudado,
+  } as CuotaConDetalle;
+}
+
+// Primer día del mes actual y primer día del mes siguiente, en formato ISO
+// ("YYYY-MM-DD") — para acotar `fecha_vencimiento` al mes calendario en curso.
+function rangoMesActual(): { desde: string; hasta: string } {
+  const hoy = new Date();
+  const desde = new Date(Date.UTC(hoy.getFullYear(), hoy.getMonth(), 1)).toISOString().slice(0, 10);
+  const hasta = new Date(Date.UTC(hoy.getFullYear(), hoy.getMonth() + 1, 1)).toISOString().slice(0, 10);
+  return { desde, hasta };
+}
+
+// Vista operativa de "qué hay que cobrar ahora": solo cuotas cuyo vencimiento cae en
+// el mes calendario actual. Para ver cuotas de otros meses, ver getCuotasHistorico().
 export async function getCuotas(): Promise<CuotaConDetalle[]> {
   const supabase = createServerClient();
+  const { desde, hasta } = rangoMesActual();
 
   const [{ data: cuotas, error }, config] = await Promise.all([
     supabase
       .from("cuota")
-      .select(
-        "*, inscripcion:inscripcion_id(alumno:alumno_id(id, dni, nombre, apellido), plan:plan_id(id, nombre)), pago(id, cuota_id, monto, fecha_pago, medio, referencia)"
-      )
+      .select(CUOTA_SELECT)
+      .gte("fecha_vencimiento", desde)
+      .lt("fecha_vencimiento", hasta)
       .order("fecha_vencimiento", { ascending: false }),
     getConfiguracionPagos(),
   ]);
@@ -30,31 +70,23 @@ export async function getCuotas(): Promise<CuotaConDetalle[]> {
   if (error) throw new Error(`No se pudieron cargar las cuotas: ${error.message}`);
 
   const hoy = new Date().toISOString().slice(0, 10);
+  return (cuotas ?? []).map((row: any) => mapearCuota(row, config, hoy));
+}
 
-  return (cuotas ?? []).map((row: any) => {
-    const pagos = ordenarPagos(row.pago ?? []);
-    const resultado = calcularEstadoCuota(row, pagos, config, hoy);
-    return {
-      id: row.id,
-      inscripcion_id: row.inscripcion_id,
-      periodo_desde: row.periodo_desde,
-      periodo_hasta: row.periodo_hasta,
-      fecha_vencimiento: row.fecha_vencimiento,
-      monto_base: row.monto_base,
-      recargo_aplicado: row.recargo_aplicado,
-      estado: row.estado,
-      creado_en: row.creado_en,
-      numero_comprobante: row.numero_comprobante,
-      alumno: row.inscripcion.alumno,
-      plan: row.inscripcion.plan,
-      pagos,
-      estado_efectivo: resultado.estado,
-      recargo_efectivo: resultado.recargo,
-      total_pagado: resultado.totalPagado,
-      saldo_capital: resultado.saldoCapital,
-      total_adeudado: resultado.totalAdeudado,
-    } as CuotaConDetalle;
-  });
+// Todas las cuotas, sin acotar por mes — para la pantalla de histórico
+// (/cuotas/historico), que filtra por alumno/plan/período/DNI en el cliente.
+export async function getCuotasHistorico(): Promise<CuotaConDetalle[]> {
+  const supabase = createServerClient();
+
+  const [{ data: cuotas, error }, config] = await Promise.all([
+    supabase.from("cuota").select(CUOTA_SELECT).order("fecha_vencimiento", { ascending: false }),
+    getConfiguracionPagos(),
+  ]);
+
+  if (error) throw new Error(`No se pudieron cargar las cuotas: ${error.message}`);
+
+  const hoy = new Date().toISOString().slice(0, 10);
+  return (cuotas ?? []).map((row: any) => mapearCuota(row, config, hoy));
 }
 
 // Historial de cuotas de un alumno puntual (todas sus inscripciones, no solo la

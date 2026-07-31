@@ -499,6 +499,19 @@ fallo silencioso dejaría a un alumno sin facturar sin que nadie lo note.
 **Fuera de alcance por ahora:** el envío del comprobante por WhatsApp/Email o su descarga
 como PDF generado en el servidor.
 
+**Pantalla de Cuotas acotada al mes actual + histórico (implementado):** `/cuotas`
+(`getCuotas()`, `src/app/cuotas/data.ts`) muestra solo las cuotas cuyo
+`fecha_vencimiento` cae en el mes calendario en curso — es la vista operativa de "qué
+hay que cobrar ahora", no un listado que crece indefinidamente. Las cards de resumen
+(Pagadas/Adeudadas/Vencidas) se calculan sobre ese mismo conjunto y muestran cantidad +
+monto (`total_pagado` para Pagadas, `total_adeudado` para Adeudadas/Vencidas); el
+número de cada card es clickeable y filtra la tabla por ese estado. Para ver cuotas de
+otros meses existe `/cuotas/historico` (`getCuotasHistorico()`, sin el filtro de mes),
+con filtros independientes por alumno, DNI, plan y rango de período — todo combinable,
+filtrado en el cliente (mismo criterio que el resto de los módulos: volumen chico,
+sin necesidad de paginar en el servidor). La tabla en sí (`CuotasTable.tsx`) es un
+componente compartido entre ambas pantallas.
+
 **Re-inscripción de alumnos (implementado):** un alumno puede tener varias
 `inscripcion` a lo largo del tiempo — el modelo nunca lo impidió (sin constraint de
 unicidad sobre `alumno_id`), pero hasta esta vuelta no había ninguna acción que lo
