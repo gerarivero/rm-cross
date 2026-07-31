@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useMobileNav } from "@/components/MobileNavProvider";
 import type { Disciplina, PlanDetalle } from "@/lib/supabase/types";
 import { PlanFormModal } from "../PlanFormModal";
 
@@ -21,20 +22,30 @@ const ESTADO_INSCRIPCION_ESTILO: Record<string, string> = {
 };
 
 export function PlanDetalleView({ plan, disciplinas }: { plan: PlanDetalle; disciplinas: Disciplina[] }) {
+  const { toggleMobileNav } = useMobileNav();
   const [modalEditarOpen, setModalEditarOpen] = useState(false);
 
   return (
     <>
       {/* Top navbar */}
-      <header className="sticky top-0 z-40 bg-surface-white border-b border-border shadow-sm flex items-center gap-md px-lg py-md w-full">
-        <a
-          href="/planes"
-          className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors"
-          title="Volver a Planes"
+      <header className="sticky top-0 z-40 bg-surface-white border-b border-border shadow-sm flex items-center justify-between gap-md px-lg py-md w-full">
+        <div className="flex items-center gap-md">
+          <a
+            href="/planes"
+            className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors"
+            title="Volver a Planes"
+          >
+            <span className="material-symbols-outlined">arrow_back</span>
+          </a>
+          <h2 className="font-headline-md text-headline-md text-primary">{plan.nombre}</h2>
+        </div>
+        <button
+          onClick={toggleMobileNav}
+          className="md:hidden p-2 text-on-surface-variant hover:text-primary-container transition-all duration-200"
+          title="Abrir menú"
         >
-          <span className="material-symbols-outlined">arrow_back</span>
-        </a>
-        <h2 className="font-headline-md text-headline-md text-primary">{plan.nombre}</h2>
+          <span className="material-symbols-outlined">menu</span>
+        </button>
       </header>
 
       <div className="p-lg space-y-gutter flex-1">

@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import type { ConfiguracionPagos, CuotaConDetalle } from "@/lib/supabase/types";
+import { useMobileNav } from "@/components/MobileNavProvider";
 import { CuotasTable } from "./CuotasTable";
 import { RegistrarPagoModal } from "./RegistrarPagoModal";
 import { DetallePagosModal } from "./DetallePagosModal";
@@ -20,6 +21,7 @@ function formatoMoneda(valor: number) {
 }
 
 export function CuotasView({ cuotas, configuracion }: { cuotas: CuotaConDetalle[]; configuracion: ConfiguracionPagos }) {
+  const { toggleMobileNav } = useMobileNav();
   const [search, setSearch] = useState("");
   const [estadoFiltro, setEstadoFiltro] = useState<EstadoResumen | null>(null);
   const [cuotaPagando, setCuotaPagando] = useState<CuotaConDetalle | null>(null);
@@ -90,8 +92,12 @@ export function CuotasView({ cuotas, configuracion }: { cuotas: CuotaConDetalle[
             <span className="material-symbols-outlined text-[18px]">history</span>
             Ver Histórico
           </a>
-          <button className="p-2 text-on-surface-variant hover:text-primary-container transition-all duration-200">
-            <span className="material-symbols-outlined">account_circle</span>
+          <button
+            onClick={toggleMobileNav}
+            className="md:hidden p-2 text-on-surface-variant hover:text-primary-container transition-all duration-200"
+            title="Abrir menú"
+          >
+            <span className="material-symbols-outlined">menu</span>
           </button>
         </div>
       </header>

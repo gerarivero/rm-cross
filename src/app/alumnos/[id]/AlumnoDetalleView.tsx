@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useMobileNav } from "@/components/MobileNavProvider";
 import type { AlumnoDetalle, CuotaDeAlumno, InscripcionHistorial, PlanConPrecio, RutinaAsignadaDeAlumno, Turno } from "@/lib/supabase/types";
 import { AlumnoFormModal } from "../AlumnoFormModal";
 import { AsignarRutinaAlumnoModal } from "../AsignarRutinaAlumnoModal";
@@ -62,6 +63,7 @@ export function AlumnoDetalleView({
   rutinaAsignada: RutinaAsignadaDeAlumno | null;
   rutinasDisponibles: { id: string; nombre: string }[];
 }) {
+  const { toggleMobileNav } = useMobileNav();
   const [modalEditarOpen, setModalEditarOpen] = useState(false);
   const [modalReinscribirOpen, setModalReinscribirOpen] = useState(false);
   const [modalAsignarRutinaOpen, setModalAsignarRutinaOpen] = useState(false);
@@ -70,11 +72,20 @@ export function AlumnoDetalleView({
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-surface-white border-b border-border shadow-sm flex items-center gap-md px-lg py-md w-full">
-        <a href="/alumnos" className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors" title="Volver a Alumnos">
-          <span className="material-symbols-outlined">arrow_back</span>
-        </a>
-        <h2 className="font-headline-md text-headline-md text-primary">{nombreCompleto}</h2>
+      <header className="sticky top-0 z-40 bg-surface-white border-b border-border shadow-sm flex items-center justify-between gap-md px-lg py-md w-full">
+        <div className="flex items-center gap-md">
+          <a href="/alumnos" className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors" title="Volver a Alumnos">
+            <span className="material-symbols-outlined">arrow_back</span>
+          </a>
+          <h2 className="font-headline-md text-headline-md text-primary">{nombreCompleto}</h2>
+        </div>
+        <button
+          onClick={toggleMobileNav}
+          className="md:hidden p-2 text-on-surface-variant hover:text-primary-container transition-all duration-200"
+          title="Abrir menú"
+        >
+          <span className="material-symbols-outlined">menu</span>
+        </button>
       </header>
 
       <div className="p-lg space-y-gutter flex-1">

@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { ConfirmModal } from "@/components/ConfirmModal";
+import { useMobileNav } from "@/components/MobileNavProvider";
 import type { AlumnoConPlan, PlanConPrecio, Turno } from "@/lib/supabase/types";
 import { AlumnoFormModal } from "./AlumnoFormModal";
 import { eliminarAlumno } from "./actions";
@@ -47,6 +48,7 @@ export function AlumnosView({
   planFiltroInicial: string | null;
   rutinaFiltroInicial: string | null;
 }) {
+  const { toggleMobileNav } = useMobileNav();
   const [search, setSearch] = useState("");
   const [planFiltro, setPlanFiltro] = useState<string | null>(planFiltroInicial);
   const [rutinaFiltro, setRutinaFiltro] = useState<string | null>(rutinaFiltroInicial);
@@ -130,8 +132,12 @@ export function AlumnosView({
               type="text"
             />
           </div>
-          <button className="p-2 text-on-surface-variant hover:text-primary-container transition-all duration-200">
-            <span className="material-symbols-outlined">account_circle</span>
+          <button
+            onClick={toggleMobileNav}
+            className="md:hidden p-2 text-on-surface-variant hover:text-primary-container transition-all duration-200"
+            title="Abrir menú"
+          >
+            <span className="material-symbols-outlined">menu</span>
           </button>
         </div>
       </header>

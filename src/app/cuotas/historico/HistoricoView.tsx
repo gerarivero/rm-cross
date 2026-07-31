@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useMobileNav } from "@/components/MobileNavProvider";
 import type { CuotaConDetalle, PlanConPrecio } from "@/lib/supabase/types";
 import { CuotasTable } from "../CuotasTable";
 import { DetallePagosModal } from "../DetallePagosModal";
@@ -10,6 +11,7 @@ const inputClass = "mt-1 w-full border border-border rounded-lg px-3 py-2 outlin
 const labelClass = "font-label-bold text-label-bold text-on-surface-variant";
 
 export function HistoricoView({ cuotas, planes }: { cuotas: CuotaConDetalle[]; planes: PlanConPrecio[] }) {
+  const { toggleMobileNav } = useMobileNav();
   const [alumno, setAlumno] = useState("");
   const [dni, setDni] = useState("");
   const [planId, setPlanId] = useState("");
@@ -48,11 +50,20 @@ export function HistoricoView({ cuotas, planes }: { cuotas: CuotaConDetalle[]; p
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-surface-white border-b border-border shadow-sm flex items-center gap-md px-lg py-md w-full">
-        <a href="/cuotas" className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors" title="Volver a Cuotas">
-          <span className="material-symbols-outlined">arrow_back</span>
-        </a>
-        <h2 className="font-headline-md text-headline-md text-primary">Histórico de Cuotas</h2>
+      <header className="sticky top-0 z-40 bg-surface-white border-b border-border shadow-sm flex items-center justify-between gap-md px-lg py-md w-full">
+        <div className="flex items-center gap-md">
+          <a href="/cuotas" className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors" title="Volver a Cuotas">
+            <span className="material-symbols-outlined">arrow_back</span>
+          </a>
+          <h2 className="font-headline-md text-headline-md text-primary">Histórico de Cuotas</h2>
+        </div>
+        <button
+          onClick={toggleMobileNav}
+          className="md:hidden p-2 text-on-surface-variant hover:text-primary-container transition-all duration-200"
+          title="Abrir menú"
+        >
+          <span className="material-symbols-outlined">menu</span>
+        </button>
       </header>
 
       <div className="p-lg space-y-gutter flex-1">

@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { ConfirmModal } from "@/components/ConfirmModal";
+import { useMobileNav } from "@/components/MobileNavProvider";
 import type {
   EjercicioConMusculo,
   RutinaActividadConEjercicios,
@@ -63,6 +64,7 @@ export function RutinaBuilderView({
   alumnosParaAsignar: { id: string; dni: string; nombre: string | null; apellido: string | null }[];
   ejercicios: EjercicioConMusculo[];
 }) {
+  const { toggleMobileNav } = useMobileNav();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [semanaIdx, setSemanaIdx] = useState(0);
@@ -125,6 +127,13 @@ export function RutinaBuilderView({
         >
           <span className="material-symbols-outlined text-[18px]">edit</span>
           Editar
+        </button>
+        <button
+          onClick={toggleMobileNav}
+          className="md:hidden p-2 text-on-surface-variant hover:text-primary-container transition-all duration-200"
+          title="Abrir menú"
+        >
+          <span className="material-symbols-outlined">menu</span>
         </button>
       </header>
 

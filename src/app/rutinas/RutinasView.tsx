@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { ConfirmModal } from "@/components/ConfirmModal";
+import { useMobileNav } from "@/components/MobileNavProvider";
 import type { RutinaConResumen } from "@/lib/supabase/types";
 import { RutinaFormModal } from "./RutinaFormModal";
 import { alternarActivoRutina, eliminarRutina } from "./actions";
@@ -9,6 +10,7 @@ import { alternarActivoRutina, eliminarRutina } from "./actions";
 const PAGE_SIZES = [10, 25, 50] as const;
 
 export function RutinasView({ rutinas }: { rutinas: RutinaConResumen[] }) {
+  const { toggleMobileNav } = useMobileNav();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(PAGE_SIZES[0]);
@@ -69,8 +71,12 @@ export function RutinasView({ rutinas }: { rutinas: RutinaConResumen[] }) {
               type="text"
             />
           </div>
-          <button className="p-2 text-on-surface-variant hover:text-primary-container transition-all duration-200">
-            <span className="material-symbols-outlined">account_circle</span>
+          <button
+            onClick={toggleMobileNav}
+            className="md:hidden p-2 text-on-surface-variant hover:text-primary-container transition-all duration-200"
+            title="Abrir menú"
+          >
+            <span className="material-symbols-outlined">menu</span>
           </button>
         </div>
       </header>

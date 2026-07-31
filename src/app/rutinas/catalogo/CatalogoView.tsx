@@ -2,12 +2,14 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { ConfirmModal } from "@/components/ConfirmModal";
+import { useMobileNav } from "@/components/MobileNavProvider";
 import type { EjercicioConMusculo, Musculo } from "@/lib/supabase/types";
 import { EjercicioFormModal } from "./EjercicioFormModal";
 import { MusculoFormModal } from "./MusculoFormModal";
 import { alternarActivoEjercicio, alternarActivoMusculo, eliminarEjercicio } from "./actions";
 
 export function CatalogoView({ musculos, ejercicios }: { musculos: Musculo[]; ejercicios: EjercicioConMusculo[] }) {
+  const { toggleMobileNav } = useMobileNav();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [filtroMusculoId, setFiltroMusculoId] = useState("");
@@ -52,11 +54,20 @@ export function CatalogoView({ musculos, ejercicios }: { musculos: Musculo[]; ej
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-surface-white border-b border-border shadow-sm flex items-center gap-md px-lg py-md w-full">
-        <a href="/rutinas" className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors" title="Volver a Rutinas">
-          <span className="material-symbols-outlined">arrow_back</span>
-        </a>
-        <h2 className="font-headline-md text-headline-md text-primary">Músculos y Ejercicios</h2>
+      <header className="sticky top-0 z-40 bg-surface-white border-b border-border shadow-sm flex items-center justify-between gap-md px-lg py-md w-full">
+        <div className="flex items-center gap-md">
+          <a href="/rutinas" className="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors" title="Volver a Rutinas">
+            <span className="material-symbols-outlined">arrow_back</span>
+          </a>
+          <h2 className="font-headline-md text-headline-md text-primary">Músculos y Ejercicios</h2>
+        </div>
+        <button
+          onClick={toggleMobileNav}
+          className="md:hidden p-2 text-on-surface-variant hover:text-primary-container transition-all duration-200"
+          title="Abrir menú"
+        >
+          <span className="material-symbols-outlined">menu</span>
+        </button>
       </header>
 
       <div className="p-lg space-y-gutter flex-1">

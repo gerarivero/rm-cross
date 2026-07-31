@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useMobileNav } from "@/components/MobileNavProvider";
 import type { EventoDashboard, ResumenAlumnos, ResumenCuotasMes, TipoEvento } from "./data";
 
 const PAGE_SIZES = [10, 25, 50] as const;
@@ -43,6 +44,7 @@ export function DashboardView({
   resumenCuotas: ResumenCuotasMes;
   eventos: EventoDashboard[];
 }) {
+  const { toggleMobileNav } = useMobileNav();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(PAGE_SIZES[0]);
 
@@ -68,8 +70,12 @@ export function DashboardView({
     <>
       <header className="sticky top-0 z-40 bg-surface-white border-b border-border shadow-sm flex justify-between items-center px-lg py-md w-full">
         <h2 className="font-headline-md text-headline-md text-primary">Dashboard</h2>
-        <button className="p-2 text-on-surface-variant hover:text-primary-container transition-all duration-200">
-          <span className="material-symbols-outlined">account_circle</span>
+        <button
+          onClick={toggleMobileNav}
+          className="md:hidden p-2 text-on-surface-variant hover:text-primary-container transition-all duration-200"
+          title="Abrir menú"
+        >
+          <span className="material-symbols-outlined">menu</span>
         </button>
       </header>
 

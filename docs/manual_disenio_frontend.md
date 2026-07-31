@@ -102,7 +102,9 @@ Dentro de `XxxView`:
 1. **Header sticky** (`sticky top-0 z-40 bg-surface-white border-b border-border
    shadow-sm`): título de la página a la izquierda (`headline-md text-primary`),
    buscador global a la derecha si el módulo tiene tabla filtrable (mismo input con
-   ícono `search` que en Planes), ícono `account_circle` como placeholder de usuario.
+   ícono `search` que en Planes), botón `menu` de navegación mobile al final (ver
+   "Responsive / mobile" más abajo). No hay ningún ícono de usuario/cuenta en el
+   header — las opciones de usuario van a vivir en `/configuracion`.
 2. **Toolbar** (debajo del header, dentro de un contenedor `p-lg space-y-gutter`):
    subtítulo con contador ("Mostrando X de Y...") a la izquierda, botón primario de
    alta a la derecha.
@@ -114,6 +116,35 @@ Dentro de `XxxView`:
 **Nota sobre el Sidebar:** es `w-20` colapsado por defecto y se expande a `w-64` con
 hover, superponiéndose al contenido (`position: fixed`, no empuja el layout) — por eso
 el margen del `<main>` siempre es `md:ml-20` (el ancho colapsado), nunca `md:ml-64`.
+
+### Responsive / mobile
+
+`Sidebar` (`src/components/Sidebar.tsx`) es `hidden md:flex` — por debajo de `md`
+(768px, breakpoints default de Tailwind, sin overrides en `tailwind.config.ts`)
+desaparece por completo, no solo visualmente. Para que el usuario pueda seguir
+navegando en ese rango existe:
+
+- **`MobileNavProvider`** (`src/components/MobileNavProvider.tsx`, único Context de
+  la app): expone `useMobileNav()` con `{ mobileNavOpen, toggleMobileNav,
+  closeMobileNav }`. Envuelve toda la app desde `src/app/layout.tsx`.
+- **Drawer mobile**, dentro del propio `Sidebar.tsx`: cuando `mobileNavOpen` es
+  `true`, renderiza (siempre `md:hidden`, nunca convive con el sidebar de escritorio)
+  un backdrop (`fixed inset-0 bg-black/40`) + un panel angosto `w-20` **solo con
+  íconos** (nunca se expande con texto, a diferencia del hover de escritorio). Cierra
+  al elegir una sección, con Escape, o tocando el backdrop.
+- **Botón de menú por página**: cada `XxxView.tsx` importa `useMobileNav`, llama
+  `const { toggleMobileNav } = useMobileNav();`, y agrega en su header un único botón
+  `md:hidden` con ícono `menu` y `onClick={toggleMobileNav}` — no hay contraparte en
+  desktop/tablet (ahí el sidebar ya se abre con hover). En pantallas de listado este
+  botón reemplaza lo que antes era el ícono `account_circle`; en pantallas de
+  detalle/sub-página (solo flecha "volver" + título) se agrega igual al final del
+  header, que pasa a `justify-between`.
+- El `<nav>` del sidebar de escritorio (colapsado, `md:flex`) tiene `overflow-y-auto`
+  para que en landscape con poca altura la lista de íconos scrollee en vez de
+  cortarse.
+
+Replicar este mismo patrón (import + hook + botón `menu` `md:hidden`) en cualquier
+página nueva.
 
 ---
 
