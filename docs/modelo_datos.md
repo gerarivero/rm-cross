@@ -772,8 +772,27 @@ estáticos, usando `src/lib/supabase/middleware.ts` (patrón estándar de
 
 La credencial del usuario admin sembrado (`admin@centrorm.local`,
 `0002_alumnos_promociones.sql`) se creó como Auth user con un paso manual único
-(Admin API), no vía migración SQL — no hay todavía una pantalla para dar de alta más
-profesores con login, queda para una próxima entrega.
+(Admin API), no vía migración SQL.
+
+## 6.2. Vínculo usuario ↔ profesor + gestión de administradores (implementado, `0011_usuario_profesor.sql`)
+
+`usuario.profesor_id` (nullable, `on delete set null`) vincula opcionalmente un
+login administrador con su fila correspondiente en el roster `profesor`
+(`0009_profesores.sql`) — esa migración había dejado ambas tablas explícitamente
+sin relación; acá se agrega el vínculo, siempre opcional (un admin puede no estar
+en el roster, y un profesor del roster puede no tener login).
+
+- **Autogestión** (`/cuenta`, `src/app/cuenta/actions.ts` → `vincularProfesor`):
+  cualquier usuario logueado puede vincular/desvincular su propia cuenta con un
+  profesor activo del roster.
+- **Alta de administradores** (`/configuracion`, card "Administradores"): antes solo
+  existía el admin sembrado manualmente; ahora `crearAdministrador`
+  (`src/app/configuracion/actions.ts`) crea la Auth user (Admin API, mismo mecanismo
+  que el alta manual original) + la fila en `usuario` (`es_admin = true`) en un solo
+  paso, con vínculo a profesor opcional. `alternarActivoAdministrador` reutiliza
+  `usuario.activo` (ya validado en `iniciarSesion`) para revocar acceso sin borrar
+  el login — con un guard explícito: un admin no puede desactivarse a sí mismo desde
+  esta pantalla (evita bloquearse el acceso por error).
 
 ## 7. Preguntas abiertas para vos
 

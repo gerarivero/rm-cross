@@ -3,16 +3,21 @@
 import { useState, useTransition } from "react";
 import { useMobileNav } from "@/components/MobileNavProvider";
 import type { UsuarioActual } from "@/lib/supabase/session";
-import { cambiarContrasena } from "./actions";
+import type { ProfesorConDisciplinas } from "@/lib/supabase/types";
+import { cambiarContrasena, vincularProfesor } from "./actions";
 
 const inputClass = "mt-1 w-full border border-border rounded-lg px-3 py-2 outline-none focus:border-primary-container";
 const labelClass = "font-label-bold text-label-bold text-on-surface-variant";
 
-export function CuentaView({ usuario }: { usuario: UsuarioActual }) {
+export function CuentaView({ usuario, profesores }: { usuario: UsuarioActual; profesores: ProfesorConDisciplinas[] }) {
   const { toggleMobileNav } = useMobileNav();
   const [error, setError] = useState<string | null>(null);
   const [exito, setExito] = useState(false);
   const [isPending, startTransition] = useTransition();
+
+  const [errorVinculo, setErrorVinculo] = useState<string | null>(null);
+  const [exitoVinculo, setExitoVinculo] = useState(false);
+  const [vinculoPending, startVinculoTransition] = useTransition();
 
   function handleSubmit(formData: FormData) {
     setError(null);
@@ -25,6 +30,19 @@ export function CuentaView({ usuario }: { usuario: UsuarioActual }) {
       }
       setExito(true);
       (document.getElementById("form-cambiar-contrasena") as HTMLFormElement)?.reset();
+    });
+  }
+
+  function handleVincular(formData: FormData) {
+    setErrorVinculo(null);
+    setExitoVinculo(false);
+    startVinculoTransition(async () => {
+      const result = await vincularProfesor(formData);
+      if (!result.ok) {
+        setErrorVinculo(result.error);
+        return;
+      }
+      setExitoVinculo(true);
     });
   }
 
@@ -60,6 +78,38 @@ export function CuentaView({ usuario }: { usuario: UsuarioActual }) {
               <p className="text-caption font-caption text-text-muted uppercase tracking-wider">Rol</p>
               <p className="font-label-bold text-label-bold text-on-surface mt-1">{usuario.es_admin ? "Admin" : "Profesor"}</p>
             </div>
+          </div>
+
+          <div className="border-t border-border mt-lg pt-lg">
+            <p className={labelClass}>Profesor vinculado</p>
+            <p className="text-body-sm font-body-sm text-text-muted mb-2">
+              Qué profesor del roster (módulo Profesores) corresponde a esta cuenta.
+            </p>
+            {errorVinculo && (
+              <div className="bg-error/10 border border-error/30 text-error rounded-lg p-sm text-body-sm mb-md">{errorVinculo}</div>
+            )}
+            {exitoVinculo && (
+              <div className="bg-success/10 border border-success/30 text-success rounded-lg p-sm text-body-sm mb-md">
+                Vínculo actualizado correctamente.
+              </div>
+            )}
+            <form action={handleVincular} className="flex flex-col sm:flex-row gap-md max-w-lg">
+              <select name="profesor_id" defaultValue={usuario.profesor_id ?? ""} className={`${inputClass} mt-0 flex-1`}>
+                <option value="">Sin vincular</option>
+                {profesores.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.nombre} {p.apellido} — DNI {p.dni}
+                  </option>
+                ))}
+              </select>
+              <button
+                disabled={vinculoPending}
+                type="submit"
+                className="bg-primary-container text-on-primary-container px-lg py-2 rounded-lg font-label-bold text-label-bold shadow-sm hover:opacity-90 transition-all disabled:opacity-50 shrink-0"
+              >
+                {vinculoPending ? "Guardando..." : "Guardar Vínculo"}
+              </button>
+            </form>
           </div>
         </div>
 

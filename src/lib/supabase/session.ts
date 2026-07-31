@@ -31,6 +31,7 @@ export type UsuarioActual = {
   email: string;
   tipo: "profesor" | "alumno";
   es_admin: boolean;
+  profesor_id: string | null;
 };
 
 // Usuario logueado (Supabase Auth) + su fila en `usuario` (perfil de aplicación),
@@ -47,7 +48,7 @@ export async function getUsuarioActual(): Promise<UsuarioActual | null> {
   const admin = createServiceRoleClient();
   const { data } = await admin
     .from("usuario")
-    .select("id, nombre, email, tipo, es_admin")
+    .select("id, nombre, email, tipo, es_admin, profesor_id")
     .eq("email", user.email)
     .maybeSingle();
 

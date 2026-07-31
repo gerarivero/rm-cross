@@ -73,21 +73,6 @@ export function CuotasView({ cuotas }: { cuotas: CuotaConDetalle[] }) {
               type="text"
             />
           </div>
-          <a
-            href="/cuotas/historico"
-            className="flex items-center gap-xs px-lg py-2.5 border border-border text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors font-label-bold text-label-bold"
-          >
-            <span className="material-symbols-outlined text-[18px]">history</span>
-            Ver Histórico
-          </a>
-          <a
-            href="/configuracion"
-            className="flex items-center gap-xs px-lg py-2.5 border border-border text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors font-label-bold text-label-bold"
-            title="Configurar días de gracia y recargo por mora"
-          >
-            <span className="material-symbols-outlined text-[18px]">rule_settings</span>
-            Configurar Mora
-          </a>
           <button
             onClick={toggleMobileNav}
             className="md:hidden p-2 text-on-surface-variant hover:text-primary-container transition-all duration-200"
@@ -121,6 +106,24 @@ export function CuotasView({ cuotas }: { cuotas: CuotaConDetalle[] }) {
               </button>
             );
           })}
+        </div>
+
+        <div className="flex justify-end gap-sm">
+          <a
+            href="/cuotas/historico"
+            className="flex items-center gap-xs px-lg py-2.5 border border-border text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors font-label-bold text-label-bold"
+          >
+            <span className="material-symbols-outlined text-[18px]">history</span>
+            Ver Histórico
+          </a>
+          <a
+            href="/configuracion"
+            className="flex items-center gap-xs px-lg py-2.5 border border-border text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors font-label-bold text-label-bold"
+            title="Configurar días de gracia y recargo por mora"
+          >
+            <span className="material-symbols-outlined text-[18px]">rule_settings</span>
+            Configurar Mora
+          </a>
         </div>
 
         <CuotasTable

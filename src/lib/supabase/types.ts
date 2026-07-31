@@ -52,6 +52,16 @@ export type ProfesorConDisciplinas = Profesor & {
   disciplinas: Pick<Disciplina, "id" | "nombre">[];
 };
 
+export type UsuarioAdmin = {
+  id: string;
+  nombre: string;
+  email: string;
+  activo: boolean;
+  creado_en: string;
+  profesor_id: string | null;
+  profesor: Pick<Profesor, "id" | "nombre" | "apellido"> | null;
+};
+
 export type EstadoPersona = "activo" | "inactivo" | "de_baja" | "suspendido";
 
 export type Alumno = {

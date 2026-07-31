@@ -2,26 +2,37 @@
 
 import { useState, useTransition } from "react";
 import { useMobileNav } from "@/components/MobileNavProvider";
-import type { ConfiguracionPagos, Disciplina, Turno } from "@/lib/supabase/types";
+import { useUsuarioActual } from "@/components/UsuarioActualProvider";
+import type { ConfiguracionPagos, Disciplina, ProfesorConDisciplinas, Turno, UsuarioAdmin } from "@/lib/supabase/types";
 import { actualizarConfiguracionPagos } from "../cuotas/actions";
+import { AdministradorFormModal } from "./AdministradorFormModal";
 import { DisciplinaFormModal } from "./DisciplinaFormModal";
 import { TurnoFormModal } from "./TurnoFormModal";
-import { alternarActivoDisciplina, alternarActivoTurno } from "./actions";
+import { alternarActivoAdministrador, alternarActivoDisciplina, alternarActivoTurno } from "./actions";
 
 function formatoHora(valor: string) {
   return valor.slice(0, 5);
+}
+
+function formatoFecha(valor: string) {
+  return new Date(valor).toLocaleDateString("es-AR");
 }
 
 export function ConfiguracionView({
   configuracion,
   disciplinas,
   turnos,
+  administradores,
+  profesores,
 }: {
   configuracion: ConfiguracionPagos;
   disciplinas: Disciplina[];
   turnos: Turno[];
+  administradores: UsuarioAdmin[];
+  profesores: ProfesorConDisciplinas[];
 }) {
   const { toggleMobileNav } = useMobileNav();
+  const usuarioActual = useUsuarioActual();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -33,6 +44,9 @@ export function ConfiguracionView({
 
   const [modalTurnoOpen, setModalTurnoOpen] = useState(false);
   const [turnoEditando, setTurnoEditando] = useState<Turno | null>(null);
+
+  const [modalAdminOpen, setModalAdminOpen] = useState(false);
+  const [adminEditando, setAdminEditando] = useState<UsuarioAdmin | null>(null);
 
   function handleGuardarConfiguracion(formData: FormData) {
     setConfigError(null);
@@ -54,6 +68,14 @@ export function ConfiguracionView({
     setError(null);
     startTransition(async () => {
       const result = await alternarActivoTurno(turno.id, !turno.activo);
+      if (!result.ok) setError(result.error);
+    });
+  }
+
+  function handleToggleAdmin(admin: UsuarioAdmin) {
+    setError(null);
+    startTransition(async () => {
+      const result = await alternarActivoAdministrador(admin.id, !admin.activo);
       if (!result.ok) setError(result.error);
     });
   }
@@ -268,6 +290,87 @@ export function ConfiguracionView({
             </table>
           </div>
         </div>
+        {/* Administradores */}
+        <div className="bg-surface-white border border-border rounded-xl shadow-sm overflow-hidden">
+          <div className="px-lg py-md border-b border-border flex items-center justify-between">
+            <h3 className="font-headline-md text-headline-md text-on-background">Administradores</h3>
+            <button
+              onClick={() => setModalAdminOpen(true)}
+              className="flex items-center gap-xs px-lg py-2 bg-primary-container text-on-primary-container rounded-lg hover:opacity-90 transition-opacity font-label-bold text-label-bold"
+            >
+              <span className="material-symbols-outlined text-[18px]">add</span>
+              Nuevo Administrador
+            </button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-secondary text-on-secondary">
+                  <th className="px-lg py-4 font-label-bold text-label-bold">Nombre</th>
+                  <th className="px-lg py-4 font-label-bold text-label-bold">Email</th>
+                  <th className="px-lg py-4 font-label-bold text-label-bold">Profesor vinculado</th>
+                  <th className="px-lg py-4 font-label-bold text-label-bold">Estado</th>
+                  <th className="px-lg py-4 font-label-bold text-label-bold text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {administradores.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-lg py-lg text-center text-body-sm text-text-muted">
+                      Todavía no hay administradores cargados.
+                    </td>
+                  </tr>
+                )}
+                {administradores.map((a, i) => {
+                  const esUsuarioActual = a.id === usuarioActual?.id;
+                  return (
+                    <tr key={a.id} className={i % 2 === 1 ? "bg-surface-container-lowest" : ""}>
+                      <td className="px-lg py-4">
+                        <p className="font-label-bold text-on-surface">{a.nombre}</p>
+                        <p className="text-caption font-caption text-text-muted">Alta: {formatoFecha(a.creado_en)}</p>
+                      </td>
+                      <td className="px-lg py-4 text-body-sm text-on-surface-variant">{a.email}</td>
+                      <td className="px-lg py-4 text-body-sm text-on-surface-variant">
+                        {a.profesor ? `${a.profesor.nombre} ${a.profesor.apellido}` : "—"}
+                      </td>
+                      <td className="px-lg py-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-caption font-label-bold ${
+                            a.activo ? "bg-success/10 text-success" : "bg-surface-container-high text-on-surface-variant"
+                          }`}
+                        >
+                          {a.activo ? "Activo" : "Inactivo"}
+                        </span>
+                      </td>
+                      <td className="px-lg py-4 text-right">
+                        <div className="flex items-center justify-end gap-sm">
+                          <button
+                            disabled={isPending}
+                            onClick={() => setAdminEditando(a)}
+                            className="p-2 text-info hover:bg-info/10 rounded-lg transition-colors disabled:opacity-50"
+                            title="Editar"
+                          >
+                            <span className="material-symbols-outlined text-[20px]">edit</span>
+                          </button>
+                          <button
+                            disabled={isPending || (a.activo && esUsuarioActual)}
+                            onClick={() => handleToggleAdmin(a)}
+                            className={`p-2 rounded-lg transition-colors disabled:opacity-50 ${
+                              a.activo ? "text-success hover:bg-success/10" : "text-on-surface-variant hover:bg-surface-container"
+                            }`}
+                            title={esUsuarioActual ? "No podés desactivar tu propio acceso" : a.activo ? "Desactivar" : "Reactivar"}
+                          >
+                            <span className="material-symbols-outlined text-[20px]">{a.activo ? "toggle_on" : "toggle_off"}</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       {modalDisciplinaOpen && <DisciplinaFormModal mode="create" onClose={() => setModalDisciplinaOpen(false)} />}
@@ -276,6 +379,17 @@ export function ConfiguracionView({
       )}
       {modalTurnoOpen && <TurnoFormModal mode="create" onClose={() => setModalTurnoOpen(false)} />}
       {turnoEditando && <TurnoFormModal mode="edit" turno={turnoEditando} onClose={() => setTurnoEditando(null)} />}
+      {modalAdminOpen && (
+        <AdministradorFormModal mode="create" profesores={profesores} onClose={() => setModalAdminOpen(false)} />
+      )}
+      {adminEditando && (
+        <AdministradorFormModal
+          mode="edit"
+          administrador={adminEditando}
+          profesores={profesores}
+          onClose={() => setAdminEditando(null)}
+        />
+      )}
     </>
   );
 }

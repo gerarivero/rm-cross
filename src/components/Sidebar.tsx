@@ -107,9 +107,15 @@ export function Sidebar({ activo }: { activo: string }) {
               <a
                 href="/cuenta"
                 title={!expanded ? "Mi cuenta" : undefined}
-                className={`flex items-center text-on-secondary opacity-80 hover:opacity-100 py-3 hover:bg-on-secondary-fixed-variant transition-colors ${
-                  expanded ? "pl-5" : "justify-center pl-0"
-                }`}
+                className={
+                  activo === "/cuenta"
+                    ? `flex items-center text-primary-container font-bold border-l-4 border-primary-container py-3 bg-on-secondary-fixed-variant ${
+                        expanded ? "pl-4" : "justify-center pl-0"
+                      }`
+                    : `flex items-center text-on-secondary opacity-80 hover:opacity-100 py-3 hover:bg-on-secondary-fixed-variant transition-colors ${
+                        expanded ? "pl-5" : "justify-center pl-0"
+                      }`
+                }
               >
                 <span className={`material-symbols-outlined ${expanded ? "mr-3" : ""}`}>account_circle</span>
                 {expanded && <span className="font-label-bold text-label-bold whitespace-nowrap">Mi cuenta</span>}
@@ -171,7 +177,11 @@ export function Sidebar({ activo }: { activo: string }) {
                   href="/cuenta"
                   onClick={closeMobileNav}
                   title="Mi cuenta"
-                  className="flex items-center justify-center p-2 text-on-secondary opacity-70 hover:opacity-100 hover:bg-on-secondary-fixed-variant rounded-lg transition-colors"
+                  className={
+                    activo === "/cuenta"
+                      ? "flex items-center justify-center p-2 text-primary-container bg-on-secondary-fixed-variant rounded-lg"
+                      : "flex items-center justify-center p-2 text-on-secondary opacity-70 hover:opacity-100 hover:bg-on-secondary-fixed-variant rounded-lg transition-colors"
+                  }
                 >
                   <span className="material-symbols-outlined text-[20px]">account_circle</span>
                 </a>
