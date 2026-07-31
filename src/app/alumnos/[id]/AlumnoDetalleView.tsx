@@ -239,6 +239,15 @@ export function AlumnoDetalleView({
                 >
                   <span className="material-symbols-outlined text-[20px]">visibility</span>
                 </a>
+                <a
+                  href={`/rutinas/${rutinaAsignada.rutina.id}/exportar?alumno=${alumno.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-xs px-lg py-2 border border-border text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors font-label-bold text-label-bold"
+                >
+                  <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+                  Exportar PDF
+                </a>
                 <button
                   onClick={() => setModalAsignarRutinaOpen(true)}
                   className="flex items-center gap-xs px-lg py-2 border border-border text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors font-label-bold text-label-bold"

@@ -103,6 +103,15 @@ export function RutinaBuilderView({
           <span className="material-symbols-outlined">arrow_back</span>
         </a>
         <h2 className="font-headline-md text-headline-md text-primary flex-1">{rutina.nombre}</h2>
+        <a
+          href={`/rutinas/${rutina.id}/exportar`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-xs px-lg py-2 border border-border text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors font-label-bold text-label-bold"
+        >
+          <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+          Exportar PDF
+        </a>
         <button
           onClick={() => setModalAsignarOpen(true)}
           className="flex items-center gap-xs px-lg py-2 border border-border text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors font-label-bold text-label-bold"

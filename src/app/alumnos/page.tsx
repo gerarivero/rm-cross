@@ -4,7 +4,7 @@ import { AlumnosView } from "./AlumnosView";
 
 export const dynamic = "force-dynamic";
 
-export default async function AlumnosPage({ searchParams }: { searchParams: { plan?: string } }) {
+export default async function AlumnosPage({ searchParams }: { searchParams: { plan?: string; rutina?: string } }) {
   const [alumnos, planes, turnos, promociones] = await Promise.all([
     getAlumnos(),
     getPlanes(),
@@ -16,7 +16,14 @@ export default async function AlumnosPage({ searchParams }: { searchParams: { pl
     <>
       <Sidebar activo="/alumnos" />
       <main className="md:ml-20 min-h-screen flex flex-col">
-        <AlumnosView alumnos={alumnos} planes={planes} turnos={turnos} promociones={promociones} planFiltroInicial={searchParams.plan ?? null} />
+        <AlumnosView
+          alumnos={alumnos}
+          planes={planes}
+          turnos={turnos}
+          promociones={promociones}
+          planFiltroInicial={searchParams.plan ?? null}
+          rutinaFiltroInicial={searchParams.rutina ?? null}
+        />
       </main>
     </>
   );

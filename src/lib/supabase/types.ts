@@ -98,12 +98,13 @@ export type InscripcionHistorial = Pick<Inscripcion, "id" | "fecha_inicio" | "fe
 };
 
 // Vista de lista que usa la tabla de Alumnos: alumno + su inscripción activa
-// (plan + precio) + turno.
+// (plan + precio) + turno + rutina activa asignada (si tiene).
 export type AlumnoConPlan = Alumno & {
   turno: Pick<Turno, "id" | "nombre"> | null;
   plan: Pick<Plan, "id" | "nombre"> | null;
   precio: number | null;
   fecha_inscripcion: string | null;
+  rutina: Pick<Rutina, "id" | "nombre"> | null;
 };
 
 // Vista compuesta de la página de detalle: plan + historial completo de precios

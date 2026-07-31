@@ -33,19 +33,27 @@ export async function getPromocionesActivas(): Promise<{ id: string; nombre: str
 export async function getAlumnos(): Promise<AlumnoConPlan[]> {
   const supabase = createServerClient();
 
-  const [{ data: alumnos, error }, { data: inscripciones, error: inscError }] = await Promise.all([
-    supabase
-      .from("alumno")
-      .select("*, turno:turno_id(id, nombre)")
-      .order("fecha_alta", { ascending: false }),
-    supabase
-      .from("inscripcion")
-      .select("alumno_id, fecha_inicio, precio_acordado, plan:plan_id(id, nombre, plan_precio_historico(precio, vigente_hasta))")
-      .eq("estado", "activa"),
-  ]);
+  const [{ data: alumnos, error }, { data: inscripciones, error: inscError }, { data: asignaciones, error: asignacionesError }] =
+    await Promise.all([
+      supabase
+        .from("alumno")
+        .select("*, turno:turno_id(id, nombre)")
+        .order("fecha_alta", { ascending: false }),
+      supabase
+        .from("inscripcion")
+        .select("alumno_id, fecha_inicio, precio_acordado, plan:plan_id(id, nombre, plan_precio_historico(precio, vigente_hasta))")
+        .eq("estado", "activa"),
+      supabase.from("rutina_asignacion").select("alumno_id, rutina:rutina_id(id, nombre)").eq("estado", "activa"),
+    ]);
 
   if (error) throw new Error(`No se pudieron cargar los alumnos: ${error.message}`);
   if (inscError) throw new Error(`No se pudo cargar el plan de los alumnos: ${inscError.message}`);
+  if (asignacionesError) throw new Error(`No se pudo cargar la rutina de los alumnos: ${asignacionesError.message}`);
+
+  const rutinaPorAlumno = new Map<string, { id: string; nombre: string }>();
+  for (const a of (asignaciones ?? []) as any[]) {
+    if (a.rutina) rutinaPorAlumno.set(a.alumno_id, a.rutina);
+  }
 
   const planPorAlumno = new Map<
     string,
@@ -69,6 +77,7 @@ export async function getAlumnos(): Promise<AlumnoConPlan[]> {
       plan: info?.plan ?? null,
       precio: info?.precio ?? null,
       fecha_inscripcion: info?.fecha_inscripcion ?? null,
+      rutina: rutinaPorAlumno.get(row.id) ?? null,
     } as AlumnoConPlan;
   });
 }

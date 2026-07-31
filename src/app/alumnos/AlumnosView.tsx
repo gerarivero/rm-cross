@@ -38,15 +38,18 @@ export function AlumnosView({
   turnos,
   promociones,
   planFiltroInicial,
+  rutinaFiltroInicial,
 }: {
   alumnos: AlumnoConPlan[];
   planes: PlanConPrecio[];
   turnos: Turno[];
   promociones: { id: string; nombre: string; plan_ids: string[] }[];
   planFiltroInicial: string | null;
+  rutinaFiltroInicial: string | null;
 }) {
   const [search, setSearch] = useState("");
   const [planFiltro, setPlanFiltro] = useState<string | null>(planFiltroInicial);
+  const [rutinaFiltro, setRutinaFiltro] = useState<string | null>(rutinaFiltroInicial);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(PAGE_SIZES[0]);
 
@@ -57,10 +60,12 @@ export function AlumnosView({
   const [isPending, startTransition] = useTransition();
 
   const planFiltroNombre = planFiltro ? planes.find((p) => p.id === planFiltro)?.nombre ?? "Plan" : null;
+  const rutinaFiltroNombre = rutinaFiltro ? alumnos.find((a) => a.rutina?.id === rutinaFiltro)?.rutina?.nombre ?? "Rutina" : null;
 
   const filteredAlumnos = useMemo(() => {
     let lista = alumnos;
     if (planFiltro) lista = lista.filter((a) => a.plan?.id === planFiltro);
+    if (rutinaFiltro) lista = lista.filter((a) => a.rutina?.id === rutinaFiltro);
 
     const term = search.trim().toLowerCase();
     if (term) {
@@ -70,7 +75,7 @@ export function AlumnosView({
       });
     }
     return lista;
-  }, [alumnos, planFiltro, search]);
+  }, [alumnos, planFiltro, rutinaFiltro, search]);
 
   const totalPages = Math.max(1, Math.ceil(filteredAlumnos.length / pageSize));
   const currentPage = Math.min(page, totalPages);
@@ -90,6 +95,12 @@ export function AlumnosView({
 
   function limpiarFiltroPlan() {
     setPlanFiltro(null);
+    setPage(1);
+    window.history.replaceState(null, "", "/alumnos");
+  }
+
+  function limpiarFiltroRutina() {
+    setRutinaFiltro(null);
     setPage(1);
     window.history.replaceState(null, "", "/alumnos");
   }
@@ -144,12 +155,24 @@ export function AlumnosView({
           </button>
         </div>
 
-        {planFiltro && (
-          <div className="inline-flex items-center gap-2 bg-info/10 text-info px-3 py-1.5 rounded-full text-caption font-label-bold">
-            Filtrando por plan: {planFiltroNombre}
-            <button onClick={limpiarFiltroPlan} className="hover:opacity-70" title="Quitar filtro">
-              <span className="material-symbols-outlined text-[16px]">close</span>
-            </button>
+        {(planFiltro || rutinaFiltro) && (
+          <div className="flex flex-wrap gap-2">
+            {planFiltro && (
+              <div className="inline-flex items-center gap-2 bg-info/10 text-info px-3 py-1.5 rounded-full text-caption font-label-bold">
+                Filtrando por plan: {planFiltroNombre}
+                <button onClick={limpiarFiltroPlan} className="hover:opacity-70" title="Quitar filtro">
+                  <span className="material-symbols-outlined text-[16px]">close</span>
+                </button>
+              </div>
+            )}
+            {rutinaFiltro && (
+              <div className="inline-flex items-center gap-2 bg-info/10 text-info px-3 py-1.5 rounded-full text-caption font-label-bold">
+                Filtrando por rutina: {rutinaFiltroNombre}
+                <button onClick={limpiarFiltroRutina} className="hover:opacity-70" title="Quitar filtro">
+                  <span className="material-symbols-outlined text-[16px]">close</span>
+                </button>
+              </div>
+            )}
           </div>
         )}
 

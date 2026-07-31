@@ -580,9 +580,22 @@ alumno tiene como máximo una rutina `activa` a la vez (índice único parcial
 asignar una rutina nueva, cualquier asignación `activa` previa del alumno se cierra
 automáticamente a `finalizada` — no hay una fecha de fin explícita, es historial simple.
 
+**Exportar a PDF (implementado):** `/rutinas/[id]/exportar` renderiza toda la rutina
+(4 semanas → días → actividades → ejercicios) en una planilla imprimible con el logo
+de Centro RM y el profesor que la generó (mismo workaround sin auth real que
+`buscarAdminAutorizador` — se muestra el usuario admin sembrado). Con `?alumno=<id>` en
+la URL agrega un bloque con nombre/DNI/fecha de inicio de ese alumno en esa rutina —
+usado desde "Exportar PDF" en el detalle de Alumno (rutina personalizada para
+mandarle al alumno) — y sin ese parámetro es la versión genérica, usada desde "Exportar
+PDF" en el detalle de la Rutina. Mismo criterio que el comprobante de pago: sin
+generación de PDF en el servidor, se imprime con el diálogo nativo del navegador
+(`window.print()`). El diseño es una versión funcional propia con los tokens de la
+app — pendiente de reemplazar visualmente cuando el usuario traiga un mockup de Stitch
+para esta planilla específica, sin que eso cambie la lógica de datos.
+
 **Fuera de alcance por ahora:** vista de la rutina desde la perspectiva del alumno (no
-hay login de alumnos todavía), exportar/imprimir en PDF, marcar ejercicios como
-"completados" (seguimiento de cumplimiento), y duplicar una semana dentro del builder.
+hay login de alumnos todavía), marcar ejercicios como "completados" (seguimiento de
+cumplimiento), y duplicar una semana dentro del builder.
 
 ---
 

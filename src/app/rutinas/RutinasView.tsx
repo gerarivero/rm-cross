@@ -151,10 +151,14 @@ export function RutinasView({ rutinas }: { rutinas: RutinaConResumen[] }) {
                       {rutina.descripcion && <p className="text-caption font-caption text-text-muted">{rutina.descripcion}</p>}
                     </td>
                     <td className="px-lg py-4">
-                      <span className="inline-flex items-center gap-1 text-on-surface-variant font-label-bold text-label-bold">
+                      <a
+                        href={`/alumnos?rutina=${rutina.id}`}
+                        className="inline-flex items-center gap-1 text-primary hover:underline font-label-bold text-label-bold"
+                        title="Ver alumnos con esta rutina"
+                      >
                         <span className="material-symbols-outlined text-[18px]">group</span>
                         {rutina.alumnos_count}
-                      </span>
+                      </a>
                     </td>
                     <td className="px-lg py-4">
                       <span
