@@ -1,9 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 
-// Cliente de servidor: usa la service role key porque los Server Actions
-// corren en el servidor y todavía no hay autenticación/RLS implementada.
-// Cuando se sume auth de verdad, esto pasa a usar el cliente con cookies de
-// sesión + políticas RLS por rol (profesor/alumno/admin).
+// Cliente de servidor: usa la service role key para todas las queries de negocio
+// (cuotas, alumnos, etc.), sin RLS todavía. El login/logout/usuario logueado usan
+// un cliente aparte con cookies de sesión (ver src/lib/supabase/session.ts) — este
+// cliente no cambia por eso, sigue siendo el único que hace queries de negocio.
 //
 // Nota sobre tipos: no se usa el generic <Database> de createClient() porque
 // con un schema escrito a mano (sin Views/Functions) el inferidor de tipos de

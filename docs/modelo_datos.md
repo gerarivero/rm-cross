@@ -744,14 +744,36 @@ dueño y un encargado), y el resto de los profesores acceden solo a su propio su
 sus clases, sus alumnos, tomar asistencia, cargar rutinas — sin ver cuotas ni
 configuración general.
 
-**Workaround temporal sin autenticación:** hasta que exista login real, la app
-(`src/lib/supabase/server.ts`) se conecta con la service role key, sin sesión de
-usuario — no hay forma de saber "quién está logueado". Por eso, cuando una Server
-Action necesita completar `inscripcion.autorizado_por` (precio promocional), busca
-`select id from usuario where es_admin = true limit 1` y usa ese usuario. La migración
-`0002_alumnos_promociones.sql` siembra un usuario admin único para este propósito. El
-día que se implemente autenticación de verdad, este workaround se reemplaza por el
-usuario de la sesión actual.
+**Workaround que sigue vigente para `autorizado_por`/`registrado_por`/`creado_por`:**
+`src/lib/supabase/server.ts` sigue usando la service role key para todas las queries
+de negocio (sin RLS todavía), así que esas columnas de auditoría puntuales siguen
+completándose con `buscarAdminAutorizador` (`select id from usuario where es_admin =
+true limit 1`, `src/lib/supabase/admin.ts`) en vez de con el usuario de la sesión
+real — no se migró en este cambio, es una mejora aparte pendiente.
+
+## 6.1. Login (implementado, Supabase Auth)
+
+`/login` es la única pantalla sin `Sidebar` — layout de pantalla completa con el
+logo del gimnasio. Usa **Supabase Auth** para credenciales/sesión (no una tabla de
+contraseñas propia): `usuario` sigue siendo el perfil de aplicación
+(nombre/tipo/es_admin/activo), vinculado con la Auth user por **email** (sin columna
+nueva, `usuario.email` ya era único). Solo puede loguear un `usuario` con `tipo =
+'profesor'` **y** `es_admin = true` — se valida explícitamente en
+`iniciarSesion` (`src/app/login/actions.ts`) después del `signInWithPassword`; si no
+cumple, se cierra la sesión recién creada y se rechaza con un mensaje genérico.
+
+`src/lib/supabase/session.ts` expone `getUsuarioActual()` (usuario logueado + su fila
+en `usuario`), usado en `src/app/layout.tsx` para sembrar `UsuarioActualProvider`
+(mismo patrón de Context que `MobileNavProvider`) — así el Sidebar puede mostrar el
+nombre real y ofrecer logout sin que cada `page.tsx` tenga que pasarlo como prop.
+`middleware.ts` (raíz del repo) protege todas las rutas salvo `/login` y los
+estáticos, usando `src/lib/supabase/middleware.ts` (patrón estándar de
+`@supabase/ssr` para Next.js).
+
+La credencial del usuario admin sembrado (`admin@centrorm.local`,
+`0002_alumnos_promociones.sql`) se creó como Auth user con un paso manual único
+(Admin API), no vía migración SQL — no hay todavía una pantalla para dar de alta más
+profesores con login, queda para una próxima entrega.
 
 ## 7. Preguntas abiertas para vos
 

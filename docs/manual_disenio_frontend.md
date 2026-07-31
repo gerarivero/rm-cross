@@ -146,6 +146,25 @@ navegando en ese rango existe:
 Replicar este mismo patrón (import + hook + botón `menu` `md:hidden`) en cualquier
 página nueva.
 
+### Login
+
+`/login` (`src/app/login/`) es la única pantalla de la app **sin Sidebar**: layout de
+pantalla completa (`min-h-screen flex items-center justify-center bg-background`)
+con una card centrada (`bg-surface-white rounded-xl shadow-md p-xl max-w-sm`), logo
+del gimnasio arriba, y el formulario de email/contraseña con los mismos
+`inputClass`/`labelClass` que el resto de los formularios de la app.
+
+### Tarjeta de usuario del Sidebar
+
+El pie del `Sidebar` (antes estática, "Profesor Principal"/"Admin" fijos) ahora lee
+`useUsuarioActual()` (`src/components/UsuarioActualProvider.tsx`) y muestra el
+nombre/rol real del profesor logueado. Debajo, dos íconos: `account_circle` (link a
+`/configuracion`) y `logout` (`<form action={cerrarSesion}>`, Server Action de
+`src/app/login/actions.ts`) — a diferencia del `account_circle` que se sacó de los
+headers de cada página (sección "Responsive / mobile" arriba, ahí no hacía nada),
+este sí es funcional y vive únicamente en el pie del Sidebar (desktop y drawer
+mobile).
+
 ---
 
 ## 6. Patrón de tabla (con paginación)

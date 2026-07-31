@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { cerrarSesion } from "@/app/login/actions";
 import { useMobileNav } from "./MobileNavProvider";
+import { useUsuarioActual } from "./UsuarioActualProvider";
 
 const NAV_ITEMS = [
   { href: "/dashboard", icon: "dashboard", label: "Dashboard" },
@@ -10,28 +12,23 @@ const NAV_ITEMS = [
   { href: "/cuotas", icon: "payments", label: "Cuotas" },
   { href: "/planes", icon: "sell", label: "Planes" },
   { href: "/rutinas", icon: "fitness_center", label: "Rutinas" },
-  { href: "/asistencia-alumnos", icon: "how_to_reg", label: "Asistencia Alumnos" },
-  { href: "/asistencia-profesores", icon: "fingerprint", label: "Asistencia Profesores" },
-  { href: "/estadisticas", icon: "leaderboard", label: "Estadísticas" },
   { href: "/configuracion", icon: "settings", label: "Configuración" },
 ];
 
-// Rutas ya implementadas con datos reales. El resto navega pero muestra un
-// aviso de "en construcción" hasta que se porten desde la maqueta de Stitch.
-const RUTAS_IMPLEMENTADAS = new Set([
-  "/dashboard",
-  "/planes",
-  "/alumnos",
-  "/profesores",
-  "/cuotas",
-  "/rutinas",
-  "/configuracion",
-]);
+function iniciales(nombre: string) {
+  return nombre
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase())
+    .join("");
+}
 
 export function Sidebar({ activo }: { activo: string }) {
   const [hovered, setHovered] = useState(false);
   const expanded = hovered;
   const { mobileNavOpen, closeMobileNav } = useMobileNav();
+  const usuario = useUsuarioActual();
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -66,12 +63,11 @@ export function Sidebar({ activo }: { activo: string }) {
         <nav className="flex-1 space-y-1 overflow-y-auto">
           {NAV_ITEMS.map((item) => {
             const isActive = item.href === activo;
-            const implementada = RUTAS_IMPLEMENTADAS.has(item.href);
             return (
               <a
                 key={item.href}
-                href={implementada ? item.href : "#"}
-                title={!expanded ? item.label : implementada ? undefined : "Todavía no portado desde la maqueta"}
+                href={item.href}
+                title={!expanded ? item.label : undefined}
                 className={
                   isActive
                     ? `flex items-center text-primary-container font-bold border-l-4 border-primary-container py-3 bg-on-secondary-fixed-variant ${
@@ -79,7 +75,7 @@ export function Sidebar({ activo }: { activo: string }) {
                       }`
                     : `flex items-center text-on-secondary opacity-80 hover:opacity-100 py-3 hover:bg-on-secondary-fixed-variant transition-colors ${
                         expanded ? "pl-5" : "justify-center pl-0"
-                      } ${implementada ? "" : "cursor-not-allowed opacity-40"}`
+                      }`
                 }
               >
                 <span className={`material-symbols-outlined ${expanded ? "mr-3" : ""}`}>{item.icon}</span>
@@ -88,18 +84,42 @@ export function Sidebar({ activo }: { activo: string }) {
             );
           })}
         </nav>
-        <div className={`pt-xl mt-auto ${expanded ? "px-lg" : "px-2"}`}>
-          <div className={`flex items-center gap-3 bg-on-secondary-fixed-variant rounded-xl border border-outline-variant/30 ${expanded ? "p-3" : "p-2 justify-center"}`}>
-            <div className="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-bold text-label-bold shrink-0">
-              RM
-            </div>
-            {expanded && (
-              <div className="overflow-hidden">
-                <p className="text-on-secondary font-label-bold text-label-bold truncate">Profesor Principal</p>
-                <p className="text-on-secondary opacity-60 text-caption font-caption truncate">Admin</p>
+        <div className={`pt-xl mt-auto space-y-2 ${expanded ? "px-lg" : "px-2"}`}>
+          {usuario && (
+            <div className={`flex items-center gap-3 bg-on-secondary-fixed-variant rounded-xl border border-outline-variant/30 ${expanded ? "p-3" : "p-2 justify-center"}`}>
+              <div className="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-bold text-label-bold shrink-0">
+                {iniciales(usuario.nombre)}
               </div>
-            )}
-          </div>
+              {expanded && (
+                <div className="overflow-hidden">
+                  <p className="text-on-secondary font-label-bold text-label-bold truncate">{usuario.nombre}</p>
+                  <p className="text-on-secondary opacity-60 text-caption font-caption truncate">
+                    {usuario.es_admin ? "Admin" : "Profesor"}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+          {usuario && (
+            <div className={`flex ${expanded ? "justify-end gap-1" : "flex-col items-center gap-1"}`}>
+              <a
+                href="/configuracion"
+                title="Mi cuenta"
+                className="p-2 text-on-secondary opacity-70 hover:opacity-100 hover:bg-on-secondary-fixed-variant rounded-lg transition-colors"
+              >
+                <span className="material-symbols-outlined text-[20px]">account_circle</span>
+              </a>
+              <form action={cerrarSesion}>
+                <button
+                  type="submit"
+                  title="Cerrar sesión"
+                  className="p-2 text-on-secondary opacity-70 hover:opacity-100 hover:bg-on-secondary-fixed-variant rounded-lg transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[20px]">logout</span>
+                </button>
+              </form>
+            </div>
+          )}
         </div>
       </aside>
 
@@ -115,19 +135,16 @@ export function Sidebar({ activo }: { activo: string }) {
             <nav className="flex-1 space-y-1">
               {NAV_ITEMS.map((item) => {
                 const isActive = item.href === activo;
-                const implementada = RUTAS_IMPLEMENTADAS.has(item.href);
                 return (
                   <a
                     key={item.href}
-                    href={implementada ? item.href : "#"}
+                    href={item.href}
                     onClick={closeMobileNav}
                     title={item.label}
                     className={
                       isActive
                         ? "flex items-center justify-center text-primary-container font-bold border-l-4 border-primary-container py-3 bg-on-secondary-fixed-variant"
-                        : `flex items-center justify-center text-on-secondary opacity-80 hover:opacity-100 py-3 hover:bg-on-secondary-fixed-variant transition-colors ${
-                            implementada ? "" : "cursor-not-allowed opacity-40"
-                          }`
+                        : "flex items-center justify-center text-on-secondary opacity-80 hover:opacity-100 py-3 hover:bg-on-secondary-fixed-variant transition-colors"
                     }
                   >
                     <span className="material-symbols-outlined">{item.icon}</span>
@@ -135,6 +152,32 @@ export function Sidebar({ activo }: { activo: string }) {
                 );
               })}
             </nav>
+            {usuario && (
+              <div className="pt-md px-2 space-y-1 border-t border-outline-variant/30">
+                <div className="flex justify-center">
+                  <div className="w-9 h-9 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-bold text-label-bold">
+                    {iniciales(usuario.nombre)}
+                  </div>
+                </div>
+                <a
+                  href="/configuracion"
+                  onClick={closeMobileNav}
+                  title="Mi cuenta"
+                  className="flex items-center justify-center p-2 text-on-secondary opacity-70 hover:opacity-100 hover:bg-on-secondary-fixed-variant rounded-lg transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[20px]">account_circle</span>
+                </a>
+                <form action={cerrarSesion}>
+                  <button
+                    type="submit"
+                    title="Cerrar sesión"
+                    className="w-full flex items-center justify-center p-2 text-on-secondary opacity-70 hover:opacity-100 hover:bg-on-secondary-fixed-variant rounded-lg transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[20px]">logout</span>
+                  </button>
+                </form>
+              </div>
+            )}
           </aside>
         </>
       )}
