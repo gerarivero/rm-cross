@@ -76,6 +76,7 @@ export type Turno = {
   nombre: string;
   hora_inicio: string;
   hora_fin: string;
+  activo: boolean;
 };
 
 export type Promocion = {

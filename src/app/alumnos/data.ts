@@ -5,7 +5,7 @@ export { getPlanes } from "../planes/data";
 
 export async function getTurnos(): Promise<Turno[]> {
   const supabase = createServerClient();
-  const { data, error } = await supabase.from("turno").select("*").order("hora_inicio");
+  const { data, error } = await supabase.from("turno").select("*").eq("activo", true).order("hora_inicio");
   if (error) throw new Error(`No se pudieron cargar los turnos: ${error.message}`);
   return data ?? [];
 }

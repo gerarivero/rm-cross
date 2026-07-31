@@ -660,6 +660,34 @@ autenticación — el módulo queda intencionalmente aislado del resto del schem
 
 ---
 
+## 3.9. Módulo de Configuración (implementado, `0010_configuracion.sql`)
+
+`/configuracion` centraliza dos cosas que antes no tenían un lugar propio:
+
+- **Parámetros de Pagos** (días de gracia, tipo/valor de recargo): el formulario que
+  antes vivía embebido en `CuotasView.tsx` se mudó acá tal cual (misma Server Action
+  `actualizarConfiguracionPagos`, `src/app/cuotas/actions.ts`, reexportada desde
+  `src/app/configuracion/actions.ts`). Cuotas conserva un link "Configurar Mora" en
+  su header que lleva a esta pantalla.
+- **Administración de Disciplinas y Turnos**: ambos catálogos existían desde
+  `0001_planes.sql`/`0002_alumnos_promociones.sql` pero solo se cargaban por seed, sin
+  ningún CRUD. Se agregó `turno.activo` (boolean, default `true`) en esta migración —
+  mismo criterio que `plan.activo`/`disciplina.activo` — para poder dar de baja un
+  turno sin afectar a los alumnos que ya lo tienen asignado. `getTurnos()`
+  (`src/app/alumnos/data.ts`) ahora filtra `activo = true` para el selector del alta
+  de alumno; la pantalla de administración usa `getTodosLosTurnos()`
+  (`src/app/configuracion/data.ts`, sin filtro) para mostrar también los inactivos.
+
+Mismo patrón que el catálogo de Músculos (`src/app/rutinas/catalogo/`): crear,
+editar, activar/desactivar — **sin eliminar** (son catálogos "padre" de los que
+dependen otras entidades).
+
+Con este módulo se cierra el alcance de datos del primer release: Dashboard,
+Alumnos, Profesores, Cuotas, Planes, Rutinas y Configuración. Asistencia (alumnos y
+profesores) y Estadísticas quedan explícitamente para una entrega futura.
+
+---
+
 ## 4. Diseño original de prorrateo (no implementado, referencia histórica)
 
 > **Superado por la sección 3.** Esta era la propuesta inicial (ciclo por mes

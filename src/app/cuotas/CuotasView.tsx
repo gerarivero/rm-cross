@@ -1,12 +1,11 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
-import type { ConfiguracionPagos, CuotaConDetalle } from "@/lib/supabase/types";
+import { useMemo, useState } from "react";
+import type { CuotaConDetalle } from "@/lib/supabase/types";
 import { useMobileNav } from "@/components/MobileNavProvider";
 import { CuotasTable } from "./CuotasTable";
 import { RegistrarPagoModal } from "./RegistrarPagoModal";
 import { DetallePagosModal } from "./DetallePagosModal";
-import { actualizarConfiguracionPagos } from "./actions";
 
 type EstadoResumen = "pagada" | "adeudada" | "vencida";
 
@@ -20,15 +19,12 @@ function formatoMoneda(valor: number) {
   return valor.toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
 }
 
-export function CuotasView({ cuotas, configuracion }: { cuotas: CuotaConDetalle[]; configuracion: ConfiguracionPagos }) {
+export function CuotasView({ cuotas }: { cuotas: CuotaConDetalle[] }) {
   const { toggleMobileNav } = useMobileNav();
   const [search, setSearch] = useState("");
   const [estadoFiltro, setEstadoFiltro] = useState<EstadoResumen | null>(null);
   const [cuotaPagando, setCuotaPagando] = useState<CuotaConDetalle | null>(null);
   const [cuotaDetalle, setCuotaDetalle] = useState<CuotaConDetalle | null>(null);
-
-  const [configError, setConfigError] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
 
   const resumen = useMemo(() => {
     const acc: Record<EstadoResumen, { cantidad: number; monto: number }> = {
@@ -62,14 +58,6 @@ export function CuotasView({ cuotas, configuracion }: { cuotas: CuotaConDetalle[
     setEstadoFiltro((actual) => (actual === estado ? null : estado));
   }
 
-  function handleGuardarConfiguracion(formData: FormData) {
-    setConfigError(null);
-    startTransition(async () => {
-      const result = await actualizarConfiguracionPagos(formData);
-      if (!result.ok) setConfigError(result.error);
-    });
-  }
-
   return (
     <>
       <header className="sticky top-0 z-40 bg-surface-white border-b border-border shadow-sm flex justify-between items-center px-lg py-md w-full">
@@ -91,6 +79,14 @@ export function CuotasView({ cuotas, configuracion }: { cuotas: CuotaConDetalle[
           >
             <span className="material-symbols-outlined text-[18px]">history</span>
             Ver Histórico
+          </a>
+          <a
+            href="/configuracion"
+            className="flex items-center gap-xs px-lg py-2.5 border border-border text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors font-label-bold text-label-bold"
+            title="Configurar días de gracia y recargo por mora"
+          >
+            <span className="material-symbols-outlined text-[18px]">rule_settings</span>
+            Configurar Mora
           </a>
           <button
             onClick={toggleMobileNav}
@@ -125,55 +121,6 @@ export function CuotasView({ cuotas, configuracion }: { cuotas: CuotaConDetalle[
               </button>
             );
           })}
-        </div>
-
-        {/* Configuración de Vencimientos y Recargos */}
-        <div className="bg-surface-white border border-border rounded-xl p-lg shadow-sm">
-          <h3 className="font-headline-md text-headline-md text-on-surface mb-xs flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary">rule_settings</span>
-            Configuración de Vencimientos y Recargos
-          </h3>
-          <p className="text-on-surface-variant font-body-sm text-body-sm mb-md">
-            Días de gracia después del vencimiento antes de que una cuota pase a <strong>Vencida</strong> y se le aplique recargo.
-          </p>
-          {configError && <div className="bg-error/10 border border-error/30 text-error rounded-lg p-sm text-body-sm mb-md">{configError}</div>}
-          <form action={handleGuardarConfiguracion} className="grid grid-cols-1 sm:grid-cols-4 gap-md items-end">
-            <div>
-              <label className="font-label-bold text-label-bold text-on-surface-variant">Días de gracia</label>
-              <input
-                name="dias_gracia"
-                type="number"
-                min={0}
-                defaultValue={configuracion.dias_gracia}
-                className="mt-1 w-full border border-border rounded-lg px-3 py-2 font-data-mono text-data-mono text-center outline-none focus:border-primary-container"
-              />
-            </div>
-            <div>
-              <label className="font-label-bold text-label-bold text-on-surface-variant">Tipo de recargo</label>
-              <select name="tipo_recargo" defaultValue={configuracion.tipo_recargo} className="mt-1 w-full border border-border rounded-lg px-3 py-2 outline-none focus:border-primary-container">
-                <option value="porcentaje">Porcentaje (%)</option>
-                <option value="monto_fijo">Monto fijo ($)</option>
-              </select>
-            </div>
-            <div>
-              <label className="font-label-bold text-label-bold text-on-surface-variant">Valor del recargo</label>
-              <input
-                name="valor_recargo"
-                type="number"
-                step="0.01"
-                min={0}
-                defaultValue={configuracion.valor_recargo}
-                className="mt-1 w-full border border-border rounded-lg px-3 py-2 font-data-mono text-data-mono outline-none focus:border-primary-container"
-              />
-            </div>
-            <button
-              disabled={isPending}
-              type="submit"
-              className="bg-primary-container text-on-primary-container px-lg py-2 rounded-lg font-label-bold text-label-bold shadow-sm hover:opacity-90 transition-all h-fit disabled:opacity-50"
-            >
-              Guardar Configuración
-            </button>
-          </form>
         </div>
 
         <CuotasTable

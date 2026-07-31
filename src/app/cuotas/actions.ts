@@ -192,5 +192,6 @@ export async function actualizarConfiguracionPagos(formData: FormData): Promise<
   if (error) return { ok: false, error: error.message };
 
   revalidatePath("/cuotas");
+  revalidatePath("/configuracion");
   return { ok: true };
 }
