@@ -521,6 +521,19 @@ soportara. Ahora:
   (implicaría cerrar/prorratear cuotas en curso) — "Reinscribir" solo aplica cuando no
   hay inscripción activa.
 
+**Sincronización de precio con la cuota adeudada (implementado):** todo cambio de
+precio — de lista (editar el precio de un plan desde `/planes`) o acordado/promocional
+(botón "Editar Precio" en el detalle de alumno, que también permite quitar una
+promoción ya aplicada y volver a cobrar precio de lista) — actualiza de inmediato el
+`monto_base` de la cuota **adeudada** (la única cuota abierta de esa inscripción, ver
+más abajo) para reflejar el nuevo precio. Nunca se toca una cuota ya `pagada` — el
+histórico de lo cobrado no se reescribe. Un cambio de precio de lista de un plan solo
+afecta a los alumnos que pagan ese precio de lista (`inscripcion.precio_acordado is
+null`); los que tienen un precio acordado/promocional no se mueven por eso. Mecanismo
+compartido: `actualizarCuotasAdeudadasDeInscripciones` (`src/app/cuotas/actions.ts`),
+llamado tanto desde `src/app/planes/actions.ts` como desde
+`actualizarPrecioInscripcion` en `src/app/alumnos/actions.ts`.
+
 ---
 
 ## 3.5. Módulo de Rutinas (implementado, `0007_rutinas.sql`)

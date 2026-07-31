@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { buscarAdminAutorizador } from "@/lib/supabase/admin";
 import { createServerClient } from "@/lib/supabase/server";
-import { crearCuotaInicial } from "../cuotas/actions";
+import { actualizarCuotasAdeudadasDeInscripciones, crearCuotaInicial } from "../cuotas/actions";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -80,6 +80,26 @@ function leerYValidarDatosPersonales(formData: FormData): { ok: true; datos: Dat
   };
 }
 
+// precioAcordado si no es null; si no, el precio de lista vigente del plan. Usado al
+// crear una inscripción y al editar el precio/promoción de una ya existente.
+async function resolverMontoCuota(
+  supabase: SupabaseClient,
+  planId: string,
+  precioAcordado: number | null
+): Promise<{ monto: number | null; error: string | null }> {
+  if (precioAcordado !== null) return { monto: precioAcordado, error: null };
+
+  const { data: precioVigenteRow, error } = await supabase
+    .from("plan_precio_historico")
+    .select("precio")
+    .eq("plan_id", planId)
+    .is("vigente_hasta", null)
+    .maybeSingle();
+
+  if (error) return { monto: null, error: `no se pudo leer el precio del plan: ${error.message}` };
+  return { monto: precioVigenteRow?.precio ?? null, error: null };
+}
+
 // Crea la inscripción (con precio promocional opcional) y su cuota inicial para
 // un alumno ya existente. Usado tanto por el alta de alumno (crearAlumno) como
 // por la re-inscripción de un alumno que no tiene plan activo (reinscribirAlumno).
@@ -127,20 +147,9 @@ async function crearInscripcionConCuota(
   }
 
   // La cuota se cobra por precio_acordado si se aplicó promoción; si no, por el
-  // precio de lista vigente del plan (mismo patrón que ya usa src/app/planes/data.ts).
-  let montoCuota = precio_acordado;
-  if (montoCuota === null) {
-    const { data: precioVigenteRow, error: precioError } = await supabase
-      .from("plan_precio_historico")
-      .select("precio")
-      .eq("plan_id", plan_id)
-      .is("vigente_hasta", null)
-      .maybeSingle();
-    if (precioError) {
-      return { error: `no se pudo leer el precio del plan: ${precioError.message}` };
-    }
-    montoCuota = precioVigenteRow?.precio ?? null;
-  }
+  // precio de lista vigente del plan.
+  const { monto: montoCuota, error: montoError } = await resolverMontoCuota(supabase, plan_id, precio_acordado);
+  if (montoError) return { error: montoError };
 
   if (montoCuota !== null) {
     const { error: cuotaError } = await crearCuotaInicial(supabase, inscripcion.id, montoCuota, fechaInicio);
@@ -224,6 +233,60 @@ export async function reinscribirAlumno(alumnoId: string, formData: FormData): P
   revalidatePath("/alumnos");
   revalidatePath(`/alumnos/${alumnoId}`);
   revalidatePath("/planes");
+  revalidatePath("/cuotas");
+  return { ok: true };
+}
+
+// Edita el precio/promoción de la inscripción activa de un alumno, sin tocar el plan
+// ni sus datos personales: permite quitar una promoción ya aplicada (vuelve a cobrar
+// precio de lista) o cambiar el precio acordado/la promoción. El cambio se propaga de
+// inmediato a la cuota adeudada de esa inscripción (mismo mecanismo que un cambio de
+// precio de lista del plan, ver src/app/cuotas/actions.ts).
+export async function actualizarPrecioInscripcion(alumnoId: string, formData: FormData): Promise<ActionResult> {
+  const supabase = createServerClient();
+
+  const { data: inscripcion, error: inscError } = await supabase
+    .from("inscripcion")
+    .select("id, plan_id, precio_acordado")
+    .eq("alumno_id", alumnoId)
+    .eq("estado", "activa")
+    .maybeSingle();
+  if (inscError) return { ok: false, error: inscError.message };
+  if (!inscripcion) return { ok: false, error: "Este alumno no tiene una inscripción activa." };
+
+  const aplicaPromocion = formData.get("aplicar_promocion") === "on";
+  let precio_acordado: number | null = null;
+  let promocion_id: string | null = null;
+  let autorizado_por: string | null = null;
+
+  if (aplicaPromocion) {
+    precio_acordado = opcionalNumero(formData, "precio");
+    if (precio_acordado === null || precio_acordado <= 0) {
+      return { ok: false, error: "El precio acordado no es válido (debe ser mayor a 0)." };
+    }
+    promocion_id = opcional(formData, "promocion_id");
+    autorizado_por = await buscarAdminAutorizador(supabase);
+    if (!autorizado_por) {
+      return { ok: false, error: "No se encontró un usuario administrador para autorizar el precio promocional." };
+    }
+  }
+
+  const { error: updateError } = await supabase
+    .from("inscripcion")
+    .update({ precio_acordado, promocion_id, autorizado_por })
+    .eq("id", inscripcion.id);
+  if (updateError) return { ok: false, error: `No se pudo actualizar el precio: ${updateError.message}` };
+
+  const { monto, error: montoError } = await resolverMontoCuota(supabase, inscripcion.plan_id, precio_acordado);
+  if (montoError) return { ok: false, error: `Precio actualizado, pero ${montoError}` };
+
+  if (monto !== null) {
+    const { error: cuotaError } = await actualizarCuotasAdeudadasDeInscripciones(supabase, [inscripcion.id], monto);
+    if (cuotaError) return { ok: false, error: `Precio actualizado, pero ${cuotaError}` };
+  }
+
+  revalidatePath("/alumnos");
+  revalidatePath(`/alumnos/${alumnoId}`);
   revalidatePath("/cuotas");
   return { ok: true };
 }

@@ -114,9 +114,13 @@ export type PlanDetalle = PlanConPrecio & {
 };
 
 // Vista de la página de detalle de alumno: mismos datos que AlumnoConPlan +
-// el nombre de la promoción aplicada (si la inscripción tiene una).
+// el nombre de la promoción aplicada (si la inscripción tiene una). precio_acordado y
+// promocion_id (crudos, sin resolver contra el precio de lista) son para precargar el
+// modal de edición de precio — `precio` ya viene resuelto para mostrar.
 export type AlumnoDetalle = AlumnoConPlan & {
   promocion_nombre: string | null;
+  precio_acordado: number | null;
+  promocion_id: string | null;
 };
 
 export type EstadoCuota = "adeudada" | "pagada" | "vencida" | "anulada";

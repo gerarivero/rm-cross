@@ -2,12 +2,35 @@
 
 import { revalidatePath } from "next/cache";
 import { createServerClient } from "@/lib/supabase/server";
+import { actualizarCuotasAdeudadasDeInscripciones } from "../cuotas/actions";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
 const POSTGRES_FOREIGN_KEY_VIOLATION = "23503";
 
 type SupabaseClient = ReturnType<typeof createServerClient>;
+
+// Un cambio de precio de lista solo afecta a los alumnos que pagan ese precio de
+// lista (sin precio_acordado propio) — los que tienen un precio promocional/acordado
+// no se mueven porque un cambio de precio de plan los cambie. La cuota adeudada de
+// esas inscripciones pasa a cobrar el nuevo precio (mismo criterio pedido para el
+// cambio de precio/promoción de un alumno puntual, ver src/app/alumnos/actions.ts).
+async function propagarNuevoPrecioACuotasAdeudadas(
+  supabase: SupabaseClient,
+  planId: string,
+  nuevoPrecio: number
+): Promise<{ error: string | null }> {
+  const { data: inscripciones, error } = await supabase
+    .from("inscripcion")
+    .select("id")
+    .eq("plan_id", planId)
+    .eq("estado", "activa")
+    .is("precio_acordado", null);
+
+  if (error) return { error: `no se pudieron buscar las inscripciones del plan: ${error.message}` };
+
+  return actualizarCuotasAdeudadasDeInscripciones(supabase, (inscripciones ?? []).map((i) => i.id), nuevoPrecio);
+}
 
 // Cierra el precio vigente (si existe) y abre uno nuevo desde `hoy`.
 // Nota: son dos operaciones secuenciales, no atómicas — para el volumen de
@@ -139,10 +162,14 @@ export async function actualizarPlan(planId: string, formData: FormData): Promis
     const hoy = new Date().toISOString().slice(0, 10);
     const { error } = await rotarPrecioVigente(supabase, planId, precio, hoy);
     if (error) return { ok: false, error };
+
+    const { error: cuotasError } = await propagarNuevoPrecioACuotasAdeudadas(supabase, planId, precio);
+    if (cuotasError) return { ok: false, error: `Plan actualizado, pero ${cuotasError}` };
   }
 
   revalidatePath("/planes");
   revalidatePath(`/planes/${planId}`);
+  revalidatePath("/cuotas");
   return { ok: true };
 }
 
@@ -158,7 +185,11 @@ export async function actualizarPrecioPlan(planId: string, formData: FormData): 
   const { error } = await rotarPrecioVigente(supabase, planId, precio, hoy);
   if (error) return { ok: false, error };
 
+  const { error: cuotasError } = await propagarNuevoPrecioACuotasAdeudadas(supabase, planId, precio);
+  if (cuotasError) return { ok: false, error: `Precio actualizado, pero ${cuotasError}` };
+
   revalidatePath("/planes");
+  revalidatePath("/cuotas");
   return { ok: true };
 }
 

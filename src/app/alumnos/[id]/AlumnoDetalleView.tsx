@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { AlumnoDetalle, CuotaDeAlumno, InscripcionHistorial, PlanConPrecio, RutinaAsignadaDeAlumno, Turno } from "@/lib/supabase/types";
 import { AlumnoFormModal } from "../AlumnoFormModal";
 import { AsignarRutinaAlumnoModal } from "../AsignarRutinaAlumnoModal";
+import { EditarPrecioModal } from "../EditarPrecioModal";
 import { ReinscribirModal } from "../ReinscribirModal";
 
 const ESTADO_ESTILO: Record<string, string> = {
@@ -64,6 +65,7 @@ export function AlumnoDetalleView({
   const [modalEditarOpen, setModalEditarOpen] = useState(false);
   const [modalReinscribirOpen, setModalReinscribirOpen] = useState(false);
   const [modalAsignarRutinaOpen, setModalAsignarRutinaOpen] = useState(false);
+  const [modalEditarPrecioOpen, setModalEditarPrecioOpen] = useState(false);
   const nombreCompleto = alumno.nombre || alumno.apellido ? `${alumno.nombre ?? ""} ${alumno.apellido ?? ""}`.trim() : `DNI ${alumno.dni}`;
 
   return (
@@ -128,7 +130,18 @@ export function AlumnoDetalleView({
 
         {/* Card: Plan asignado */}
         <div className="bg-surface-white border border-border rounded-xl shadow-sm p-lg">
-          <h3 className="font-headline-md text-headline-md text-on-background mb-md">Plan asignado</h3>
+          <div className="flex items-center justify-between mb-md">
+            <h3 className="font-headline-md text-headline-md text-on-background">Plan asignado</h3>
+            {alumno.plan && (
+              <button
+                onClick={() => setModalEditarPrecioOpen(true)}
+                className="flex items-center gap-xs px-lg py-2 border border-border text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors font-label-bold text-label-bold"
+              >
+                <span className="material-symbols-outlined text-[18px]">sell</span>
+                Editar Precio
+              </button>
+            )}
+          </div>
           {alumno.plan ? (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-lg">
               <div>
@@ -342,6 +355,9 @@ export function AlumnoDetalleView({
       )}
       {modalAsignarRutinaOpen && (
         <AsignarRutinaAlumnoModal alumnoId={alumno.id} rutinas={rutinasDisponibles} onClose={() => setModalAsignarRutinaOpen(false)} />
+      )}
+      {modalEditarPrecioOpen && (
+        <EditarPrecioModal alumno={alumno} promociones={promociones} onClose={() => setModalEditarPrecioOpen(false)} />
       )}
     </>
   );

@@ -46,6 +46,29 @@ export async function crearCuotaInicial(
   return { error: null };
 }
 
+// Actualiza el monto_base de la(s) cuota(s) todavía no pagadas de una o varias
+// inscripciones — se llama tanto al cambiar el precio de lista de un plan
+// (src/app/planes/actions.ts, puede afectar a varias inscripciones a la vez) como al
+// editar el precio/promoción de la inscripción de un alumno puntual
+// (src/app/alumnos/actions.ts). Nunca toca una cuota ya 'pagada' — el histórico de lo
+// cobrado no se reescribe.
+export async function actualizarCuotasAdeudadasDeInscripciones(
+  supabase: SupabaseClient,
+  inscripcionIds: string[],
+  nuevoMonto: number
+): Promise<{ error: string | null }> {
+  if (inscripcionIds.length === 0) return { error: null };
+
+  const { error } = await supabase
+    .from("cuota")
+    .update({ monto_base: nuevoMonto })
+    .eq("estado", "adeudada")
+    .in("inscripcion_id", inscripcionIds);
+
+  if (error) return { error: `no se pudieron actualizar las cuotas adeudadas: ${error.message}` };
+  return { error: null };
+}
+
 // Se llama desde registrarPago cuando una cuota queda 100% pagada: genera la cuota
 // del período siguiente automáticamente (sin cron ni botón manual — ver
 // docs/modelo_datos.md sección 3). Si la inscripción ya no está activa (el alumno fue
