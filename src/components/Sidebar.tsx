@@ -84,38 +84,46 @@ export function Sidebar({ activo }: { activo: string }) {
             );
           })}
         </nav>
-        <div className={`pt-xl mt-auto space-y-2 ${expanded ? "px-lg" : "px-2"}`}>
-          {usuario && (
-            <div className={`flex items-center gap-3 bg-on-secondary-fixed-variant rounded-xl border border-outline-variant/30 ${expanded ? "p-3" : "p-2 justify-center"}`}>
-              <div className="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-bold text-label-bold shrink-0">
-                {iniciales(usuario.nombre)}
-              </div>
-              {expanded && (
-                <div className="overflow-hidden">
-                  <p className="text-on-secondary font-label-bold text-label-bold truncate">{usuario.nombre}</p>
-                  <p className="text-on-secondary opacity-60 text-caption font-caption truncate">
-                    {usuario.es_admin ? "Admin" : "Profesor"}
-                  </p>
+        <div className="mt-auto">
+          <div className={`pt-xl ${expanded ? "px-lg" : "px-2"}`}>
+            {usuario && (
+              <div className={`flex items-center gap-3 bg-on-secondary-fixed-variant rounded-xl border border-outline-variant/30 mb-2 ${expanded ? "p-3" : "p-2 justify-center"}`}>
+                <div className="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-bold text-label-bold shrink-0">
+                  {iniciales(usuario.nombre)}
                 </div>
-              )}
-            </div>
-          )}
+                {expanded && (
+                  <div className="overflow-hidden">
+                    <p className="text-on-secondary font-label-bold text-label-bold truncate">{usuario.nombre}</p>
+                    <p className="text-on-secondary opacity-60 text-caption font-caption truncate">
+                      {usuario.es_admin ? "Admin" : "Profesor"}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           {usuario && (
-            <div className={`flex ${expanded ? "justify-end gap-1" : "flex-col items-center gap-1"}`}>
+            <div className="space-y-1">
               <a
-                href="/configuracion"
-                title="Mi cuenta"
-                className="p-2 text-on-secondary opacity-70 hover:opacity-100 hover:bg-on-secondary-fixed-variant rounded-lg transition-colors"
+                href="/cuenta"
+                title={!expanded ? "Mi cuenta" : undefined}
+                className={`flex items-center text-on-secondary opacity-80 hover:opacity-100 py-3 hover:bg-on-secondary-fixed-variant transition-colors ${
+                  expanded ? "pl-5" : "justify-center pl-0"
+                }`}
               >
-                <span className="material-symbols-outlined text-[20px]">account_circle</span>
+                <span className={`material-symbols-outlined ${expanded ? "mr-3" : ""}`}>account_circle</span>
+                {expanded && <span className="font-label-bold text-label-bold whitespace-nowrap">Mi cuenta</span>}
               </a>
               <form action={cerrarSesion}>
                 <button
                   type="submit"
-                  title="Cerrar sesión"
-                  className="p-2 text-on-secondary opacity-70 hover:opacity-100 hover:bg-on-secondary-fixed-variant rounded-lg transition-colors"
+                  title={!expanded ? "Cerrar sesión" : undefined}
+                  className={`w-full flex items-center text-on-secondary opacity-80 hover:opacity-100 py-3 hover:bg-on-secondary-fixed-variant transition-colors ${
+                    expanded ? "pl-5" : "justify-center pl-0"
+                  }`}
                 >
-                  <span className="material-symbols-outlined text-[20px]">logout</span>
+                  <span className={`material-symbols-outlined ${expanded ? "mr-3" : ""}`}>power_settings_new</span>
+                  {expanded && <span className="font-label-bold text-label-bold whitespace-nowrap">Cerrar sesión</span>}
                 </button>
               </form>
             </div>
@@ -160,7 +168,7 @@ export function Sidebar({ activo }: { activo: string }) {
                   </div>
                 </div>
                 <a
-                  href="/configuracion"
+                  href="/cuenta"
                   onClick={closeMobileNav}
                   title="Mi cuenta"
                   className="flex items-center justify-center p-2 text-on-secondary opacity-70 hover:opacity-100 hover:bg-on-secondary-fixed-variant rounded-lg transition-colors"
@@ -173,7 +181,7 @@ export function Sidebar({ activo }: { activo: string }) {
                     title="Cerrar sesión"
                     className="w-full flex items-center justify-center p-2 text-on-secondary opacity-70 hover:opacity-100 hover:bg-on-secondary-fixed-variant rounded-lg transition-colors"
                   >
-                    <span className="material-symbols-outlined text-[20px]">logout</span>
+                    <span className="material-symbols-outlined text-[20px]">power_settings_new</span>
                   </button>
                 </form>
               </div>
