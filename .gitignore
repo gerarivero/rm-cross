@@ -10,6 +10,14 @@ node_modules/
 .env
 .env.local
 .env*.local
+.env.production
+
+# Claves SSH de deploy (nunca deben commitearse)
+*.pem
+*_deploy_key*
+*deploy-key*
+id_ed25519*
+id_rsa*
 
 # Supabase CLI
 supabase/.temp/

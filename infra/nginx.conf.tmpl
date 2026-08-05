@@ -1,0 +1,23 @@
+# Reverse proxy para Centro RM.
+# Este archivo es una PLANTILLA: el placeholder de dominio de abajo lo
+# reemplaza infra/create-droplet.sh antes de pasarlo a cloud-init.
+#
+# El bloque HTTPS lo agrega/edita certbot automáticamente la primera vez que
+# se corre `certbot --nginx -d <dominio>` (ver docs/deploy.md, paso 5).
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name __DOMAIN__;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

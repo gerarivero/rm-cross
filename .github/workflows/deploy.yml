@@ -1,0 +1,85 @@
+name: Deploy
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch: {}
+
+env:
+  RELEASES_DIR: /var/www/centro-rm/releases
+  KEEP_RELEASES: 3
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: npm run build
+
+      - name: Package release
+        run: |
+          set -euo pipefail
+          RELEASE_NAME="$(date -u +%Y%m%d%H%M%S)-${GITHUB_SHA::8}"
+          echo "RELEASE_NAME=$RELEASE_NAME" >> "$GITHUB_ENV"
+
+          mkdir -p release/.next
+          cp -r .next/standalone/. release/
+          cp -r .next/static release/.next/static
+          cp -r public release/public
+
+          tar -czf release.tar.gz -C release .
+
+      - name: Upload release to droplet
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          source: "release.tar.gz"
+          target: "/tmp/"
+
+      - name: Extract, activate and restart
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          envs: RELEASE_NAME,RELEASES_DIR,KEEP_RELEASES
+          script: |
+            set -euo pipefail
+
+            RELEASE_PATH="$RELEASES_DIR/$RELEASE_NAME"
+            mkdir -p "$RELEASE_PATH"
+            tar -xzf /tmp/release.tar.gz -C "$RELEASE_PATH"
+            rm -f /tmp/release.tar.gz
+
+            ln -sfn "$RELEASE_PATH" /var/www/centro-rm/current
+
+            sudo systemctl restart centro-rm
+            sleep 2
+            sudo systemctl is-active --quiet centro-rm
+
+            # Mantener solo las últimas $KEEP_RELEASES releases
+            cd "$RELEASES_DIR"
+            ls -1t | tail -n "+$((KEEP_RELEASES + 1))" | xargs -r rm -rf

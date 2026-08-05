@@ -1,0 +1,23 @@
+[Unit]
+Description=Centro RM (Next.js standalone)
+After=network.target
+
+[Service]
+Type=simple
+User=deploy
+Group=deploy
+WorkingDirectory=/var/www/centro-rm/current
+EnvironmentFile=/var/www/centro-rm/shared/.env.production
+Environment=PORT=3000
+Environment=HOSTNAME=127.0.0.1
+ExecStart=/usr/bin/node /var/www/centro-rm/current/server.js
+Restart=on-failure
+RestartSec=5
+# Endurecimiento básico
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/var/www/centro-rm
+
+[Install]
+WantedBy=multi-user.target
