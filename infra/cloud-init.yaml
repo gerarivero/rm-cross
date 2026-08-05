@@ -36,7 +36,6 @@ write_files:
 
   - path: /var/www/centro-rm/shared/.env.production
     permissions: "0600"
-    owner: deploy:deploy
     content: |
       # Completar a mano tras la creación del droplet (ver docs/deploy.md, paso 6).
       # SUPABASE_URL=
