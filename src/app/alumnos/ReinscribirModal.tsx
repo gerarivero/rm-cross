@@ -106,6 +106,7 @@ export function ReinscribirModal({
                 <input
                   name="precio"
                   type="number"
+                  required
                   step="0.01"
                   min={1}
                   value={precio}

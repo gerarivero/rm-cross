@@ -22,6 +22,10 @@ export function PromocionFormModal({
 
   function handleSubmit(formData: FormData) {
     setError(null);
+    if (formData.getAll("plan_ids").length === 0) {
+      setError("Elegí al menos un plan para la promoción.");
+      return;
+    }
     startTransition(async () => {
       const result =
         mode === "edit" && promocion ? await actualizarPromocion(promocion.id, formData) : await crearPromocion(formData);

@@ -22,10 +22,7 @@ export function Modal({
   }, [onClose]);
 
   return (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-md"
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-md">
       <div
         className={`bg-surface-white rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.2)] w-full ${maxWidth} max-h-[90vh] overflow-y-auto`}
         onClick={(e) => e.stopPropagation()}

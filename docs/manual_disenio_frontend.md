@@ -189,10 +189,13 @@ Referencia: tabla de `PlanesView.tsx`.
 
 ## 7. Componentes reutilizables
 
-- **`Modal`** (`src/components/Modal.tsx`): overlay + panel centrado, cierra con click
-  afuera o `Escape`. Props: `title`, `onClose`, `children`, `maxWidth` opcional. Usarlo
-  para cualquier formulario o contenido que deba aparecer superpuesto.
-- **`ConfirmModal`** (`src/components/ConfirmModal.tsx`): construido sobre `Modal`.
+- **`Modal`** (`src/components/Modal.tsx`): overlay con fondo blurreado (`backdrop-blur-sm`),
+  fijo — no cierra con click afuera, solo con `Escape` o el botón X. Props: `title`,
+  `onClose`, `children`, `maxWidth` opcional. Usarlo para cualquier formulario o contenido
+  que deba aparecer superpuesto. Dentro de un `<form>`, Enter dispara el submit nativo del
+  navegador (y `required` bloquea el envío mostrando feedback nativo) sin código adicional.
+- **`ConfirmModal`** (`src/components/ConfirmModal.tsx`): construido sobre `Modal`. Enter
+  dispara `onConfirm` (salvo `pending`), igual en variantes `danger`.
   Props: `title`, `message`, `confirmLabel`, `danger` (estilo rojo), `pending`,
   `onConfirm`, `onCancel`. Usarlo para **toda** confirmación destructiva (baja,
   eliminación).

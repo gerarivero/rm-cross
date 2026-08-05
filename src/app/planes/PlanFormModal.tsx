@@ -67,6 +67,7 @@ export function PlanFormModal({
             <input
               name="dias_por_semana"
               type="number"
+              required={!accesoLibre}
               min={1}
               max={7}
               disabled={accesoLibre}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Modal } from "./Modal";
 
 export function ConfirmModal({
@@ -19,6 +20,14 @@ export function ConfirmModal({
   onConfirm: () => void;
   onCancel: () => void;
 }) {
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Enter" && !pending) onConfirm();
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onConfirm, pending]);
+
   return (
     <Modal title={title} onClose={onCancel} maxWidth="max-w-md">
       <p className="text-body-sm text-on-surface-variant">{message}</p>
