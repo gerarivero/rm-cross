@@ -148,7 +148,35 @@ En el repo: **Settings → Secrets and variables → Actions**:
 `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` **no** van acá — son server-only y
 ya quedaron en `.env.production` en el droplet (paso 6).
 
-## 8. Deploy automático
+## 8. Crear el primer usuario administrador
+
+Crear un administrador desde la UI (**Configuración → Administradores**)
+requiere estar logueado como administrador — y un sistema recién instalado no
+tiene ninguno con credenciales reales (la migración `0002` siembra una fila
+`usuario` placeholder, `admin@centrorm.local`, sin `auth_user_id`, que nunca
+pudo loguearse). Para romper ese círculo hay un script que habla directo con
+Supabase con la service role key:
+
+```bash
+SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... \
+  npm run seed:admin -- --nombre "Nombre Apellido" --email vos@dominio.com --password "unaClaveSegura123"
+```
+
+Usá las mismas `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` del proyecto
+(local: `.env.local`; producción: `/var/www/centro-rm/shared/.env.production`
+en el droplet, o directo desde tu máquina si el proyecto de Supabase es
+accesible). El script:
+
+1. Crea el usuario en Supabase Auth con la contraseña indicada.
+2. Crea su fila en `usuario` con `es_admin = true`.
+3. Si todavía existe el placeholder `admin@centrorm.local` (sin
+   `auth_user_id`), lo borra.
+
+Después de correrlo, entrá a `/login` con ese email y contraseña. Desde ahí
+ya podés crear el resto de los administradores por la UI normal, y cambiar tu
+propia contraseña desde Mi Cuenta si querés.
+
+## 9. Deploy automático
 
 Cualquier push a `master` dispara `.github/workflows/deploy.yml`:
 
@@ -166,7 +194,7 @@ ssh -i ~/.ssh/centro-rm-deploy-key deploy@rm.iteasy.com.ar
 sudo journalctl -u centro-rm -f
 ```
 
-## 9. Deploy manual / rollback
+## 10. Deploy manual / rollback
 
 - **Re-disparar el deploy actual**: pestaña Actions → workflow "Deploy" → *Run workflow*.
 - **Rollback a un release anterior** (sin pasar por CI):
@@ -177,7 +205,7 @@ sudo journalctl -u centro-rm -f
   sudo systemctl restart centro-rm
   ```
 
-## 10. Destruir el droplet
+## 11. Destruir el droplet
 
 ```bash
 ./infra/destroy-droplet.sh
@@ -190,12 +218,12 @@ tocar los GitHub Secrets — apenas el DNS vuelva a propagar, el próximo deploy
 funciona igual. Sí hay que repetir el paso 5 (certbot) porque el certificado
 vivía en el droplet anterior.
 
-## 11. Costos
+## 12. Costos
 
 - Droplet `s-1vcpu-1gb`: **US$6/mes**.
 - DNS y certificado TLS (Let's Encrypt vía DO): sin costo adicional.
 
-## 12. Troubleshooting
+## 13. Troubleshooting
 
 - **`certbot` falla con error de validación HTTP-01**: el DNS todavía no
   propagó, o el puerto 80 no está abierto. Verificar `dig +short
